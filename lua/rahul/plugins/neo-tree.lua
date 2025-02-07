@@ -46,8 +46,8 @@ return {
         },
         git_status = {
           symbols = {
-            unstaged = "󰄱",
-            staged = "󰱒",
+            unstaged = "󰄬", -- Pencil icon for unstaged
+            staged = "󰸞", -- Checkmark for staged
           },
         },
       },
