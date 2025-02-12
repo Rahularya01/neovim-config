@@ -10,6 +10,9 @@ return {
     if notify_ok then
       notify.setup({
         background_colour = "#000000", -- Fix: Corrected the spelling
+        render = "compact",
+        stages = "fade",
+        top_down = false
       })
       vim.notify = notify
     end

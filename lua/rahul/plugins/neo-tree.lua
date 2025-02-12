@@ -55,7 +55,7 @@ return {
 
     -- Basic key mappings to toggle/focus Neo-tree
     vim.keymap.set('n', '<leader>e', ':Neotree toggle filesystem left<CR>', { desc = "Toggle File Explorer" })
-    vim.keymap.set('n', '<leader>o', ':Neotree focus<CR>', { desc = "Focus Neo-tree" })
+    -- vim.keymap.set('n', '<leader>o', ':Neotree focus<CR>', { desc = "Focus Neo-tree" })
 
     -- Window navigation
     vim.api.nvim_set_keymap('n', '<C-h>', '<C-w>h', { noremap = true, silent = true })
