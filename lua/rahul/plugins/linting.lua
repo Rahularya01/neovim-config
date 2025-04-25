@@ -13,6 +13,22 @@ return {
       python = { "pylint" },
     }
 
+    -- Customize pylint to ensure correct output format
+    lint.linters.pylint = {
+      cmd = "pylint",
+      stdin = false,
+      args = {
+        "--output-format=text",
+        "--msg-template='{path}:{line}:{column}: {msg}'",
+        "$FILENAME",
+      },
+      parser = require("lint.parser").from_errorformat("%f:%l:%c: %m"),
+      ignore_exitcode = true,
+    }
+
+    -- Customize eslint_d if necessary (usually not required)
+    -- lint.linters.eslint_d.args = { "--format", "json", "--stdin", "--stdin-filename", "$FILENAME" }
+
     local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
 
     vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
