@@ -27,3 +27,19 @@ opt.clipboard:append("unnamedplus")
 
 opt.splitright = true
 opt.splitbelow = true
+
+opt.mouse = "a" -- Enable mouse support
+
+-- Enable smooth horizontal scrolling
+opt.sidescroll = 1    -- Minimum horizontal scroll step
+opt.sidescrolloff = 8 -- Keep context when scrolling
+
+-- Bind Shift + Scroll Wheel to horizontal scrolling
+vim.api.nvim_exec([[
+  nnoremap <ScrollWheelLeft>  zh
+  nnoremap <ScrollWheelRight> zl
+  inoremap <ScrollWheelLeft>  <C-o>zh
+  inoremap <ScrollWheelRight> <C-o>zl
+  vnoremap <ScrollWheelLeft>  zh
+  vnoremap <ScrollWheelRight> zl
+]], false)
