@@ -130,6 +130,7 @@ return {
       ["pyright"] = function()
         lspconfig["pyright"].setup({
           capabilities = capabilities,
+          filetypes = { "python" },
           settings = {
             python = {
               analysis = {

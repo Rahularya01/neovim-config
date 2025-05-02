@@ -31,11 +31,8 @@ return {
         "html",
         "cssls",
         "tailwindcss",
-        "svelte",
         "lua_ls",
-        "graphql",
         "emmet_ls",
-        "prismals",
         "pyright",
       },
     })
@@ -43,9 +40,7 @@ return {
     mason_tool_installer.setup({
       ensure_installed = {
         "prettierd", -- prettier formatter
-        "isort",     -- python formatter
         "black",     -- python formatter
-        "pylint",    -- python linter
         "eslint_d",  -- js linter
       },
     })
