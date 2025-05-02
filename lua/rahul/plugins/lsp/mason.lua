@@ -42,6 +42,8 @@ return {
         "prettierd", -- prettier formatter
         "black",     -- python formatter
         "eslint_d",  -- js linter
+        "ruff",      -- python linter
+        "mypy",      -- python type checker
       },
     })
   end,
