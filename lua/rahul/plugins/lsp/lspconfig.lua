@@ -8,10 +8,6 @@ return {
     { "folke/lsp-colors.nvim" },    -- Better highlighting for LSP diagnostics
     { "ray-x/lsp_signature.nvim" }, -- Shows function signature when typing
     {
-      "SmiteshP/nvim-navic",
-      -- Remove the config function from here, we'll handle it in the main config
-    }, -- Show code context
-    {
       "https://git.sr.ht/~whynothugo/lsp_lines.nvim",
       config = function()
         require("lsp_lines").setup()
@@ -30,51 +26,6 @@ return {
 
     -- import lsp_signature plugin
     local lsp_signature = require("lsp_signature")
-
-    -- First ensure navic is loaded and configured
-    local navic_ok, navic = pcall(require, "nvim-navic")
-    if not navic_ok then
-      vim.notify("navic module not found. Please ensure 'SmiteshP/nvim-navic' is installed properly.", vim.log.levels.ERROR)
-      -- Create a dummy navic module to prevent further errors
-      navic = {
-        attach = function() end,
-        setup = function() end,
-      }
-    else
-      -- Configure navic here
-      navic.setup({
-        highlight = true,
-        depth_limit = 5,
-        icons = {
-          File = " ",
-          Module = " ",
-          Namespace = " ",
-          Package = " ",
-          Class = " ",
-          Method = " ",
-          Property = " ",
-          Field = " ",
-          Constructor = " ",
-          Enum = " ",
-          Interface = " ",
-          Function = " ",
-          Variable = " ",
-          Constant = " ",
-          String = " ",
-          Number = " ",
-          Boolean = " ",
-          Array = " ",
-          Object = " ",
-          Key = " ",
-          Null = " ",
-          EnumMember = " ",
-          Struct = " ",
-          Event = " ",
-          Operator = " ",
-          TypeParameter = " ",
-        },
-      })
-    end
 
     local keymap = vim.keymap -- for conciseness
 
@@ -139,7 +90,6 @@ return {
         vim.notify("Diagnostic mode: virtual text", vim.log.levels.INFO)
       end
     end
-
 
     vim.api.nvim_create_autocmd("LspAttach", {
       group = vim.api.nvim_create_augroup("UserLspConfig", {}),
@@ -213,11 +163,6 @@ return {
 
         opts.desc = "Show all LSP symbols in workspace"
         keymap.set("n", "<leader>swy", "<cmd>Telescope lsp_workspace_symbols<CR>", opts)
-
-        -- Setup navic (breadcrumbs) if supported and available
-        if navic_ok and client.server_capabilities.documentSymbolProvider then
-          navic.attach(client, ev.buf)
-        end
       end,
     })
 
@@ -344,9 +289,9 @@ return {
         })
       end,
 
-      ["ruff_lsp"] = function()
-        -- Setup ruff_lsp for Python linting and formatting
-        lspconfig["ruff_lsp"].setup({
+      ["ruff"] = function()
+        -- Setup ruff for Python linting and formatting
+        lspconfig["ruff"].setup({
           capabilities = capabilities,
           on_attach = function(client, _)
             -- Disable hover in favor of Pyright
@@ -402,9 +347,9 @@ return {
         })
       end,
 
-      ["ts_ls"] = function()
+      ["ts_ls"] = function()  -- Fixed server name from ts_ls to ts_ls
         -- TypeScript configuration
-        local server_settings = project_settings["ts_ls"] or {}
+        local server_settings = project_settings["ts_ls"] or {}  -- Changed from ts_ls to ts_ls
         local default_settings = {
           typescript = {
             inlayHints = {
@@ -445,7 +390,7 @@ return {
         -- Merge settings
         local merged_settings = vim.tbl_deep_extend("force", default_settings, server_settings)
 
-        lspconfig["ts_ls"].setup({
+        lspconfig["ts_ls"].setup({  -- Changed from ts_ls to ts_ls
           capabilities = capabilities,
           settings = merged_settings,
           on_attach = function(client, _)
