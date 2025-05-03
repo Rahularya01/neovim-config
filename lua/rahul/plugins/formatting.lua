@@ -8,18 +8,18 @@ return {
       -- Organize formatters by file type
       formatters_by_ft = {
         -- Web development
-        javascript = { "prettierd", "prettier" }, -- Fallback to prettier if prettierd fails
-        typescript = { "prettierd", "prettier" },
-        javascriptreact = { "prettierd", "prettier" },
-        typescriptreact = { "prettierd", "prettier" },
-        svelte = { "prettierd", "prettier" },
-        css = { "prettierd", "prettier" },
-        html = { "prettierd", "prettier" },
-        json = { "prettierd", "prettier" },
-        yaml = { "prettierd", "prettier" },
-        markdown = { "prettierd", "prettier" },
-        graphql = { "prettierd", "prettier" },
-        liquid = { "prettierd", "prettier" },
+        javascript = { "prettierd" }, -- Fallback to prettier if prettierd fails
+        typescript = { "prettierd" },
+        javascriptreact = { "prettierd" },
+        typescriptreact = { "prettierd" },
+        svelte = { "prettierd" },
+        css = { "prettierd" },
+        html = { "prettierd" },
+        json = { "prettierd" },
+        yaml = { "prettierd" },
+        markdown = { "prettierd" },
+        graphql = { "prettierd" },
+        liquid = { "prettierd" },
 
         -- Lua
         lua = { "stylua" },
