@@ -4,7 +4,7 @@ return {
   dependencies = {
     "hrsh7th/cmp-nvim-lsp",
     { "antosha417/nvim-lsp-file-operations", config = true },
-    { "folke/neodev.nvim", opts = {} },
+    { "folke/neodev.nvim",                   opts = {} },
     { "folke/lsp-colors.nvim" },    -- Better highlighting for LSP diagnostics
     { "ray-x/lsp_signature.nvim" }, -- Shows function signature when typing
     {
@@ -91,6 +91,35 @@ return {
       end
     end
 
+    -- Enhance code action functionality to include linting fixes
+    local orig_code_action_handler = vim.lsp.handlers["textDocument/codeAction"]
+    vim.lsp.handlers["textDocument/codeAction"] = function(...)
+      local params = select(2, ...)
+      -- Include all diagnostic sources for code actions
+      if params and params.context and params.context.diagnostics then
+        -- Keep track of all diagnostic sources seen
+        local sources = {}
+        for _, diagnostic in ipairs(params.context.diagnostics) do
+          if diagnostic.source then
+            sources[diagnostic.source] = true
+          end
+        end
+
+        -- Include specific linting sources like eslint, ruff, etc.
+        -- Adding common linting tools to be included in code actions
+        for source, _ in pairs(sources) do
+          if source:match("eslint") or source:match("ruff") or
+              source:match("pylint") or source:match("mypy") then
+            -- Set the only flag to nil to include all code actions, not just specific ones
+            params.context.only = nil
+            break
+          end
+        end
+      end
+
+      return orig_code_action_handler(...)
+    end
+
     vim.api.nvim_create_autocmd("LspAttach", {
       group = vim.api.nvim_create_augroup("UserLspConfig", {}),
       callback = function(ev)
@@ -143,6 +172,17 @@ return {
         vim.keymap.set("n", "<leader>oi", function()
           vim.lsp.buf.code_action({
             context = { only = { "source" } },
+          })
+        end, opts)
+
+        -- Add a specific keybinding for linting fixes
+        opts.desc = "Apply linting fixes"
+        vim.keymap.set("n", "<leader>lx", function()
+          vim.lsp.buf.code_action({
+            context = {
+              diagnostics = vim.diagnostic.get(0), -- Get all diagnostics in current buffer
+              only = { "quickfix" }                -- Target quickfix actions, which most linters use
+            }
           })
         end, opts)
 
@@ -294,6 +334,9 @@ return {
         lspconfig["ruff"].setup({
           capabilities = capabilities,
           on_attach = function(client, _)
+            -- Enable full capabilities including code actions for linting fixes
+            client.server_capabilities.codeActionProvider = true
+
             -- Disable hover in favor of Pyright
             client.server_capabilities.hoverProvider = false
           end,
@@ -347,9 +390,9 @@ return {
         })
       end,
 
-      ["ts_ls"] = function()  -- Fixed server name from ts_ls to ts_ls
+      ["ts_ls"] = function()                                    -- Fixed server name from ts_ls to ts_ls
         -- TypeScript configuration
-        local server_settings = project_settings["ts_ls"] or {}  -- Changed from ts_ls to ts_ls
+        local server_settings = project_settings["ts_ls"] or {} -- Changed to ts_ls
         local default_settings = {
           typescript = {
             inlayHints = {
@@ -390,14 +433,44 @@ return {
         -- Merge settings
         local merged_settings = vim.tbl_deep_extend("force", default_settings, server_settings)
 
-        lspconfig["ts_ls"].setup({  -- Changed from ts_ls to ts_ls
+        lspconfig["ts_ls"].setup({ -- Changed from ts_ls to ts_ls
           capabilities = capabilities,
           settings = merged_settings,
           on_attach = function(client, _)
+            -- Keep code action support for ESLint fixes
+            client.server_capabilities.codeActionProvider = true
+
             -- Disable formatting in favor of eslint/prettier
             client.server_capabilities.documentFormattingProvider = false
             client.server_capabilities.documentRangeFormattingProvider = false
           end,
+        })
+      end,
+
+      ["eslint"] = function()
+        -- Setup ESLint LSP for fixable linting diagnostics
+        lspconfig["eslint"].setup({
+          capabilities = capabilities,
+          on_attach = function(client, bufnr)
+            -- Enable code actions for ESLint fixes
+            client.server_capabilities.codeActionProvider = true
+
+            -- Add specific ESLint fix command
+            vim.api.nvim_buf_create_user_command(bufnr, "EslintFix", function()
+              vim.cmd("EslintFixAll")
+            end, { desc = "Fix all ESLint issues" })
+
+            -- Add keymap for ESLint fixes
+            vim.keymap.set("n", "<leader>ef", ":EslintFix<CR>",
+              { buffer = bufnr, desc = "Fix all ESLint issues" })
+          end,
+          settings = {
+            eslint = {
+              enable = true,
+              run = "onSave",
+              autoFixOnSave = false, -- We'll use the command instead for more control
+            }
+          }
         })
       end,
     })
