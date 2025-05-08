@@ -22,13 +22,30 @@ return {
 
     -- Configure telescope
     telescope.setup({
+      highlights = {
+        TelescopeBorder = { fg = "#5e81ac" }, -- border color
+        TelescopePromptBorder = { fg = "#5e81ac" },
+        TelescopeResultsBorder = { fg = "#5e81ac" },
+        TelescopePreviewBorder = { fg = "#5e81ac" },
+
+        TelescopeSelection = {
+          bg = "#3B4252", -- nordic dark background
+          fg = "#E5E9F0", -- light foreground
+          bold = true,
+          italic = false,
+        },
+
+        TelescopeSelectionCaret = { fg = "#BF616A" },        -- red caret
+        TelescopeMatching = { fg = "#EBCB8B", bold = true }, -- yellow matches
+        TelescopePromptPrefix = { fg = "#BF616A" },          -- red prompt icon
+      },
       defaults = {
         prompt_prefix = " 󰍉 ", -- nicer prompt
-        selection_caret = " ", -- selection indicator
         path_display = { "smart" }, -- smart path display
         file_ignore_patterns = { -- files to ignore
           ".git/", "node_modules/", "target/", "docs/", "vendor/*",
-          "%.lock", "%.sqlite3", "%.otf", "%.ttf", "%.DS_Store"
+          "%.lock", "%.sqlite3", "%.ipynb", "%.jpg", "%.jpeg", "%.png",
+          "%.svg", "%.otf", "%.ttf", "%.DS_Store"
         },
         layout_strategy = "horizontal", -- default layout
         layout_config = {
