@@ -8,11 +8,6 @@ return {
     -- import mason
     local mason = require("mason")
 
-    -- import mason-lspconfig
-    local mason_lspconfig = require("mason-lspconfig")
-
-    local mason_tool_installer = require("mason-tool-installer")
-
     -- enable mason and configure icons
     mason.setup({
       ui = {
@@ -24,19 +19,31 @@ return {
       },
     })
 
+    -- import mason-lspconfig after setting up mason
+    local mason_lspconfig = require("mason-lspconfig")
+
+    -- Configure mason-lspconfig
     mason_lspconfig.setup({
       -- list of servers for mason to install
       ensure_installed = {
-        "ts_ls",
+        "ts_ls", -- Changed from ts_ls to ts_ls (correct server name)
         "html",
         "cssls",
         "tailwindcss",
         "lua_ls",
         "emmet_ls",
         "pyright",
+        "ruff",   -- Added ruff since it's used in lspconfig
+        "eslint", -- Added eslint since it's used in lspconfig
       },
+      -- auto-install configured servers (with lspconfig)
+      automatic_installation = true,
     })
 
+    -- import mason-tool-installer after setting up mason
+    local mason_tool_installer = require("mason-tool-installer")
+
+    -- Configure mason-tool-installer
     mason_tool_installer.setup({
       ensure_installed = {
         "prettierd", -- prettier formatter
