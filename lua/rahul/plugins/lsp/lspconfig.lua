@@ -2,8 +2,8 @@ return {
   "neovim/nvim-lspconfig",
   event = { "BufReadPre", "BufNewFile" },
   dependencies = {
-    "williamboman/mason.nvim",           -- Add Mason as a dependency
-    "williamboman/mason-lspconfig.nvim", -- Add Mason-lspconfig as a dependency
+    "williamboman/mason.nvim",           -- Mason dependency
+    "williamboman/mason-lspconfig.nvim", -- Mason-lspconfig dependency
     "hrsh7th/cmp-nvim-lsp",
     { "antosha417/nvim-lsp-file-operations", config = true },
     { "folke/neodev.nvim",                   opts = {} },
@@ -17,25 +17,8 @@ return {
     }, -- Show diagnostic lines
   },
   config = function()
-    -- Ensure mason is loaded first
-    local mason_ok, mason = pcall(require, "mason")
-    if not mason_ok then
-      vim.notify("Mason not loaded! LSP functionality may be limited.", vim.log.levels.WARN)
-      return
-    end
-
-    -- Initialize Mason
-    mason.setup()
-
-    -- Then try to load mason-lspconfig
-    local mason_lspconfig_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
-    if not mason_lspconfig_ok then
-      vim.notify("Mason-lspconfig not loaded! LSP servers might not be configured properly.", vim.log.levels.WARN)
-      return
-    end
-
-    -- Initialize mason-lspconfig
-    mason_lspconfig.setup()
+    -- Create a dedicated namespace for LSP diagnostics - THIS IS IMPORTANT to avoid duplicates
+    local lsp_ns = vim.api.nvim_create_namespace("lsp-diagnostics")
 
     -- import lspconfig plugin
     local lspconfig_ok, lspconfig = pcall(require, "lspconfig")
@@ -70,9 +53,48 @@ return {
 
     -- Performance tweaks for LSP
     vim.lsp.set_log_level("error") -- Reduce log noise
+
+    -- CENTRALIZED DIAGNOSTICS HANDLER - avoids duplicates
     vim.lsp.handlers["textDocument/publishDiagnostics"] = vim.lsp.with(
-      vim.lsp.diagnostic.on_publish_diagnostics, {
-        -- Reduce update rate for better performance
+      function(_, result, ctx, config)
+        local client = vim.lsp.get_client_by_id(ctx.client_id)
+        local bufnr = vim.uri_to_bufnr(result.uri)
+
+        -- Only process valid buffers
+        if not vim.api.nvim_buf_is_valid(bufnr) then
+          return
+        end
+
+        -- Convert LSP diagnostics to vim diagnostics format
+        -- Handle the case where diagnostics might be nil
+        local diagnostics = {}
+
+        -- Check if result.diagnostics exists and is not nil before processing
+        if result and result.diagnostics then
+          -- Safe conversion with error handling
+          local status, conv_diagnostics = pcall(vim.lsp.diagnostic.on_publish_diagnostics, _, result, ctx, config)
+          if status and conv_diagnostics then
+            diagnostics = conv_diagnostics
+
+            -- Add source information only if we have diagnostics
+            for _, diagnostic in ipairs(diagnostics) do
+              diagnostic.source = diagnostic.source or (client and client.name or "unknown")
+            end
+          end
+        end
+
+        -- Set diagnostics with our dedicated namespace
+        vim.diagnostic.set(lsp_ns, bufnr, diagnostics, {
+          severity_sort = true,
+          virtual_text = {
+            spacing = 4,
+            prefix = "●",
+          },
+          underline = true,
+        })
+      end,
+      {
+        -- Diagnostic display options
         update_in_insert = false,
         virtual_text = {
           spacing = 4,
@@ -97,6 +119,20 @@ return {
         silent = true,
       }
     )
+
+    -- UNIFIED CODE ACTION HANDLER - consolidates code actions from all sources
+    local orig_code_action_handler = vim.lsp.handlers["textDocument/codeAction"]
+    vim.lsp.handlers["textDocument/codeAction"] = function(err, result, ctx, config)
+      -- Include all diagnostic sources for code actions
+      local params = ctx.params
+      if params and params.context and params.context.diagnostics then
+        -- Remove any filtering to ensure we get all possible actions
+        params.context.only = nil
+      end
+
+      -- Call the original handler with our modified context
+      return orig_code_action_handler(err, result, ctx, config)
+    end
 
     -- Setup LSP signature as you type (only if available)
     if lsp_signature_ok then
@@ -130,35 +166,6 @@ return {
         diagnostic_mode = "virtual_text"
         vim.notify("Diagnostic mode: virtual text", vim.log.levels.INFO)
       end
-    end
-
-    -- Enhance code action functionality to include linting fixes
-    local orig_code_action_handler = vim.lsp.handlers["textDocument/codeAction"]
-    vim.lsp.handlers["textDocument/codeAction"] = function(...)
-      local params = select(2, ...)
-      -- Include all diagnostic sources for code actions
-      if params and params.context and params.context.diagnostics then
-        -- Keep track of all diagnostic sources seen
-        local sources = {}
-        for _, diagnostic in ipairs(params.context.diagnostics) do
-          if diagnostic.source then
-            sources[diagnostic.source] = true
-          end
-        end
-
-        -- Include specific linting sources like eslint, ruff, etc.
-        -- Adding common linting tools to be included in code actions
-        for source, _ in pairs(sources) do
-          if source:match("eslint") or source:match("ruff") or
-              source:match("pylint") or source:match("mypy") then
-            -- Set the only flag to nil to include all code actions, not just specific ones
-            params.context.only = nil
-            break
-          end
-        end
-      end
-
-      return orig_code_action_handler(...)
     end
 
     vim.api.nvim_create_autocmd("LspAttach", {
@@ -299,300 +306,216 @@ return {
     -- Load project-specific settings
     local project_settings = load_project_settings()
 
-    -- Get list of available language servers
-    local available_servers = {}
-    if mason_lspconfig_ok then
-      -- Get servers that are available through mason-lspconfig
-      available_servers = mason_lspconfig.get_installed_servers()
-    end
+    -- Define server configuration functions
+    local server_configs = {
+      emmet_ls = {
+        capabilities = capabilities,
+        filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
+      },
 
-    -- Utility function to safely setup a language server
-    local function setup_server(server_name, config_func)
-      -- Check if the server is available before setting it up
-      if type(lspconfig[server_name]) ~= "table" or type(lspconfig[server_name].setup) ~= "function" then
-        vim.notify("Language server '" .. server_name .. "' not available. Make sure it's installed via Mason.",
-          vim.log.levels.WARN)
-        return false
-      end
-
-      -- Setup the server with either the provided config function or default config
-      if type(config_func) == "function" then
-        config_func()
-      else
-        -- Add project-specific settings if they exist
-        local server_settings = project_settings[server_name] or {}
-        local default_settings = {}
-        -- Merge settings
-        local merged_settings = vim.tbl_deep_extend("force", default_settings, server_settings)
-
-        lspconfig[server_name].setup({
-          capabilities = capabilities,
-          settings = merged_settings,
-        })
-      end
-
-      return true
-    end
-
-    -- Setup basic LSP server configurations
-    local function setup_servers()
-      -- Define server configuration functions
-      local server_configs = {
-        emmet_ls = function()
-          -- configure emmet language server
-          lspconfig["emmet_ls"].setup({
-            capabilities = capabilities,
-            filetypes = { "html", "typescriptreact", "javascriptreact", "css", "sass", "scss", "less", "svelte" },
-          })
-        end,
-
-        pyright = function()
-          -- Load project-specific settings
-          local server_settings = project_settings["pyright"] or {}
-          local default_settings = {
-            python = {
-              analysis = {
-                typeCheckingMode = "basic",
-                autoSearchPaths = true,
-                useLibraryCodeForTypes = true,
-                diagnosticMode = "workspace", -- or "openFilesOnly" for better performance
-                -- Ignore specific issues (customize as needed)
-                diagnosticSeverityOverrides = {
-                  reportMissingTypeStubs = "information",
-                  reportUnknownMemberType = "information",
-                  reportUnknownParameterType = "information",
-                  reportUnknownVariableType = "information",
-                  reportGeneralTypeIssues = "warning",
-                },
-                stubPath = vim.fn.stdpath("data") .. "/stubs",
+      pyright = {
+        capabilities = capabilities,
+        filetypes = { "python" },
+        settings = {
+          python = {
+            analysis = {
+              typeCheckingMode = "basic",
+              autoSearchPaths = true,
+              useLibraryCodeForTypes = true,
+              diagnosticMode = "workspace", -- or "openFilesOnly" for better performance
+              -- Ignore specific issues (customize as needed)
+              diagnosticSeverityOverrides = {
+                reportMissingTypeStubs = "information",
+                reportUnknownMemberType = "information",
+                reportUnknownParameterType = "information",
+                reportUnknownVariableType = "information",
+                reportGeneralTypeIssues = "warning",
               },
+              stubPath = vim.fn.stdpath("data") .. "/stubs",
             },
-          }
+          },
+        },
+        -- Additional configuration for Python work
+        on_attach = function(client, bufnr)
+          -- Add special handler for organizing imports
+          vim.api.nvim_buf_create_user_command(bufnr, "OrganizeImports", function()
+            vim.lsp.buf.execute_command({
+              command = "pyright.organizeimports",
+              arguments = { vim.api.nvim_buf_get_name(bufnr) },
+            })
+          end, { desc = "Organize Python Imports" })
 
-          -- Merge settings
-          local merged_settings = vim.tbl_deep_extend("force", default_settings, server_settings)
-
-          lspconfig["pyright"].setup({
-            capabilities = capabilities,
-            filetypes = { "python" },
-            settings = merged_settings,
-            -- Additional configuration for Python work
-            on_attach = function(client, bufnr)
-              -- Add special handler for organizing imports
-              vim.api.nvim_buf_create_user_command(bufnr, "OrganizeImports", function()
-                vim.lsp.buf.execute_command({
-                  command = "pyright.organizeimports",
-                  arguments = { vim.api.nvim_buf_get_name(bufnr) },
-                })
-              end, { desc = "Organize Python Imports" })
-
-              -- Add keymap for organizing imports
-              vim.keymap.set("n", "<leader>oi", ":OrganizeImports<CR>",
-                { buffer = bufnr, desc = "Organize Python Imports" })
-            end,
-          })
+          -- Add keymap for organizing imports
+          vim.keymap.set("n", "<leader>oi", ":OrganizeImports<CR>",
+            { buffer = bufnr, desc = "Organize Python Imports" })
         end,
+      },
 
-        ruff = function()
-          -- Setup ruff for Python linting and formatting
-          lspconfig["ruff"].setup({
-            capabilities = capabilities,
-            on_attach = function(client, _)
-              -- Enable full capabilities including code actions for linting fixes
-              client.server_capabilities.codeActionProvider = true
-
-              -- Disable hover in favor of Pyright
-              client.server_capabilities.hoverProvider = false
-            end,
-            settings = {
-              ruff = {
-                lint = {
-                  run = "onSave",
-                },
-                format = {
-                  args = { "--line-length=100" },
-                },
-              },
-            }
-          })
+      ruff = {
+        capabilities = capabilities,
+        on_attach = function(client, _)
+          -- Disable hover in favor of Pyright
+          client.server_capabilities.hoverProvider = false
         end,
-
-        lua_ls = function()
-          -- configure lua server (with special settings)
-          -- Load project-specific settings
-          local server_settings = project_settings["lua_ls"] or {}
-          local default_settings = {
-            Lua = {
-              diagnostics = {
-                globals = { "vim" },
-              },
-              completion = {
-                callSnippet = "Replace",
-              },
-              workspace = {
-                checkThirdParty = false,
-                library = {
-                  [vim.fn.expand("$VIMRUNTIME/lua")] = true,
-                  [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
-                  [vim.fn.stdpath("data") .. "/lazy/lazy.nvim/lua/lazy"] = true,
-                },
-                maxPreload = 2000,
-                preloadFileSize = 1000,
-              },
-              telemetry = {
-                enable = false,
-              },
+        settings = {
+          ruff = {
+            lint = {
+              run = "onSave",
             },
-          }
-
-          -- Merge settings
-          local merged_settings = vim.tbl_deep_extend("force", default_settings, server_settings)
-
-          lspconfig["lua_ls"].setup({
-            capabilities = capabilities,
-            settings = merged_settings,
-          })
-        end,
-
-        ts_ls = function()
-          -- TypeScript configuration
-          local server_settings = project_settings["ts_ls"] or {}
-          local default_settings = {
-            typescript = {
-              inlayHints = {
-                includeInlayParameterNameHints = "all",
-                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-                includeInlayFunctionParameterTypeHints = true,
-                includeInlayVariableTypeHints = true,
-                includeInlayPropertyDeclarationTypeHints = true,
-                includeInlayFunctionLikeReturnTypeHints = true,
-                includeInlayEnumMemberValueHints = true,
-              },
-              updateImportsOnFileMove = {
-                enabled = "always",
-              },
-              suggestionActions = {
-                enabled = true,
-              },
+            format = {
+              args = { "--line-length=100" },
             },
-            javascript = {
-              inlayHints = {
-                includeInlayParameterNameHints = "all",
-                includeInlayParameterNameHintsWhenArgumentMatchesName = false,
-                includeInlayFunctionParameterTypeHints = true,
-                includeInlayVariableTypeHints = true,
-                includeInlayPropertyDeclarationTypeHints = true,
-                includeInlayFunctionLikeReturnTypeHints = true,
-                includeInlayEnumMemberValueHints = true,
-              },
-              updateImportsOnFileMove = {
-                enabled = "always",
-              },
-              suggestionActions = {
-                enabled = true,
-              },
-            },
-          }
-
-          -- Merge settings
-          local merged_settings = vim.tbl_deep_extend("force", default_settings, server_settings)
-
-          lspconfig["ts_ls"].setup({
-            capabilities = capabilities,
-            settings = merged_settings,
-            on_attach = function(client, _)
-              -- Keep code action support for ESLint fixes
-              client.server_capabilities.codeActionProvider = true
-
-              -- Disable formatting in favor of eslint/prettier
-              client.server_capabilities.documentFormattingProvider = false
-              client.server_capabilities.documentRangeFormattingProvider = false
-            end,
-          })
-        end,
-
-        eslint = function()
-          -- Setup ESLint LSP for fixable linting diagnostics
-          lspconfig["eslint"].setup({
-            capabilities = capabilities,
-            on_attach = function(client, bufnr)
-              -- Enable code actions for ESLint fixes
-              client.server_capabilities.codeActionProvider = true
-
-              -- Add specific ESLint fix command
-              vim.api.nvim_buf_create_user_command(bufnr, "EslintFix", function()
-                vim.cmd("EslintFixAll")
-              end, { desc = "Fix all ESLint issues" })
-
-              -- Add keymap for ESLint fixes
-              vim.keymap.set("n", "<leader>ef", ":EslintFix<CR>",
-                { buffer = bufnr, desc = "Fix all ESLint issues" })
-            end,
-            settings = {
-              eslint = {
-                enable = true,
-                run = "onSave",
-                autoFixOnSave = false, -- We'll use the command instead for more control
-              }
-            }
-          })
-        end,
-      }
-
-      -- Use mason-lspconfig handlers if available
-      if mason_lspconfig_ok and mason_lspconfig.setup_handlers then
-        mason_lspconfig.setup_handlers({
-          -- Default handler for installed servers
-          function(server_name)
-            -- Use specific config function if available or default config
-            local config_func = server_configs[server_name]
-            setup_server(server_name, config_func)
-          end,
-        })
-      else
-        -- Fallback - manually setup servers with known configurations
-        vim.notify("Using fallback LSP server configuration method", vim.log.levels.WARN)
-
-        -- Setup servers with specific configurations
-        for server_name, config_func in pairs(server_configs) do
-          setup_server(server_name, config_func)
-        end
-
-        -- Setup common servers with basic configuration
-        local common_servers = {
-          "pyright", "lua_ls", "ts_ls", "html", "cssls", "jsonls", "bashls"
+          },
         }
+      },
 
-        for _, server_name in ipairs(common_servers) do
-          -- Only try to set up if not already set up
-          if not server_configs[server_name] then
-            setup_server(server_name)
+      lua_ls = {
+        capabilities = capabilities,
+        settings = {
+          Lua = {
+            diagnostics = {
+              globals = { "vim" },
+            },
+            completion = {
+              callSnippet = "Replace",
+            },
+            workspace = {
+              checkThirdParty = false,
+              library = {
+                [vim.fn.expand("$VIMRUNTIME/lua")] = true,
+                [vim.fn.expand("$VIMRUNTIME/lua/vim/lsp")] = true,
+                [vim.fn.stdpath("data") .. "/lazy/lazy.nvim/lua/lazy"] = true,
+              },
+              maxPreload = 2000,
+              preloadFileSize = 1000,
+            },
+            telemetry = {
+              enable = false,
+            },
+          },
+        },
+      },
+
+      ts_ls = {
+        capabilities = capabilities,
+        settings = {
+          typescript = {
+            inlayHints = {
+              includeInlayParameterNameHints = "all",
+              includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+              includeInlayFunctionParameterTypeHints = true,
+              includeInlayVariableTypeHints = true,
+              includeInlayPropertyDeclarationTypeHints = true,
+              includeInlayFunctionLikeReturnTypeHints = true,
+              includeInlayEnumMemberValueHints = true,
+            },
+            updateImportsOnFileMove = {
+              enabled = "always",
+            },
+            suggestionActions = {
+              enabled = true,
+            },
+          },
+          javascript = {
+            inlayHints = {
+              includeInlayParameterNameHints = "all",
+              includeInlayParameterNameHintsWhenArgumentMatchesName = false,
+              includeInlayFunctionParameterTypeHints = true,
+              includeInlayVariableTypeHints = true,
+              includeInlayPropertyDeclarationTypeHints = true,
+              includeInlayFunctionLikeReturnTypeHints = true,
+              includeInlayEnumMemberValueHints = true,
+            },
+            updateImportsOnFileMove = {
+              enabled = "always",
+            },
+            suggestionActions = {
+              enabled = true,
+            },
+          },
+        },
+        on_attach = function(client, _)
+          -- Disable formatting in favor of eslint/prettier
+          client.server_capabilities.documentFormattingProvider = false
+          client.server_capabilities.documentRangeFormattingProvider = false
+        end,
+      },
+
+      eslint = {
+        capabilities = capabilities,
+        on_attach = function(client, bufnr)
+          -- Add specific ESLint fix command
+          vim.api.nvim_buf_create_user_command(bufnr, "EslintFix", function()
+            vim.cmd("EslintFixAll")
+          end, { desc = "Fix all ESLint issues" })
+
+          -- Add keymap for ESLint fixes
+          vim.keymap.set("n", "<leader>ef", ":EslintFix<CR>",
+            { buffer = bufnr, desc = "Fix all ESLint issues" })
+        end,
+        settings = {
+          eslint = {
+            enable = true,
+            run = "onSave",
+            autoFixOnSave = false, -- We'll use the command instead for more control
+          }
+        }
+      },
+
+      html = {
+        capabilities = capabilities,
+      },
+
+      cssls = {
+        capabilities = capabilities,
+      },
+
+      tailwindcss = {
+        capabilities = capabilities,
+      }
+    }
+
+    -- Get mason-lspconfig integration
+    local mason_lspconfig_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
+    if not mason_lspconfig_ok then
+      vim.notify("Mason-lspconfig not loaded! Using direct LSP setup.", vim.log.levels.WARN)
+
+      -- Directly set up servers if mason-lspconfig is not available
+      for server_name, server_config in pairs(server_configs) do
+        if lspconfig[server_name] then
+          -- Merge with project settings if available
+          if project_settings[server_name] then
+            server_config.settings = vim.tbl_deep_extend("force",
+              server_config.settings or {},
+              project_settings[server_name] or {})
           end
+
+          lspconfig[server_name].setup(server_config)
         end
       end
-    end
+    else
+      -- Use mason-lspconfig to set up servers with our custom configurations
+      mason_lspconfig.setup_handlers({
+        -- Default handler for all servers
+        function(server_name)
+          -- Skip if server is not installed or not supported
+          if not lspconfig[server_name] then
+            return
+          end
 
-    -- Set up LSP servers with error handling
-    local setup_success, setup_error = pcall(setup_servers)
-    if not setup_success then
-      vim.notify("Failed to setup LSP servers: " .. setup_error, vim.log.levels.ERROR)
+          -- Use specific configuration if available
+          local server_config = server_configs[server_name] or { capabilities = capabilities }
 
-      -- Log more detailed error information to help with debugging
-      vim.schedule(function()
-        local debug_info = "LSP setup error details:\n"
-        debug_info = debug_info .. "- Error message: " .. setup_error .. "\n"
-        debug_info = debug_info .. "- Mason available: " .. tostring(mason_ok) .. "\n"
-        debug_info = debug_info .. "- Mason-lspconfig available: " .. tostring(mason_lspconfig_ok) .. "\n"
+          -- Merge with project settings if available
+          if project_settings[server_name] then
+            server_config.settings = vim.tbl_deep_extend("force",
+              server_config.settings or {},
+              project_settings[server_name] or {})
+          end
 
-        -- Log to a file in the Neovim data directory
-        local log_file = vim.fn.stdpath("data") .. "/lsp_setup_error.log"
-        local file = io.open(log_file, "w")
-        if file then
-          file:write(debug_info)
-          file:close()
-          vim.notify("Error details written to: " .. log_file, vim.log.levels.INFO)
+          lspconfig[server_name].setup(server_config)
         end
-      end)
+      })
     end
 
     -- Create user command to reload project settings

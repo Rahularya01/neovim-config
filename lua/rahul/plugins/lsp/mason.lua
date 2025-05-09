@@ -7,7 +7,6 @@ return {
   config = function()
     -- import mason
     local mason = require("mason")
-
     -- enable mason and configure icons
     mason.setup({
       ui = {
@@ -26,19 +25,21 @@ return {
     mason_lspconfig.setup({
       -- list of servers for mason to install
       ensure_installed = {
-        "ts_ls", -- Changed from ts_ls to ts_ls (correct server name)
+        "ts_ls", -- TypeScript server
         "html",
         "cssls",
         "tailwindcss",
         "lua_ls",
         "emmet_ls",
         "pyright",
-        "ruff",   -- Added ruff since it's used in lspconfig
-        "eslint", -- Added eslint since it's used in lspconfig
+        "ruff",
+        "eslint",
       },
       -- auto-install configured servers (with lspconfig)
       automatic_installation = true,
     })
+
+    -- Important: Do NOT set up handlers here - we'll do this in lspconfig.lua
 
     -- import mason-tool-installer after setting up mason
     local mason_tool_installer = require("mason-tool-installer")
