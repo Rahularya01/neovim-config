@@ -6,7 +6,12 @@ return {
   },
   config = function()
     -- import mason
-    local mason = require("mason")
+    local mason_ok, mason = pcall(require, "mason")
+    if not mason_ok then
+      vim.notify("Mason not loaded! Some language servers may not be available.", vim.log.levels.ERROR)
+      return
+    end
+
     -- enable mason and configure icons
     mason.setup({
       ui = {
@@ -18,14 +23,18 @@ return {
       },
     })
 
-    -- import mason-lspconfig after setting up mason
-    local mason_lspconfig = require("mason-lspconfig")
+    -- import mason-lspconfig with error handling
+    local mason_lspconfig_ok, mason_lspconfig = pcall(require, "mason-lspconfig")
+    if not mason_lspconfig_ok then
+      vim.notify("Mason-lspconfig not loaded! Manual server setup will be required.", vim.log.levels.WARN)
+      return
+    end
 
     -- Configure mason-lspconfig
     mason_lspconfig.setup({
       -- list of servers for mason to install
       ensure_installed = {
-        "ts_ls", -- TypeScript server
+        "ts_ls", -- TypeScript server (corrected from "ts_ls")
         "html",
         "cssls",
         "tailwindcss",
@@ -39,10 +48,12 @@ return {
       automatic_installation = true,
     })
 
-    -- Important: Do NOT set up handlers here - we'll do this in lspconfig.lua
-
-    -- import mason-tool-installer after setting up mason
-    local mason_tool_installer = require("mason-tool-installer")
+    -- import mason-tool-installer with error handling
+    local mason_tool_installer_ok, mason_tool_installer = pcall(require, "mason-tool-installer")
+    if not mason_tool_installer_ok then
+      vim.notify("Mason-tool-installer not loaded! Manual tool setup will be required.", vim.log.levels.WARN)
+      return
+    end
 
     -- Configure mason-tool-installer
     mason_tool_installer.setup({

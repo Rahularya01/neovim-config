@@ -494,28 +494,47 @@ return {
         end
       end
     else
-      -- Use mason-lspconfig to set up servers with our custom configurations
-      mason_lspconfig.setup_handlers({
-        -- Default handler for all servers
-        function(server_name)
-          -- Skip if server is not installed or not supported
-          if not lspconfig[server_name] then
-            return
+      -- Fix: Check if setup_handlers exists before calling it
+      if type(mason_lspconfig.setup_handlers) ~= "function" then
+        vim.notify("mason-lspconfig.setup_handlers is not available. Setting up servers directly.", vim.log.levels.WARN)
+
+        -- Manual setup for each server
+        for server_name, server_config in pairs(server_configs) do
+          if lspconfig[server_name] then
+            -- Merge with project settings if available
+            if project_settings[server_name] then
+              server_config.settings = vim.tbl_deep_extend("force",
+                server_config.settings or {},
+                project_settings[server_name] or {})
+            end
+
+            lspconfig[server_name].setup(server_config)
           end
-
-          -- Use specific configuration if available
-          local server_config = server_configs[server_name] or { capabilities = capabilities }
-
-          -- Merge with project settings if available
-          if project_settings[server_name] then
-            server_config.settings = vim.tbl_deep_extend("force",
-              server_config.settings or {},
-              project_settings[server_name] or {})
-          end
-
-          lspconfig[server_name].setup(server_config)
         end
-      })
+      else
+        -- Use mason-lspconfig to set up servers with our custom configurations
+        mason_lspconfig.setup_handlers({
+          -- Default handler for all servers
+          function(server_name)
+            -- Skip if server is not installed or not supported
+            if not lspconfig[server_name] then
+              return
+            end
+
+            -- Use specific configuration if available
+            local server_config = server_configs[server_name] or { capabilities = capabilities }
+
+            -- Merge with project settings if available
+            if project_settings[server_name] then
+              server_config.settings = vim.tbl_deep_extend("force",
+                server_config.settings or {},
+                project_settings[server_name] or {})
+            end
+
+            lspconfig[server_name].setup(server_config)
+          end
+        })
+      end
     end
 
     -- Create user command to reload project settings
