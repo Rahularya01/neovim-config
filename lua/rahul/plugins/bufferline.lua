@@ -151,9 +151,11 @@ return {
 
     -- Buffer picker with enhanced Telescope integration
     map("n", "<leader>bb", function()
+      local actions = require("telescope.actions")
+      local action_state = require("telescope.actions.state")
+
       require("telescope.builtin").buffers({
         sort_mru = true,
-        ignore_current_buffer = false,
         sort_lastused = true,
         previewer = false,
         theme = "dropdown",
@@ -161,18 +163,100 @@ return {
           width = 0.5,
           height = 0.4,
         },
+        attach_mappings = function(prompt_bufnr, map)
+          -- Delete all buffers with <C-a> (this will close Telescope)
+          local delete_all_bufs = function()
+            -- Close the telescope window first
+            actions.close(prompt_bufnr)
+
+            -- Schedule the deletion to happen after telescope is closed
+            vim.schedule(function()
+              -- Get all listed buffers
+              local buffers = vim.fn.getbufinfo({ buflisted = true })
+
+              -- Delete all buffers one by one
+              for _, buf in ipairs(buffers) do
+                -- Try Bdelete first (from bufdelete.nvim)
+                pcall(function()
+                  vim.cmd(string.format("silent! Bdelete! %d", buf.bufnr))
+                end)
+
+                -- Fallback to native deletion if buffer still exists
+                if vim.api.nvim_buf_is_valid(buf.bufnr) then
+                  pcall(vim.api.nvim_buf_delete, buf.bufnr, { force = true })
+                end
+              end
+
+              -- Create a new empty buffer
+              vim.cmd("enew")
+              print("All buffers closed")
+            end)
+          end
+
+          map("i", "<C-a>", delete_all_bufs)
+          map("n", "<C-a>", delete_all_bufs)
+
+          -- Add multi-delete with <Tab> to mark and <C-d> to delete marked
+          local toggle_selection = function()
+            actions.toggle_selection(prompt_bufnr)
+            actions.move_selection_next(prompt_bufnr)
+          end
+
+          -- Tab to select multiple buffers
+          map("i", "<Tab>", toggle_selection)
+          map("n", "<Tab>", toggle_selection)
+
+          -- Delete all selected buffers with <C-d>
+          local delete_selected = function()
+            local selection = action_state.get_selected_entry(prompt_bufnr)
+            local picker = action_state.get_current_picker(prompt_bufnr)
+            local selections = picker:get_multi_selection()
+
+            if #selections == 0 then
+              -- If nothing is explicitly selected, just delete current selection
+              if selection then
+                local bufnr = selection.bufnr
+                pcall(function() vim.cmd(string.format("silent! Bdelete! %d", bufnr)) end)
+                if vim.api.nvim_buf_is_valid(bufnr) then
+                  pcall(vim.api.nvim_buf_delete, bufnr, { force = true })
+                end
+              end
+            else
+              -- Delete all selected buffers
+              for _, sel in ipairs(selections) do
+                local bufnr = sel.bufnr
+                pcall(function() vim.cmd(string.format("silent! Bdelete! %d", bufnr)) end)
+                if vim.api.nvim_buf_is_valid(bufnr) then
+                  pcall(vim.api.nvim_buf_delete, bufnr, { force = true })
+                end
+              end
+            end
+
+            -- Close and reopen Telescope to refresh buffer list
+            actions.close(prompt_bufnr)
+            vim.defer_fn(function()
+              require("telescope.builtin").buffers({
+                sort_mru = true,
+                sort_lastused = true,
+                previewer = false,
+                theme = "dropdown",
+                layout_config = {
+                  width = 0.5,
+                  height = 0.4,
+                }
+              })
+            end, 10) -- Small delay to ensure buffer is deleted first
+          end
+
+          map("i", "<C-d>", delete_selected)
+          map("n", "<C-d>", delete_selected)
+
+          -- Keep default mappings
+          return true
+        end,
       })
-    end, "Show buffer list")
-
-    -- Auto-open an empty buffer if the last buffer is closed
-    vim.api.nvim_create_autocmd("BufDelete", {
-      callback = function()
-        if #vim.fn.getbufinfo({ buflisted = true }) == 0 then
-          vim.cmd("enew") -- Open a new empty buffer
-        end
-      end,
-    })
-
+    end, "Show buffer list with enhanced delete actions")
+    -- Add a separate keymap specifically for closing all buffers from telescope
     -- Pick specific visible buffer
     map("n", "<leader>bs", ":BufferLinePick<CR>", "Pick a buffer")
 
