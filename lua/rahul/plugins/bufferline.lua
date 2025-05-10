@@ -11,7 +11,9 @@ return {
     -- Initialize scope.nvim for tab-local buffers
     require("scope").setup()
 
+    -- Setup with Catppuccin integration
     require("bufferline").setup({
+      highlights = require("catppuccin.groups.integrations.bufferline").get(),
       options = {
         mode = "buffers",
         numbers = "ordinal", -- Show buffer numbers for easier navigation
@@ -25,7 +27,7 @@ return {
         },
         buffer_close_icon = "󰅖",
         modified_icon = "●",
-        close_icon = "",
+        close_icon = "󰅗",
         left_trunc_marker = "",
         right_trunc_marker = "",
         max_name_length = 18,
@@ -34,12 +36,18 @@ return {
         diagnostics = "nvim_lsp", -- Show diagnostics in buffers (requires LSP)
         diagnostics_update_in_insert = false,
         diagnostics_indicator = function(count, level)
-          local icon = level:match("error") and " " or " "
+          local icons = {
+            error = " ",
+            warning = " ",
+            info = " ",
+            hint = " ",
+          }
+          local icon = icons[level:lower()] or icons.hint
           return " " .. icon .. count
         end,
         custom_filter = function(buf_number, buf_numbers)
           -- Filter out certain filetypes from the tabline
-          local excluded_ft = { "qf", "fugitive", "git", "help" }
+          local excluded_ft = { "qf", "fugitive", "git", "help", "TelescopePrompt", "TelescopeResults" }
           local buf_ft = vim.bo[buf_number].filetype
           if vim.tbl_contains(excluded_ft, buf_ft) then
             return false
@@ -70,7 +78,7 @@ return {
         color_icons = true,
         show_buffer_icons = true,
         show_buffer_close_icons = true,
-        show_close_icon = false,
+        show_close_icon = true,
         show_tab_indicators = true,
         persist_buffer_sort = true,
         separator_style = "slant", -- "slant", "thick", "thin", or {"any", "any"}
@@ -83,7 +91,6 @@ return {
           reveal = { "close" }
         },
       },
-      -- Custom highlights can be defined here if needed
     })
 
     -- Advanced keymaps for bufferline with descriptions
@@ -122,15 +129,24 @@ return {
     map("n", "<leader>bp", ":BufferLineTogglePin<CR>", "Toggle pin buffer")
     map("n", "<leader>bP", ":BufferLineCloseRight<CR>:BufferLineCloseLeft<CR>", "Close all except current")
 
-    -- Close all buffers
+    -- Close all buffers command fix
     map("n", "<leader>ba", function()
-      local excluded = {} -- Add any buffers you want to exclude
-      for _, buf in ipairs(vim.fn.getbufinfo({ buflisted = true })) do
-        if not vim.tbl_contains(excluded, buf.bufnr) then
-          vim.cmd("Bdelete " .. buf.bufnr)
+      -- Get all listed buffers
+      local buffers = vim.fn.getbufinfo({ buflisted = true })
+
+      -- Store current buffer to prevent errors if it gets deleted
+      local current = vim.fn.bufnr('%')
+
+      -- Delete all buffers except the current one first
+      for _, buf in ipairs(buffers) do
+        if buf.bufnr ~= current then
+          vim.cmd(string.format("silent! Bdelete! %d", buf.bufnr))
         end
       end
-      vim.cmd("enew")   -- Always open a new buffer after closing all
+
+      -- Then delete the current buffer and create a new one
+      vim.cmd("enew")
+      vim.cmd(string.format("silent! Bdelete! %d", current))
     end, "Close all buffers")
 
     -- Buffer picker with enhanced Telescope integration
@@ -165,6 +181,9 @@ return {
 
     -- Sort buffers by extension
     map("n", "<leader>be", ":BufferLineSortByExtension<CR>", "Sort buffers by extension")
+
+    -- Quickly toggle buffer groups
+    map("n", "<leader>bg", ":BufferLineToggleGroups<CR>", "Toggle buffer groups")
 
     -- Handle buffer closing with tab closing if empty
     vim.api.nvim_create_autocmd("BufEnter", {

@@ -9,7 +9,7 @@ return {
         flavour = "mocha",
         transparent_background = true,
       })
-      -- vim.cmd([[colorscheme catppuccin]])
+      vim.cmd([[colorscheme catppuccin]])
     end,
   },
   -- Tokyo Night
@@ -23,7 +23,7 @@ return {
         transparent = true, -- disables setting background color
         terminal_colors = true,
       })
-      vim.cmd([[colorscheme tokyonight]]) -- enable to use
+      -- vim.cmd([[colorscheme tokyonight]]) -- enable to use
     end,
   },
 
@@ -42,7 +42,7 @@ return {
         transparent = true,
         dimInactive = true,
       })
-      -- vim.cmd([[colorscheme kanagawa]])  -- enable to use
+      -- vim.cmd([[colorscheme kanagawa]]) -- enable to use
     end,
   },
 
