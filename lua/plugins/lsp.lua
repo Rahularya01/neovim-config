@@ -1,15 +1,10 @@
 return {
   'neovim/nvim-lspconfig',
   dependencies = {
-    -- Automatically install LSPs and related tools to stdpath for Neovim
-    { 'mason-org/mason.nvim', config = true }, -- NOTE: Must be loaded before dependants
+    { 'mason-org/mason.nvim', config = true },
     'mason-org/mason-lspconfig.nvim',
     'WhoIsSethDaniel/mason-tool-installer.nvim',
-
-    -- JSON schemas for better JSON/JSONC support
     'b0o/schemastore.nvim',
-
-    -- Useful status updates for LSP.
     {
       'j-hui/fidget.nvim',
       opts = {
@@ -18,8 +13,6 @@ return {
         },
       },
     },
-
-    -- Allows extra capabilities provided by nvim-cmp
     'hrsh7th/cmp-nvim-lsp',
   },
   config = function()
@@ -47,7 +40,7 @@ return {
     }
 
     -- Diagnostic signs
-    local signs = { Error = '', Warn = '', Hint = '', Info = '' }
+    local signs = { Error = '', Warn = '', Hint = '', Info = '' }
     for type, icon in pairs(signs) do
       local hl = 'DiagnosticSign' .. type
       vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = '' })
@@ -62,7 +55,7 @@ return {
     })
     vim.cmd 'doautocmd ColorScheme'
 
-    -- Common LSP keymaps & features
+    -- LSP keymaps & features
     vim.api.nvim_create_autocmd('LspAttach', {
       group = vim.api.nvim_create_augroup('kickstart-lsp-attach', { clear = true }),
       callback = function(event)
@@ -109,17 +102,13 @@ return {
       end,
     })
 
-    -- Capabilities (nvim-cmp)
+    -- Capabilities
     local capabilities = vim.lsp.protocol.make_client_capabilities()
     capabilities = vim.tbl_deep_extend('force', capabilities, require('cmp_nvim_lsp').default_capabilities())
 
-    -- lspconfig util
-    local util = require 'lspconfig.util'
-
-    -- Servers
+    -- Servers configuration
     local servers = {
       ts_ls = {
-        filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
         settings = {
           typescript = {
             inlayHints = {
@@ -131,7 +120,6 @@ return {
               includeInlayFunctionLikeReturnTypeHints = true,
               includeInlayEnumMemberValueHints = true,
             },
-            preferences = { disableSuggestions = false },
           },
           javascript = {
             inlayHints = {
@@ -145,92 +133,53 @@ return {
             },
           },
         },
-        init_options = { preferences = { disableSuggestions = false } },
       },
       emmet_ls = {
         filetypes = { 'css', 'eruby', 'html', 'javascript', 'javascriptreact', 'less', 'sass', 'scss', 'pug', 'typescriptreact' },
         init_options = {
           html = { options = { ['bem.enabled'] = true } },
-          showExpandedAbbreviation = 'in_markup',
-          showAbbreviationSuggestions = true,
-          showSuggestionsAsSnippets = false,
-        },
-        settings = {
-          emmet = {
-            includeLanguages = { javascript = 'javascriptreact', typescript = 'typescriptreact' },
-            triggerExpansionOnTab = false,
-          },
         },
       },
       eslint = {
-        filetypes = { 'javascript', 'javascriptreact', 'typescript', 'typescriptreact', 'vue', 'svelte' },
         settings = {
-          eslint = {
-            enable = true,
-            autoFixOnSave = false,
-            validate = 'probe',
-            packageManager = 'npm',
-            useESLintClass = false,
-            experimental = { useFlatConfig = true },
-            codeAction = {
-              disableRuleComment = { enable = true, location = 'separateLine' },
-              showDocumentation = { enable = true },
-            },
-            options = { cache = true, cacheLocation = '.eslintcache' },
-          },
+          workingDirectories = { mode = 'auto' },
+          experimental = { useFlatConfig = true },
         },
         on_attach = function(client, _)
           client.server_capabilities.documentFormattingProvider = false
           client.server_capabilities.documentRangeFormattingProvider = false
-          if client.server_capabilities.semanticTokensProvider then
-            client.server_capabilities.semanticTokensProvider = nil
-          end
-          client.flags = client.flags or {}
-          client.flags.debounce_text_changes = 500
         end,
       },
-      html = { filetypes = { 'html', 'twig', 'hbs', 'javascriptreact', 'typescriptreact' } },
+      html = {},
       cssls = {
-        filetypes = { 'css', 'scss', 'less' },
         settings = {
           css = { validate = true, lint = { unknownAtRules = 'ignore' } },
           scss = { validate = true, lint = { unknownAtRules = 'ignore' } },
           less = { validate = true, lint = { unknownAtRules = 'ignore' } },
         },
       },
-
-      -- ✅ C/C++ via clangd (with stronger root_dir + optional offsetEncoding)
       clangd = {
-        filetypes = { 'c', 'cpp', 'objc', 'objcpp' },
         cmd = { 'clangd', '--background-index', '--clang-tidy', '--completion-style=detailed', '--header-insertion=never' },
-        root_dir = util.root_pattern('compile_commands.json', 'compile_flags.txt', '.clangd', '.git'),
-        capabilities = { offsetEncoding = { 'utf-16' } }, -- merged with global capabilities below
+        capabilities = { offsetEncoding = { 'utf-16' } },
       },
-
       tailwindcss = {
-        filetypes = { 'html', 'css', 'scss', 'javascript', 'javascriptreact', 'typescript', 'typescriptreact' },
         settings = {
           tailwindCSS = {
-            experimental = {
-              classRegex = {
-                { 'cva\\(([^)]*)\\)', '["\'`]([^"\'`]*).*?["\'`]' },
-                { 'cx\\(([^)]*)\\)', "(?:'|\"|`)([^']*)(?:'|\"|`)" },
-                { 'className\\s*=\\s*["\']([^"\']*)["\']', '([^"\'\\s]*)' },
-              },
-            },
+            experimental = {},
           },
         },
       },
       jsonls = {
-        filetypes = { 'json', 'jsonc' },
         settings = {
-          json = { schemas = require('schemastore').json.schemas(), validate = { enable = true } },
+          json = {
+            schemas = require('schemastore').json.schemas(),
+            validate = { enable = true },
+          },
         },
       },
       yamlls = {
         settings = {
           yaml = {
-            validate = true,
             schemaStore = { enable = false, url = '' },
             schemas = require('schemastore').yaml.schemas(),
           },
@@ -240,37 +189,56 @@ return {
         settings = {
           Lua = {
             completion = { callSnippet = 'Replace' },
-            runtime = { version = 'LuaJIT' },
-            workspace = { checkThirdParty = false, library = vim.api.nvim_get_runtime_file('', true) },
-            diagnostics = { globals = { 'vim' }, disable = { 'missing-fields' }, unusedLocalExclude = { '_*' } },
-            format = { enable = false },
+            diagnostics = { globals = { 'vim' }, disable = { 'missing-fields' } },
+            workspace = { checkThirdParty = false },
             hint = { enable = true },
+          },
+        },
+      },
+      rust_analyzer = {
+        settings = {
+          ['rust-analyzer'] = {
+            cargo = { allFeatures = true },
+            checkOnSave = { command = 'clippy' },
+            procMacro = { enable = true },
           },
         },
       },
     }
 
-    -- Ensure servers & tools are installed (added clangd ✅)
-    local ensure_installed = vim.tbl_keys(servers or {})
-    vim.list_extend(ensure_installed, {
-      'prettierd',
-      'stylua',
-      'ruff',
-      'eslint_d',
-      'eslint-lsp',
-      'emmet-ls',
-      'clangd', -- <-- important
-    })
-    require('mason-tool-installer').setup { ensure_installed = ensure_installed }
+    -- Install LSPs and tools
+    require('mason-tool-installer').setup {
+      ensure_installed = {
+        -- LSPs
+        'ts_ls',
+        'eslint',
+        'html',
+        'cssls',
+        'emmet_ls',
+        'tailwindcss',
+        'jsonls',
+        'yamlls',
+        'lua_ls',
+        'clangd',
+        'rust_analyzer',
+        -- Formatters & Linters
+        'prettierd',
+        'stylua',
+        'black',
+        'isort',
+        'shfmt',
+      },
+    }
 
     -- Setup each server
-    local lspconfig = require 'lspconfig'
-    for server, cfg in pairs(servers) do
-      cfg.capabilities = vim.tbl_deep_extend('force', {}, capabilities, cfg.capabilities or {})
-      cfg.flags = cfg.flags or {}
-      cfg.flags.debounce_text_changes = cfg.flags.debounce_text_changes or 300
-      cfg.flags.allow_incremental_sync = cfg.flags.allow_incremental_sync or true
-      lspconfig[server].setup(cfg)
-    end
+    require('mason-lspconfig').setup {
+      handlers = {
+        function(server_name)
+          local server = servers[server_name] or {}
+          server.capabilities = vim.tbl_deep_extend('force', {}, capabilities, server.capabilities or {})
+          require('lspconfig')[server_name].setup(server)
+        end,
+      },
+    }
   end,
 }
