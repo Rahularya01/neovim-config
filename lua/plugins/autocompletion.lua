@@ -262,148 +262,145 @@ return {
       },
     }
 
-    -- Enhanced highlighting setup with Catppuccin integration and transparency
+    -- Enhanced highlighting setup with Gruvbox integration and transparency
     local function setup_highlights()
-      -- Check if Catppuccin is available and get the current flavor
-      local has_catppuccin, catppuccin = pcall(require, 'catppuccin')
+      -- Check if Gruvbox is available and get the palette
+      local has_gruvbox, gruvbox_palette = pcall(require, 'gruvbox.palette')
 
-      if has_catppuccin then
-        -- Get the current Catppuccin flavor (mocha, macchiato, frappe, latte)
-        local current_flavor = vim.g.catppuccin_flavour or 'mocha'
-        local colors = require('catppuccin.palettes').get_palette(current_flavor)
+      if has_gruvbox then
+        local colors = gruvbox_palette.get_base_colors(vim.o.background or 'dark', 'medium')
 
-        -- Check if transparency is enabled
-        local transparent_bg = require('catppuccin').options.transparent_background or false
-        local bg_color = transparent_bg and 'NONE' or colors.base
-        local menu_bg = transparent_bg and 'NONE' or colors.surface0
+        -- Always use transparent background for completion menu
+        local transparent_bg = true
+        local bg_color = 'NONE'
+        local menu_bg = 'NONE'
 
         -- Main completion menu with transparency support
         vim.api.nvim_set_hl(0, 'CmpPmenu', {
           bg = menu_bg,
-          fg = colors.text,
+          fg = colors.light1,
         })
         vim.api.nvim_set_hl(0, 'CmpPmenuBorder', {
           bg = menu_bg,
-          fg = colors.blue,
+          fg = colors.bright_blue,
         })
         vim.api.nvim_set_hl(0, 'CmpPmenuSel', {
-          bg = colors.surface2,
-          fg = colors.text,
+          bg = colors.dark2,
+          fg = colors.light0,
           bold = true,
         })
 
         -- Documentation window with transparency
         vim.api.nvim_set_hl(0, 'CmpDocumentation', {
           bg = menu_bg,
-          fg = colors.text,
+          fg = colors.light1,
         })
         vim.api.nvim_set_hl(0, 'CmpDocumentationBorder', {
           bg = menu_bg,
-          fg = colors.sapphire,
+          fg = colors.bright_aqua,
         })
 
         -- Scrollbar with proper contrast
         vim.api.nvim_set_hl(0, 'PmenuSbar', {
-          bg = transparent_bg and colors.surface0 or colors.surface1,
+          bg = 'NONE',
         })
         vim.api.nvim_set_hl(0, 'PmenuThumb', {
-          bg = colors.overlay0,
+          bg = colors.dark4,
         })
 
         -- Ghost text with theme-appropriate opacity
         vim.api.nvim_set_hl(0, 'CmpGhostText', {
-          fg = colors.overlay0,
+          fg = colors.dark4,
           italic = true,
         })
 
         -- Item highlights that respect the theme
-        vim.api.nvim_set_hl(0, 'CmpItemAbbr', { fg = colors.text })
+        vim.api.nvim_set_hl(0, 'CmpItemAbbr', { fg = colors.light1 })
         vim.api.nvim_set_hl(0, 'CmpItemAbbrDeprecated', {
-          fg = colors.overlay1,
+          fg = colors.gray,
           strikethrough = true,
         })
         vim.api.nvim_set_hl(0, 'CmpItemAbbrMatch', {
-          fg = colors.blue,
+          fg = colors.bright_blue,
           bold = true,
         })
         vim.api.nvim_set_hl(0, 'CmpItemAbbrMatchFuzzy', {
-          fg = colors.blue,
+          fg = colors.bright_blue,
           bold = true,
         })
         vim.api.nvim_set_hl(0, 'CmpItemMenu', {
-          fg = colors.overlay1,
+          fg = colors.gray,
           italic = true,
         })
 
-        -- Kind-specific highlights using Catppuccin's semantic colors
+        -- Kind-specific highlights using Gruvbox's semantic colors
         local kind_highlights = {
-          CmpItemKindFunction = colors.mauve,
-          CmpItemKindMethod = colors.mauve,
-          CmpItemKindConstructor = colors.sapphire,
-          CmpItemKindVariable = colors.lavender,
-          CmpItemKindField = colors.teal,
-          CmpItemKindProperty = colors.teal,
-          CmpItemKindClass = colors.yellow,
-          CmpItemKindInterface = colors.yellow,
-          CmpItemKindStruct = colors.yellow,
-          CmpItemKindModule = colors.blue,
-          CmpItemKindKeyword = colors.red,
-          CmpItemKindSnippet = colors.green,
-          CmpItemKindText = colors.text,
-          CmpItemKindEnum = colors.peach,
-          CmpItemKindEnumMember = colors.peach,
-          CmpItemKindConstant = colors.peach,
-          CmpItemKindValue = colors.peach,
-          CmpItemKindUnit = colors.green,
-          CmpItemKindFile = colors.blue,
-          CmpItemKindFolder = colors.blue,
-          CmpItemKindColor = colors.pink,
-          CmpItemKindReference = colors.overlay2,
-          CmpItemKindOperator = colors.sky,
-          CmpItemKindTypeParameter = colors.maroon,
-          CmpItemKindEvent = colors.flamingo,
+          CmpItemKindFunction = colors.bright_purple,
+          CmpItemKindMethod = colors.bright_purple,
+          CmpItemKindConstructor = colors.bright_aqua,
+          CmpItemKindVariable = colors.bright_blue,
+          CmpItemKindField = colors.bright_aqua,
+          CmpItemKindProperty = colors.bright_aqua,
+          CmpItemKindClass = colors.bright_yellow,
+          CmpItemKindInterface = colors.bright_yellow,
+          CmpItemKindStruct = colors.bright_yellow,
+          CmpItemKindModule = colors.neutral_blue,
+          CmpItemKindKeyword = colors.bright_red,
+          CmpItemKindSnippet = colors.bright_green,
+          CmpItemKindText = colors.light1,
+          CmpItemKindEnum = colors.bright_orange,
+          CmpItemKindEnumMember = colors.bright_orange,
+          CmpItemKindConstant = colors.bright_orange,
+          CmpItemKindValue = colors.bright_orange,
+          CmpItemKindUnit = colors.bright_green,
+          CmpItemKindFile = colors.neutral_blue,
+          CmpItemKindFolder = colors.neutral_blue,
+          CmpItemKindColor = colors.bright_purple,
+          CmpItemKindReference = colors.gray,
+          CmpItemKindOperator = colors.neutral_aqua,
+          CmpItemKindTypeParameter = colors.neutral_yellow,
+          CmpItemKindEvent = colors.neutral_red,
         }
 
         for group, color in pairs(kind_highlights) do
           vim.api.nvim_set_hl(0, group, { fg = color })
         end
       else
-        -- Fallback highlights when Catppuccin is not available
-        -- Check if user prefers transparency
-        local use_transparent = vim.g.transparent_enabled or false
-        local fallback_bg = use_transparent and 'NONE' or '#1e1e2e'
+        -- Fallback highlights with Gruvbox colors when palette is not available
+        -- Always use transparent background
+        local fallback_bg = 'NONE'
 
         vim.api.nvim_set_hl(0, 'CmpPmenu', {
           bg = fallback_bg,
-          fg = '#cdd6f4',
+          fg = '#ebdbb2',
         })
         vim.api.nvim_set_hl(0, 'CmpPmenuBorder', {
           bg = fallback_bg,
-          fg = '#89b4fa',
+          fg = '#83a598',
         })
         vim.api.nvim_set_hl(0, 'CmpPmenuSel', {
-          bg = '#313244',
-          fg = '#cdd6f4',
+          bg = '#504945',
+          fg = '#fbf1c7',
           bold = true,
         })
         vim.api.nvim_set_hl(0, 'CmpDocumentation', {
           bg = fallback_bg,
-          fg = '#cdd6f4',
+          fg = '#ebdbb2',
         })
         vim.api.nvim_set_hl(0, 'CmpDocumentationBorder', {
           bg = fallback_bg,
-          fg = '#74c7ec',
+          fg = '#8ec07c',
         })
         vim.api.nvim_set_hl(0, 'CmpGhostText', {
-          fg = '#6c7086',
+          fg = '#928374',
           italic = true,
         })
         vim.api.nvim_set_hl(0, 'CmpItemAbbrMatch', {
-          fg = '#89b4fa',
+          fg = '#83a598',
           bold = true,
         })
         vim.api.nvim_set_hl(0, 'CmpItemMenu', {
-          fg = '#6c7086',
+          fg = '#928374',
           italic = true,
         })
       end
