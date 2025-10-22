@@ -40,7 +40,7 @@ return {
     require('lualine').setup {
       options = {
         icons_enabled = true,
-  theme = 'catppuccin', -- match Catppuccin Mocha colorscheme (transparent)
+        theme = 'gruvbox', -- match Gruvbox colorscheme (transparent)
         -- Some useful glyphs:
         -- https://www.nerdfonts.com/cheat-sheet
         --
