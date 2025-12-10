@@ -1,0 +1,34 @@
+-- Keymaps based on VS Code settings
+
+local map = vim.keymap.set
+
+-- Better window navigation
+map("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
+map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
+map("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
+map("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
+
+-- Buffer navigation (Shift-L/H)
+map("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
+map("n", "<S-h>", ":bprev<CR>", { desc = "Previous buffer" })
+
+-- Window splitting
+map("n", "<leader>v", ":vsplit<CR>", { desc = "Split window right" })
+
+-- Clear search highlights
+map("n", "<Esc>", ":nohl<CR>", { desc = "Clear search highlights" })
+
+-- Move lines (Alt-Shift-j/k) - M is Alt
+map("n", "<M-J>", ":m .+1<CR>==", { desc = "Move line down" })
+map("n", "<M-K>", ":m .-2<CR>==", { desc = "Move line up" })
+map("v", "<M-J>", ":m '>+1<CR>gv=gv", { desc = "Move selection down" })
+map("v", "<M-K>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
+
+-- Save file
+map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
+
+-- Close buffer (Space x - mapped to closeActiveEditor in VSCode)
+map("n", "<C-x>", ":bd<CR>", { desc = "Close buffer" })
+
+-- Insert mode escape
+map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
