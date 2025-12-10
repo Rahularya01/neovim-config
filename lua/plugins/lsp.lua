@@ -26,7 +26,7 @@ return {
 				"pyright",
 				"typescript-language-server",
 				"prettier",
-				"eslint_d",
+				"eslint-lsp",
 				"black",
 				"isort",
 				"clang-format",
@@ -73,10 +73,16 @@ return {
 						javascript = { format = { enable = false } },
 					},
 				},
+				eslint = {
+					settings = {
+						format = { enable = false },
+						workingDirectory = { mode = "auto" },
+					},
+				},
 			}
 
 			mason_lspconfig.setup({
-				ensure_installed = { "lua_ls", "rust_analyzer", "pyright", "clangd", "ts_ls" },
+				ensure_installed = { "lua_ls", "rust_analyzer", "pyright", "clangd", "ts_ls", "eslint" },
 				handlers = {
 					function(server_name)
 						if server_name == "rust_analyzer" then
@@ -97,20 +103,14 @@ return {
 	{
 		"nvimtools/none-ls.nvim",
 		event = { "BufReadPre", "BufNewFile" },
-		dependencies = {
-			"nvim-lua/plenary.nvim",
-			"nvimtools/none-ls-extras.nvim",
-		},
+		dependencies = { "nvim-lua/plenary.nvim" },
 		config = function()
 			local null_ls = require("null-ls")
 
 			null_ls.setup({
 				sources = {
 					-- Diagnostics (Linting)
-					require("none-ls.diagnostics.eslint_d"),
 					null_ls.builtins.diagnostics.pylint,
-					-- Code Actions
-					require("none-ls.code_actions.eslint_d"),
 				},
 				on_attach = handlers.on_attach,
 			})

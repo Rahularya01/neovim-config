@@ -69,7 +69,7 @@ function M.on_attach(client, bufnr)
 	map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
 	map("n", "[d", vim.diagnostic.goto_prev, "Previous diagnostic")
 	map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
-	map("n", "<leader>e", vim.diagnostic.open_float, "Line diagnostics")
+	map("n", "<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
 end
 
 return M

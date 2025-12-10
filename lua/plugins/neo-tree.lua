@@ -97,7 +97,7 @@ return {
 			git_status = { window = { position = "float" } },
 		})
 
-		-- Note: <leader>e is used by Snacks.nvim explorer, using alternative keymap
+		-- Reserve <leader>e exclusively for toggling Neo-tree
 		vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { silent = true, desc = "Toggle Neotree" })
 	end,
 }

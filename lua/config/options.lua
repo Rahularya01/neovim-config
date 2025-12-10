@@ -17,5 +17,3 @@ vim.opt.splitbelow = true
 
 vim.opt.wrap = false
 vim.opt.linebreak = false
-vim.opt.sidescroll = 1
-
