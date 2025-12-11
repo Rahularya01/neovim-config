@@ -7,7 +7,7 @@ return {
 		lint.linters_by_ft = {
 			-- JS/TS diagnostics now handled by eslint-lsp
 			python = { "pylint" },
-			lua = { "luacheck" }, -- Or 'selene'
+			lua = { "selene" }, -- Alternative to luacheck
 		}
 
 		local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })

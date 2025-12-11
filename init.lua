@@ -20,5 +20,5 @@ vim.opt.rtp:prepend(lazypath)
 -- 4. Load Plugins
 -- This automatically imports every file inside lua/plugins/*.lua
 require("lazy").setup("plugins", {
-    change_detection = { notify = false } -- Optional: stops notifications on config change
+    change_detection = { enabled = false } -- Optional: stops notifications on config change
 })

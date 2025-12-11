@@ -25,12 +25,18 @@ return {
 				"rust-analyzer",
 				"pyright",
 				"typescript-language-server",
-				"prettier",
+				"prettierd",
 				"eslint-lsp",
 				"black",
 				"isort",
 				"clang-format",
 				"pylint",
+				"codelldb",
+				"debugpy",
+				"selene",
+				"tailwindcss-language-server",
+				"css-lsp",
+				"html-lsp",
 			},
 			auto_update = true,
 		},
@@ -67,7 +73,7 @@ return {
 				clangd = {
 					cmd = { "clangd", "--header-insertion=never" },
 				},
-				ts_ls = {
+				tsserver = {
 					settings = {
 						typescript = { format = { enable = false } },
 						javascript = { format = { enable = false } },
@@ -79,10 +85,16 @@ return {
 						workingDirectory = { mode = "auto" },
 					},
 				},
+				gopls = {},
+				yamlls = {},
+				jsonls = {},
+				tailwindcss = {},
+				cssls = {},
+				html = {},
 			}
 
 			mason_lspconfig.setup({
-				ensure_installed = { "lua_ls", "rust_analyzer", "pyright", "clangd", "ts_ls", "eslint" },
+				ensure_installed = { "lua_ls", "rust_analyzer", "pyright", "clangd", "tsserver", "eslint", "gopls", "yamlls", "jsonls", "tailwindcss", "cssls", "html" },
 				handlers = {
 					function(server_name)
 						if server_name == "rust_analyzer" then
