@@ -1,7 +1,7 @@
 return {
 	{
 		"williamboman/mason.nvim",
-		lazy = false, -- Ensure Mason loads early to set up PATH
+		lazy = false,
 		opts = {
 			ui = {
 				icons = {
@@ -28,7 +28,7 @@ return {
 				"isort",
 				"clang-format",
 				"pylint",
-				"emmet_language_server", -- Add Emmet here
+				"emmet_language_server",
 			},
 			auto_update = true,
 		},
@@ -46,7 +46,6 @@ return {
 			local mason_lspconfig = require("mason-lspconfig")
 			local lspconfig = require("lspconfig")
 
-			-- 1. Capabilities Setup
 			local capabilities
 			local ok, blink = pcall(require, "blink.cmp")
 			if ok then
@@ -55,7 +54,6 @@ return {
 				capabilities = vim.lsp.protocol.make_client_capabilities()
 			end
 
-			-- 2. Diagnostic Signs & Config
 			local signs = {
 				{ name = "DiagnosticSignError", text = "" },
 				{ name = "DiagnosticSignWarn", text = "" },
@@ -83,7 +81,6 @@ return {
 				},
 			})
 
-			-- 3. LspAttach Keymaps & Formatting
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 				callback = function(event)
@@ -97,7 +94,16 @@ return {
 					map("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
 					map("n", "gr", vim.lsp.buf.references, "List references")
 					map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
+
+					-- Code Actions
 					map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
+
+					map("n", "<leader>oi", function()
+						vim.lsp.buf.code_action({
+							context = { only = { "source" } },
+						})
+					end)
+
 					map("n", "[d", vim.diagnostic.goto_prev, "Previous diagnostic")
 					map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
 					map("n", "<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
@@ -120,7 +126,6 @@ return {
 				end,
 			})
 
-			-- 4. Server Configuration
 			local servers = {
 				lua_ls = {
 					settings = {
@@ -142,7 +147,6 @@ return {
 				eslint = {
 					settings = { format = { enable = false }, workingDirectory = { mode = "auto" } },
 				},
-				-- Emmet Configuration
 				emmet_language_server = {
 					filetypes = { "html", "typescriptreact", "javascriptreact" },
 				},

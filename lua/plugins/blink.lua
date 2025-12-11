@@ -1,6 +1,6 @@
 return {
 	"saghen/blink.cmp",
-	dependencies = { "rafamadriz/friendly-snippets" }, -- Add this line
+	dependencies = { "rafamadriz/friendly-snippets" },
 	version = "*",
 	opts = {
 		keymap = {
@@ -18,7 +18,13 @@ return {
 		},
 		signature = { enabled = true },
 		completion = {
-			menu = { border = "rounded" },
+			menu = {
+				border = "rounded",
+				draw = {
+					-- We add "label_description" here to show the import source
+					columns = { { "kind_icon" }, { "label", "label_description", gap = 1 }, { "source_name" } },
+				},
+			},
 			documentation = { window = { border = "rounded" } },
 		},
 	},
