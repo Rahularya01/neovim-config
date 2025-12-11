@@ -1,103 +1,96 @@
 return {
-	"nvim-neo-tree/neo-tree.nvim",
-	branch = "v3.x",
-	dependencies = {
-		"nvim-lua/plenary.nvim",
-		"nvim-tree/nvim-web-devicons",
-		"MunifTanjim/nui.nvim",
-		{
-			"s1n7ax/nvim-window-picker",
-			version = "2.*",
-			config = function()
-				require("window-picker").setup({
-					autoselect_one = true,
-					include_current_win = false,
-					filter_rules = {
-						bo = { filetype = { "neo-tree", "notify" }, buftype = { "terminal", "quickfix" } },
-					},
-				})
-			end,
+	{
+		"nvim-neo-tree/neo-tree.nvim",
+		branch = "v3.x",
+		dependencies = {
+			"nvim-lua/plenary.nvim",
+			"MunifTanjim/nui.nvim",
+			"nvim-tree/nvim-web-devicons",
 		},
-	},
-	config = function()
-		local icons = {
-			default = "",
-			symlink = "",
-			folder = { closed = "", open = "", empty = "ﰊ" },
-			git = {
-				added = "", -- added files
-				modified = "", -- modified files
-				deleted = "", -- deleted files
-				renamed = "➜", -- renamed files
-				untracked = "", -- untracked files
-				ignored = "◌", -- ignored files
-				staged = "✓", -- staged files
-				conflict = "", -- merge conflicts
-				unstaged = "✗", -- unstaged changes
-			},
-			diagnostics = {
-				error = "",
-				warn = "",
-				info = "",
-				hint = "",
-			},
-		}
+		lazy = false,
 
-		require("neo-tree").setup({
-			close_if_last_window = true,
+		keys = {
+			{ "<leader>e", "<cmd>Neotree toggle<CR>", desc = "Toggle NeoTree" },
+		},
+
+		opts = {
+			-- 1. General UI Settings
+			close_if_last_window = true, -- Close Neo-tree if it's the last window left
 			popup_border_style = "rounded",
 			enable_git_status = true,
 			enable_diagnostics = true,
-			window = {
-				position = "left",
-				width = 28,
-				mappings = {
-					["<CR>"] = "open",
-					["l"] = "open",
-					["h"] = "close_node",
-					["s"] = "open_split",
-					["v"] = "open_vsplit",
-					["<BS>"] = "navigate_up",
-					["H"] = "toggle_hidden",
-					["R"] = "refresh",
-					["a"] = "add",
-					["d"] = "delete",
-					["r"] = "rename",
-					["y"] = "copy_to_clipboard",
-					["x"] = "cut_to_clipboard",
-					["p"] = "paste_from_clipboard",
-					["q"] = "close_window",
-				},
-			},
+
+			-- 2. Visuals & Icons Configuration
 			default_component_configs = {
-				icon = {
-					folder_closed = icons.folder.closed,
-					folder_open = icons.folder.open,
-					folder_empty = icons.folder.empty,
-					default = icons.default,
-					symlink = icons.symlink,
+				indent = {
+					with_expanders = true, -- Add expander triangles
+					expander_collapsed = "",
+					expander_expanded = "",
+					expander_highlight = "NeoTreeExpander",
 				},
-				diagnostics = {
-					symbols = icons.diagnostics,
+				icon = {
+					folder_closed = "",
+					folder_open = "",
+					folder_empty = "󰜌",
+					default = "*",
+					highlight = "NeoTreeFileIcon",
+				},
+				modified = {
+					symbol = "[+]",
+					highlight = "NeoTreeModified",
 				},
 				git_status = {
-					symbols = icons.git,
+					symbols = {
+						-- Change type
+						added = "",
+						modified = "",
+						deleted = "✖",
+						renamed = "󰁕",
+						-- Status type
+						untracked = "",
+						ignored = "",
+						unstaged = "󰄱",
+						staged = "",
+						conflict = "",
+					},
 				},
 			},
-			filesystem = {
-				filtered_items = { hide_dotfiles = false, hide_gitignored = false },
-				hijack_netrw_behavior = "open_current",
-				follow_current_file = {
-					enabled = true,
-				},
-			},
-			buffers = { follow_current_file = {
-				enabled = true,
-			}, show_unloaded = true },
-			git_status = { window = { position = "float" } },
-		})
 
-		-- Reserve <leader>e exclusively for toggling Neo-tree
-		vim.keymap.set("n", "<leader>e", "<cmd>Neotree toggle<cr>", { silent = true, desc = "Toggle Neotree" })
-	end,
+			-- 3. Filesystem Specific Settings
+			filesystem = {
+				follow_current_file = {
+					enabled = true, -- This will find and focus the file in the active buffer
+					leave_dirs_open = false,
+				},
+				use_libuv_file_watcher = true, -- This will automatically detect changes (e.g. from git pull)
+
+				-- Filter out hidden files
+				filtered_items = {
+					visible = false,
+					hide_dotfiles = false,
+					hide_gitignored = false,
+					hide_by_name = {
+						".git",
+						".DS_Store",
+						"thumbs.db",
+					},
+				},
+
+				-- 4. Keymaps (Your custom mapping)
+				window = {
+					mappings = {
+						["l"] = "open",
+						["h"] = "close_node",
+						["a"] = "add",
+						["A"] = "add_directory",
+						["d"] = "delete",
+						["r"] = "rename",
+
+						-- Optional: Map '?' to show help
+						["?"] = "show_help",
+					},
+				},
+			},
+		},
+	},
 }

@@ -7,13 +7,9 @@ return {
 
 		vim.g.rustaceanvim = {
 			-- Plugin configuration
-			tools = {
-			},
+			tools = {},
 			-- LSP configuration
 			server = {
-				on_attach = function(client, bufnr)
-					handlers.on_attach(client, bufnr)
-				end,
 				default_settings = {
 					-- rust-analyzer language server configuration
 					["rust-analyzer"] = {
