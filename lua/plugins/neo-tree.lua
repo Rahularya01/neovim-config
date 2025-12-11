@@ -15,7 +15,7 @@ return {
 
 		opts = {
 			-- 1. General UI Settings
-			close_if_last_window = true, -- Close Neo-tree if it's the last window left
+			close_if_last_window = true,
 			popup_border_style = "rounded",
 			enable_git_status = true,
 			enable_diagnostics = true,
@@ -23,7 +23,7 @@ return {
 			-- 2. Visuals & Icons Configuration
 			default_component_configs = {
 				indent = {
-					with_expanders = true, -- Add expander triangles
+					with_expanders = true,
 					expander_collapsed = "",
 					expander_expanded = "",
 					expander_highlight = "NeoTreeExpander",
@@ -41,12 +41,10 @@ return {
 				},
 				git_status = {
 					symbols = {
-						-- Change type
 						added = "",
 						modified = "",
 						deleted = "✖",
 						renamed = "󰁕",
-						-- Status type
 						untracked = "",
 						ignored = "",
 						unstaged = "󰄱",
@@ -59,12 +57,11 @@ return {
 			-- 3. Filesystem Specific Settings
 			filesystem = {
 				follow_current_file = {
-					enabled = true, -- This will find and focus the file in the active buffer
+					enabled = true,
 					leave_dirs_open = false,
 				},
-				use_libuv_file_watcher = true, -- This will automatically detect changes (e.g. from git pull)
+				use_libuv_file_watcher = true,
 
-				-- Filter out hidden files
 				filtered_items = {
 					visible = false,
 					hide_dotfiles = false,
@@ -78,6 +75,7 @@ return {
 
 				-- 4. Keymaps (Your custom mapping)
 				window = {
+					width = 32, -- ADD THIS LINE (Default is 40)
 					mappings = {
 						["l"] = "open",
 						["h"] = "close_node",
@@ -85,8 +83,6 @@ return {
 						["A"] = "add_directory",
 						["d"] = "delete",
 						["r"] = "rename",
-
-						-- Optional: Map '?' to show help
 						["?"] = "show_help",
 					},
 				},

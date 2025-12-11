@@ -42,3 +42,7 @@ map("n", "<leader>w", ":w<CR>", { desc = "Save file" })
 
 -- Terminal toggle
 map("n", "<C-\\>", ":ToggleTerm<CR>", { desc = "Toggle terminal" })
+
+map("n", "<C-x>", ":bd<CR>", { desc = "Close current buffer" })
+
+map("n", "<leader>bc", ":bufdo bd<CR>", { desc = "Close all buffers" })
