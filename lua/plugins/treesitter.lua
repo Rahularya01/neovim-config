@@ -1,17 +1,4 @@
 return {
-	-- 1. Configure nvim-ts-autotag separately
-	{
-		"windwp/nvim-ts-autotag",
-		event = { "BufReadPre", "BufNewFile" },
-		opts = {
-			-- Defaults
-			enable_close = true,
-			enable_rename = true,
-			enable_close_on_slash = true, -- Auto close on trailing </
-		},
-	},
-
-	-- 2. Your Treesitter configuration
 	{
 		"nvim-treesitter/nvim-treesitter",
 		event = { "BufReadPre", "BufNewFile" },
@@ -36,7 +23,7 @@ return {
 					"go",
 					"yaml",
 					"html",
-					"css", -- Added html/css as they are crucial for autotag testing
+					"css",
 				},
 				auto_install = true,
 				highlight = { enable = true },
@@ -50,9 +37,6 @@ return {
 						node_decremental = "grm",
 					},
 				},
-				-- NOTE: 'autotag' section is REMOVED from here.
-				-- It is handled by the plugin block above.
-
 				textobjects = {
 					select = {
 						enable = true,
