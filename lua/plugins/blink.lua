@@ -1,5 +1,6 @@
 return {
 	"saghen/blink.cmp",
+	dependencies = { "rafamadriz/friendly-snippets" }, -- Add this line
 	version = "*",
 	opts = {
 		keymap = {

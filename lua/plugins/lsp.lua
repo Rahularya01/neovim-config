@@ -22,12 +22,13 @@ return {
 				"rust-analyzer",
 				"pyright",
 				"typescript-language-server",
-				"eslint-lsp", -- LSP Server for ESLint
+				"eslint-lsp",
 				"prettier",
 				"black",
 				"isort",
 				"clang-format",
-				"pylint", -- Linter binary for nvim-lint
+				"pylint",
+				"emmet_language_server", -- Add Emmet here
 			},
 			auto_update = true,
 		},
@@ -45,9 +46,7 @@ return {
 			local mason_lspconfig = require("mason-lspconfig")
 			local lspconfig = require("lspconfig")
 
-			-- ----------------------------------------------------------------
-			-- 1. Capabilities Setup (Merged from M.capabilities)
-			-- ----------------------------------------------------------------
+			-- 1. Capabilities Setup
 			local capabilities
 			local ok, blink = pcall(require, "blink.cmp")
 			if ok then
@@ -56,9 +55,7 @@ return {
 				capabilities = vim.lsp.protocol.make_client_capabilities()
 			end
 
-			-- ----------------------------------------------------------------
-			-- 2. Diagnostic Signs & Config (Merged from M.setup)
-			-- ----------------------------------------------------------------
+			-- 2. Diagnostic Signs & Config
 			local signs = {
 				{ name = "DiagnosticSignError", text = "" },
 				{ name = "DiagnosticSignWarn", text = "" },
@@ -72,9 +69,7 @@ return {
 
 			vim.diagnostic.config({
 				virtual_text = true,
-				signs = {
-					active = signs,
-				},
+				signs = { active = signs },
 				update_in_insert = true,
 				underline = true,
 				severity_sort = true,
@@ -88,9 +83,7 @@ return {
 				},
 			})
 
-			-- ----------------------------------------------------------------
 			-- 3. LspAttach Keymaps & Formatting
-			-- ----------------------------------------------------------------
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 				callback = function(event)
@@ -98,7 +91,6 @@ return {
 						vim.keymap.set(mode, lhs, rhs, { buffer = event.buf, silent = true, desc = desc })
 					end
 
-					-- Standard LSP mappings
 					map("n", "K", vim.lsp.buf.hover, "Hover")
 					map("n", "gd", vim.lsp.buf.definition, "Go to definition")
 					map("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
@@ -110,7 +102,6 @@ return {
 					map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
 					map("n", "<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
 
-					-- Disable LSP formatting if you use Conform/null-ls
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
 					local disable_format = {
 						tsserver = true,
@@ -119,7 +110,7 @@ return {
 						pyright = true,
 						clangd = true,
 						rust_analyzer = true,
-						eslint = true, -- Let Prettier handle formatting
+						eslint = true,
 					}
 
 					if client and disable_format[client.name] then
@@ -129,26 +120,19 @@ return {
 				end,
 			})
 
-			-- ----------------------------------------------------------------
 			-- 4. Server Configuration
-			-- ----------------------------------------------------------------
 			local servers = {
 				lua_ls = {
 					settings = {
 						Lua = {
 							diagnostics = { globals = { "vim" } },
-							workspace = {
-								library = { vim.env.VIMRUNTIME },
-								checkThirdParty = false,
-							},
+							workspace = { library = { vim.env.VIMRUNTIME }, checkThirdParty = false },
 							telemetry = { enable = false },
 						},
 					},
 				},
 				pyright = {},
-				clangd = {
-					cmd = { "clangd", "--header-insertion=never" },
-				},
+				clangd = { cmd = { "clangd", "--header-insertion=never" } },
 				ts_ls = {
 					settings = {
 						typescript = { format = { enable = false } },
@@ -156,24 +140,32 @@ return {
 					},
 				},
 				eslint = {
-					settings = {
-						-- ESLint-lsp handles diagnostics automatically
-						format = { enable = false },
-						workingDirectory = { mode = "auto" },
-					},
+					settings = { format = { enable = false }, workingDirectory = { mode = "auto" } },
+				},
+				-- Emmet Configuration
+				emmet_language_server = {
+					filetypes = { "html", "typescriptreact", "javascriptreact" },
 				},
 			}
 
 			mason_lspconfig.setup({
-				ensure_installed = { "lua_ls", "rust_analyzer", "pyright", "clangd", "ts_ls", "eslint" },
+				ensure_installed = {
+					"lua_ls",
+					"rust_analyzer",
+					"pyright",
+					"clangd",
+					"ts_ls",
+					"eslint",
+					"emmet_language_server",
+				},
 				handlers = {
 					function(server_name)
 						if server_name == "rust_analyzer" then
-							return -- rustaceanvim handles this server
+							return
 						end
 
 						local server_opts = vim.tbl_deep_extend("force", servers[server_name] or {}, {
-							capabilities = capabilities, -- Uses the local capabilities defined above
+							capabilities = capabilities,
 						})
 
 						lspconfig[server_name].setup(server_opts)
