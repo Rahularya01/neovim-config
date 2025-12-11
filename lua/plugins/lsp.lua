@@ -29,6 +29,7 @@ return {
 				"clang-format",
 				"pylint",
 				"emmet_language_server",
+				"tailwindcss", -- ADDED HERE
 			},
 			auto_update = true,
 		},
@@ -94,8 +95,6 @@ return {
 					map("n", "gi", vim.lsp.buf.implementation, "Go to implementation")
 					map("n", "gr", vim.lsp.buf.references, "List references")
 					map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
-
-					-- Code Actions
 					map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
 
 					map("n", "<leader>oi", function()
@@ -150,6 +149,7 @@ return {
 				emmet_language_server = {
 					filetypes = { "html", "typescriptreact", "javascriptreact" },
 				},
+				tailwindcss = {}, -- ADDED HERE
 			}
 
 			mason_lspconfig.setup({
@@ -161,6 +161,7 @@ return {
 					"ts_ls",
 					"eslint",
 					"emmet_language_server",
+					"tailwindcss", -- ADDED HERE
 				},
 				handlers = {
 					function(server_name)

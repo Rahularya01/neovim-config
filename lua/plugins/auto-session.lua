@@ -5,10 +5,10 @@ return {
 		require("auto-session").setup({
 			log_level = "error",
 
-			-- Suppress session for these directories (keep your home cleaner)
+			-- Suppress session for these directories
 			suppressed_dirs = { "~/", "~/Projects", "~/Downloads", "/" },
 
-			-- Don't save these file types (prevents Neo-tree or DAP UI from breaking on restore)
+			-- Don't save these file types
 			bypass_session_save_file_types = {
 				"neo-tree",
 				"NvimTree",
@@ -16,6 +16,13 @@ return {
 				"dapui_breakpoints",
 				"dapui_stacks",
 				"dapui_watches",
+			},
+
+			-- Fix: Run :edit on the current buffer after restore to trigger Treesitter/LSP
+			post_restore_cmds = {
+				function()
+					vim.cmd("edit")
+				end,
 			},
 
 			-- Keymaps
