@@ -3,6 +3,14 @@ return {
 		"lewis6991/gitsigns.nvim",
 		event = { "BufReadPre", "BufNewFile" },
 		opts = {
+			-- Enable auto git blame on the current line
+			current_line_blame = true,
+			current_line_blame_opts = {
+				virt_text = true,
+				virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
+				delay = 500, -- Delay in ms before showing blame
+				ignore_whitespace = false,
+			},
 			on_attach = function(bufnr)
 				local gs = package.loaded.gitsigns
 
@@ -62,3 +70,4 @@ return {
 		},
 	},
 }
+
