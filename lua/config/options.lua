@@ -28,3 +28,12 @@ vim.opt.cmdheight = 0
 -- Prevents auto-selection of the first completion item.
 -- This allows "Enter" to insert a newline unless you manually select a suggestion.
 vim.opt.completeopt = "menu,menuone,noselect"
+
+-- Treat .env files as bash for syntax highlighting
+-- Fix commentstring for .env files so Comment.nvim works
+vim.api.nvim_create_autocmd("FileType", {
+	pattern = "env",
+	callback = function()
+		vim.bo.commentstring = "# %s"
+	end,
+})

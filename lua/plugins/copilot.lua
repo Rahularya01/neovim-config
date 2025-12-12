@@ -9,7 +9,7 @@ return {
 				auto_trigger = true,
 				debounce = 75,
 				keymap = {
-					accept = "<M-l>", -- Changed from <Tab> to avoid conflicts
+					accept = "<Tab>", -- Changed from <Tab> to avoid conflicts
 					accept_word = false,
 					accept_line = false,
 					next = "<M-]>",
