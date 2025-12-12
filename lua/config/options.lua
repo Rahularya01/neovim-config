@@ -24,3 +24,7 @@ vim.opt.writebackup = false
 vim.opt.swapfile = false
 vim.opt.updatetime = 300
 vim.opt.cmdheight = 0
+
+-- Prevents auto-selection of the first completion item.
+-- This allows "Enter" to insert a newline unless you manually select a suggestion.
+vim.opt.completeopt = "menu,menuone,noselect"

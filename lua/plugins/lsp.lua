@@ -28,8 +28,8 @@ return {
 				"isort",
 				"clang-format",
 				"pylint",
-				"emmet_language_server",
-				"tailwindcss", -- ADDED HERE
+				-- "emmet_language_server", -- REMOVED to stop annoyance
+				"tailwindcss",
 			},
 			auto_update = true,
 		},
@@ -41,19 +41,14 @@ return {
 		dependencies = {
 			"neovim/nvim-lspconfig",
 			"williamboman/mason.nvim",
-			"saghen/blink.cmp",
+			"hrsh7th/cmp-nvim-lsp",
 		},
 		config = function()
 			local mason_lspconfig = require("mason-lspconfig")
 			local lspconfig = require("lspconfig")
+			local cmp_nvim_lsp = require("cmp_nvim_lsp")
 
-			local capabilities
-			local ok, blink = pcall(require, "blink.cmp")
-			if ok then
-				capabilities = blink.get_lsp_capabilities()
-			else
-				capabilities = vim.lsp.protocol.make_client_capabilities()
-			end
+			local capabilities = cmp_nvim_lsp.default_capabilities()
 
 			local signs = {
 				{ name = "DiagnosticSignError", text = "" },
@@ -149,7 +144,7 @@ return {
 				emmet_language_server = {
 					filetypes = { "html", "typescriptreact", "javascriptreact" },
 				},
-				tailwindcss = {}, -- ADDED HERE
+				tailwindcss = {},
 			}
 
 			mason_lspconfig.setup({
@@ -160,19 +155,16 @@ return {
 					"clangd",
 					"ts_ls",
 					"eslint",
-					"emmet_language_server",
-					"tailwindcss", -- ADDED HERE
+					"tailwindcss",
 				},
 				handlers = {
 					function(server_name)
 						if server_name == "rust_analyzer" then
 							return
 						end
-
 						local server_opts = vim.tbl_deep_extend("force", servers[server_name] or {}, {
 							capabilities = capabilities,
 						})
-
 						lspconfig[server_name].setup(server_opts)
 					end,
 				},
