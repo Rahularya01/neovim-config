@@ -29,7 +29,7 @@ return {
 				"clang-format",
 				"pylint",
 				"emmet_language_server",
-				"tailwindcss", -- ADDED HERE
+				"tailwindcss",
 			},
 			auto_update = true,
 		},
@@ -143,13 +143,28 @@ return {
 						javascript = { format = { enable = false } },
 					},
 				},
+				-- UPDATED ESLINT CONFIGURATION
 				eslint = {
-					settings = { format = { enable = false }, workingDirectory = { mode = "auto" } },
+					settings = {
+						workingDirectory = { mode = "auto" },
+						format = { enable = false },
+					},
+					root_dir = lspconfig.util.root_pattern(
+						".eslintrc",
+						".eslintrc.js",
+						".eslintrc.cjs",
+						".eslintrc.yaml",
+						".eslintrc.yml",
+						".eslintrc.json",
+						"eslint.config.js",
+						"eslint.config.mjs",
+						"eslint.config.cjs"
+					),
 				},
 				emmet_language_server = {
 					filetypes = { "html", "typescriptreact", "javascriptreact" },
 				},
-				tailwindcss = {}, -- ADDED HERE
+				tailwindcss = {},
 			}
 
 			mason_lspconfig.setup({
@@ -161,7 +176,7 @@ return {
 					"ts_ls",
 					"eslint",
 					"emmet_language_server",
-					"tailwindcss", -- ADDED HERE
+					"tailwindcss",
 				},
 				handlers = {
 					function(server_name)
