@@ -36,11 +36,44 @@ return {
 			return text:sub(col, col):match("%s") == nil
 		end
 
+		-- Helper: avoid annoying auto-popup after certain characters like "{"
+		-- Note: I have left this function here, but I am not using it in the enabled()
+		-- block below because it breaks <C-Space> usage.
+		local should_disable_cmp_here = function()
+			local col = vim.fn.col(".") - 1
+			if col <= 0 then
+				return false
+			end
+			local line = vim.fn.getline(".")
+			local prev = line:sub(col, col)
+			return prev:match("[%{%}%(%);,%[%]]") ~= nil
+		end
+
 		cmp.setup({
+			-- ✅ keep suggestions while typing words
 			completion = {
-				-- ✅ allow first item to be selected (remove "noselect")
 				completeopt = "menu,menuone",
+				autocomplete = { cmp.TriggerEvent.TextChanged },
 			},
+
+			-- ✅ stop cmp from showing up in comments
+			enabled = function()
+				local context = require("cmp.config.context")
+
+				-- Disable in comments
+				if context.in_treesitter_capture("comment") or context.in_syntax_group("Comment") then
+					return false
+				end
+
+				-- ⚠️ FIXED: I commented this out.
+				-- If active, this logic completely turns off the plugin near brackets,
+				-- meaning <C-Space> would be ignored.
+				-- if should_disable_cmp_here() then
+				-- 	return false
+				-- end
+
+				return true
+			end,
 
 			snippet = {
 				expand = function(args)
@@ -61,34 +94,13 @@ return {
 				["<C-j>"] = cmp.mapping.select_next_item(),
 				["<C-b>"] = cmp.mapping.scroll_docs(-4),
 				["<C-f>"] = cmp.mapping.scroll_docs(4),
-				["<C-Space>"] = cmp.mapping.complete(),
+				["<C-i>"] = cmp.mapping.complete(),
+
 				["<C-e>"] = cmp.mapping.abort(),
 
-				-- ✅ Enter always confirms; if nothing explicitly selected, it picks the first
+				-- ✅ Enter always confirms
 				["<CR>"] = cmp.mapping.confirm({ select = true }),
 
-				-- Tab behavior: cmp → snippet → complete → fallback
-				["<Tab>"] = cmp.mapping(function(fallback)
-					if cmp.visible() then
-						cmp.select_next_item()
-					elseif luasnip.expand_or_jumpable() then
-						luasnip.expand_or_jump()
-					elseif has_words_before() then
-						cmp.complete()
-					else
-						fallback()
-					end
-				end, { "i", "s" }),
-
-				["<S-Tab>"] = cmp.mapping(function(fallback)
-					if cmp.visible() then
-						cmp.select_prev_item()
-					elseif luasnip.jumpable(-1) then
-						luasnip.jump(-1)
-					else
-						fallback()
-					end
-				end, { "i", "s" }),
 			}),
 
 			-- Sources
@@ -99,7 +111,7 @@ return {
 				{ name = "buffer", keyword_length = 3, max_item_count = 50 },
 			}),
 
-			-- 🎨 Formatting: FIX duplicate icons
+			-- 🎨 Formatting
 			formatting = {
 				fields = { "kind", "abbr", "menu" },
 				format = function(entry, item)
@@ -113,20 +125,17 @@ return {
 						path = "PATH",
 					})[entry.source.name] or entry.source.name
 
-					-- Put readable info in menu column
 					item.menu = string.format("[%s]", source)
 					return item
 				end,
 			},
 
-			-- Optional perf tuning
 			performance = {
 				debounce = 60,
 				throttle = 30,
 				fetching_timeout = 200,
 			},
 
-			-- Optional VS Code–like inline hint
 			experimental = {
 				ghost_text = true,
 			},
