@@ -15,26 +15,20 @@ return {
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
 		cmd = { "MasonToolsInstall", "MasonToolsUpdate" },
+		dependencies = { "williamboman/mason.nvim" },
 		opts = {
 			ensure_installed = {
 				"stylua",
-				"clangd",
-				"rust-analyzer",
-				"pyright",
-				"typescript-language-server",
-				"eslint-lsp",
 				"prettier",
 				"black",
 				"isort",
 				"clang-format",
 				"pylint",
-				-- "emmet_language_server", -- REMOVED to stop annoyance
-				"tailwindcss",
 			},
 			auto_update = true,
 		},
-		dependencies = { "williamboman/mason.nvim" },
 	},
+
 	{
 		"williamboman/mason-lspconfig.nvim",
 		event = { "BufReadPre", "BufNewFile" },
@@ -56,17 +50,15 @@ return {
 				{ name = "DiagnosticSignHint", text = "" },
 				{ name = "DiagnosticSignInfo", text = "" },
 			}
-
 			for _, sign in ipairs(signs) do
 				vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
 			end
 
 			vim.diagnostic.config({
 				virtual_text = true,
-				signs = { active = signs },
-				update_in_insert = true,
 				underline = true,
 				severity_sort = true,
+				update_in_insert = false,
 				float = {
 					focusable = false,
 					style = "minimal",
@@ -93,10 +85,8 @@ return {
 					map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
 
 					map("n", "<leader>oi", function()
-						vim.lsp.buf.code_action({
-							context = { only = { "source" } },
-						})
-					end)
+						vim.lsp.buf.code_action({ context = { only = { "source" } } })
+					end, "Source actions")
 
 					map("n", "[d", vim.diagnostic.goto_prev, "Previous diagnostic")
 					map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
@@ -104,7 +94,6 @@ return {
 
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
 					local disable_format = {
-						tsserver = true,
 						ts_ls = true,
 						lua_ls = true,
 						pyright = true,
@@ -130,15 +119,20 @@ return {
 						},
 					},
 				},
+
 				pyright = {},
-				clangd = { cmd = { "clangd", "--header-insertion=never" } },
+
+				clangd = {
+					cmd = { "clangd", "--header-insertion=never" },
+				},
+
 				ts_ls = {
 					settings = {
 						typescript = { format = { enable = false } },
 						javascript = { format = { enable = false } },
 					},
 				},
-				-- UPDATED ESLINT CONFIGURATION
+
 				eslint = {
 					settings = {
 						workingDirectory = { mode = "auto" },
@@ -156,35 +150,40 @@ return {
 						"eslint.config.cjs"
 					),
 				},
-				emmet_language_server = {
-					filetypes = { "html", "typescriptreact", "javascriptreact" },
-				},
+
+				emmet_language_server = { filetypes = { "html", "typescriptreact", "javascriptreact" } },
+
 				tailwindcss = {},
 			}
 
+			local lsp_servers = {
+				"lua_ls",
+				"pyright",
+				"clangd",
+				"ts_ls",
+				"eslint",
+				"tailwindcss",
+			}
+
 			mason_lspconfig.setup({
-				ensure_installed = {
-					"lua_ls",
-					"rust_analyzer",
-					"pyright",
-					"clangd",
-					"ts_ls",
-					"eslint",
-					"emmet_language_server",
-					"tailwindcss", -- ADDED HERE
-				},
-				handlers = {
-					function(server_name)
-						if server_name == "rust_analyzer" then
-							return
-						end
-						local server_opts = vim.tbl_deep_extend("force", servers[server_name] or {}, {
-							capabilities = capabilities,
-						})
-						lspconfig[server_name].setup(server_opts)
-					end,
-				},
+				ensure_installed = lsp_servers,
+				automatic_enable = true,
 			})
+
+			local has_native = (vim.lsp and vim.lsp.config and vim.lsp.enable)
+
+			for _, name in ipairs(lsp_servers) do
+				local opts = vim.tbl_deep_extend("force", servers[name] or {}, {
+					capabilities = capabilities,
+				})
+
+				if has_native then
+					vim.lsp.config(name, opts)
+					vim.lsp.enable(name)
+				else
+					lspconfig[name].setup(opts)
+				end
+			end
 		end,
 	},
 }

@@ -75,7 +75,7 @@ return {
 
 				-- 4. Keymaps (Your custom mapping)
 				window = {
-					width = 32, -- ADD THIS LINE (Default is 40)
+					width = 35, -- ADD THIS LINE (Default is 40)
 					mappings = {
 						["l"] = "open",
 						["h"] = "close_node",
