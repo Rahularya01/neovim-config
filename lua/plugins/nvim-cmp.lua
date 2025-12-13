@@ -94,13 +94,12 @@ return {
 				["<C-j>"] = cmp.mapping.select_next_item(),
 				["<C-b>"] = cmp.mapping.scroll_docs(-4),
 				["<C-f>"] = cmp.mapping.scroll_docs(4),
-				["<C-i>"] = cmp.mapping.complete(),
+				["<C-A-Space>"] = cmp.mapping.complete(),
 
 				["<C-e>"] = cmp.mapping.abort(),
 
 				-- ✅ Enter always confirms
 				["<CR>"] = cmp.mapping.confirm({ select = true }),
-
 			}),
 
 			-- Sources
