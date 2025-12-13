@@ -38,7 +38,8 @@ return {
 
 		cmp.setup({
 			completion = {
-				completeopt = "menu,menuone,noselect",
+				-- ✅ allow first item to be selected (remove "noselect")
+				completeopt = "menu,menuone",
 			},
 
 			snippet = {
@@ -52,8 +53,8 @@ return {
 				documentation = cmp.config.window.bordered(),
 			},
 
-			-- 🚫 no auto-select
-			preselect = cmp.PreselectMode.None,
+			-- ✅ preselect the first suggestion
+			preselect = cmp.PreselectMode.Item,
 
 			mapping = cmp.mapping.preset.insert({
 				["<C-k>"] = cmp.mapping.select_prev_item(),
@@ -62,7 +63,9 @@ return {
 				["<C-f>"] = cmp.mapping.scroll_docs(4),
 				["<C-Space>"] = cmp.mapping.complete(),
 				["<C-e>"] = cmp.mapping.abort(),
-				["<CR>"] = cmp.mapping.confirm({ select = false }),
+
+				-- ✅ Enter always confirms; if nothing explicitly selected, it picks the first
+				["<CR>"] = cmp.mapping.confirm({ select = true }),
 
 				-- Tab behavior: cmp → snippet → complete → fallback
 				["<Tab>"] = cmp.mapping(function(fallback)
