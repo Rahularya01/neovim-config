@@ -163,6 +163,7 @@ return {
 				"ts_ls",
 				"eslint",
 				"tailwindcss",
+				"emmet_language_server",
 			}
 
 			mason_lspconfig.setup({
