@@ -34,7 +34,7 @@ return {
 				},
 			}
 
-			-- For C/C++/Rust
+			-- For C/C++
 			dap.adapters.codelldb = {
 				type = "server",
 				port = "${port}",
@@ -56,7 +56,6 @@ return {
 				},
 			}
 			dap.configurations.c = dap.configurations.cpp
-			dap.configurations.rust = dap.configurations.cpp
 
 			-- Keymaps
 			vim.keymap.set("n", "<F5>", dap.continue, { desc = "Continue" })

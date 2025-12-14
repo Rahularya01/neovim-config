@@ -24,6 +24,7 @@ return {
 				"isort",
 				"clang-format",
 				"pylint",
+				"codelldb",
 			},
 			auto_update = true,
 		},
@@ -98,7 +99,6 @@ return {
 						lua_ls = true,
 						pyright = true,
 						clangd = true,
-						rust_analyzer = true,
 						eslint = true,
 					}
 
