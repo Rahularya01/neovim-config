@@ -2,6 +2,7 @@ return {
 	{
 		"williamboman/mason.nvim",
 		lazy = false,
+		priority = 1000,
 		opts = {
 			ui = {
 				icons = {
@@ -24,7 +25,6 @@ return {
 				"isort",
 				"clang-format",
 				"pylint",
-				"codelldb",
 			},
 			auto_update = true,
 		},
@@ -178,7 +178,6 @@ return {
 
 			mason_lspconfig.setup({
 				ensure_installed = lsp_servers,
-				automatic_enable = true,
 			})
 
 			local has_native = (vim.lsp and vim.lsp.config and vim.lsp.enable)
