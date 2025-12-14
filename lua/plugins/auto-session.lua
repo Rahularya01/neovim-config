@@ -8,7 +8,6 @@ return {
 			-- Suppress session for these directories
 			suppressed_dirs = { "~/", "~/Projects", "~/Downloads", "/" },
 
-			-- Don't save these file types
 			bypass_session_save_file_types = {
 				"neo-tree",
 				"NvimTree",
