@@ -45,4 +45,6 @@ map("n", "<C-\\>", ":ToggleTerm<CR>", { desc = "Toggle terminal" })
 
 map("n", "<C-x>", ":bd<CR>", { desc = "Close current buffer" })
 
-map("n", "<leader>bc", ":bufdo bd<CR>", { desc = "Close all buffers" })
+-- Close ALL buffers with Leader + bc
+-- :%bd deletes all buffers. If you have unsaved changes, Vim will prompt you.
+map("n", "<leader>bc", ":silent! %bd!<CR>", { desc = "Close all buffers silently" })
