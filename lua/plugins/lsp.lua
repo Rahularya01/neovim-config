@@ -151,7 +151,17 @@ return {
 					),
 				},
 
-				emmet_language_server = { filetypes = { "html", "typescriptreact", "javascriptreact" } },
+				emmet_language_server = {
+					filetypes = { "html", "typescriptreact", "javascriptreact" },
+					init_options = {
+						showAbbreviationSuggestions = false,
+						showSuggestionsAsSnippets = true,
+						showExpandedAbbreviation = "always",
+					},
+					syntaxProfiles = {
+						jsx = { self_closing_tag = true },
+					},
+				},
 
 				tailwindcss = {},
 			}

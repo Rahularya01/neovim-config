@@ -16,6 +16,11 @@ return {
 
 				BlinkCmpMenu = { bg = "NONE" },
 				BlinkCmpDoc = { bg = "NONE" },
+
+				-- TreeSitter overrides for React/HTML
+				["@tag"] = { fg = "#fabd2f" }, -- Components (Yellow)
+				["@tag.builtin"] = { fg = "#83a598" }, -- HTML tags (Blue)
+				["@tag.attribute"] = { fg = "#fe8019" }, -- Attributes (Orange)
 			},
 		})
 		vim.cmd("colorscheme gruvbox")
