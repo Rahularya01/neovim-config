@@ -4,18 +4,13 @@ return {
 	config = function()
 		require("gruvbox").setup({
 			contrast = "hard",
-			transparent_mode = true,
+			transparent_mode = true, -- Changed to false to match VS Code's solid background
 			overrides = {
-				Pmenu = { bg = "NONE" },
+				-- UI Overrides
+				Pmenu = { bg = "#282828" }, -- Solid background for popup menu
 				PmenuSel = { bg = "#504945", fg = "NONE" },
-				PmenuSbar = { bg = "NONE" },
-				PmenuThumb = { bg = "NONE" },
-				NormalFloat = { bg = "NONE" },
-				FloatBorder = { bg = "NONE", fg = "#504945" },
-				["@tag"] = { fg = "#83a598" },
-				["@tag.builtin"] = { fg = "#83a598" },
-				["@tag.attribute"] = { fg = "#fabd2f" },
-				["@tag.delimiter"] = { fg = "#83a598" },
+				NormalFloat = { bg = "#282828" }, -- Solid background for floats
+				FloatBorder = { bg = "#282828", fg = "#504945" },
 				SignColumn = { bg = "NONE" },
 			},
 		})
