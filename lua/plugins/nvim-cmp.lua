@@ -23,54 +23,19 @@ return {
 		local luasnip = require("luasnip")
 		local lspkind = require("lspkind")
 
-		-- Load snippets
 		require("luasnip.loaders.from_vscode").lazy_load()
 
-		-- Helper: check if there are words before cursor
-		local has_words_before = function()
-			local line, col = unpack(vim.api.nvim_win_get_cursor(0))
-			if col == 0 then
-				return false
-			end
-			local text = vim.api.nvim_buf_get_lines(0, line - 1, line, true)[1]
-			return text:sub(col, col):match("%s") == nil
-		end
-
-		-- Helper: avoid annoying auto-popup after certain characters like "{"
-		-- Note: I have left this function here, but I am not using it in the enabled()
-		-- block below because it breaks <C-Space> usage.
-		local should_disable_cmp_here = function()
-			local col = vim.fn.col(".") - 1
-			if col <= 0 then
-				return false
-			end
-			local line = vim.fn.getline(".")
-			local prev = line:sub(col, col)
-			return prev:match("[%{%}%(%);,%[%]]") ~= nil
-		end
-
 		cmp.setup({
-			-- ✅ keep suggestions while typing words
 			completion = {
-				completeopt = "menu,menuone",
-				autocomplete = { cmp.TriggerEvent.TextChanged },
+				completeopt = "menu,menuone,preview,noselect",
 			},
 
-			-- ✅ stop cmp from showing up in comments
 			enabled = function()
 				local context = require("cmp.config.context")
 
-				-- Disable in comments
 				if context.in_treesitter_capture("comment") or context.in_syntax_group("Comment") then
 					return false
 				end
-
-				-- ⚠️ FIXED: I commented this out.
-				-- If active, this logic completely turns off the plugin near brackets,
-				-- meaning <C-Space> would be ignored.
-				-- if should_disable_cmp_here() then
-				-- 	return false
-				-- end
 
 				return true
 			end,
@@ -86,7 +51,6 @@ return {
 				documentation = cmp.config.window.bordered(),
 			},
 
-			-- ✅ preselect the first suggestion
 			preselect = cmp.PreselectMode.Item,
 
 			mapping = cmp.mapping.preset.insert({
@@ -94,15 +58,11 @@ return {
 				["<C-j>"] = cmp.mapping.select_next_item(),
 				["<C-b>"] = cmp.mapping.scroll_docs(-4),
 				["<C-f>"] = cmp.mapping.scroll_docs(4),
-				["<C-A-Space>"] = cmp.mapping.complete(),
+				["<C-Space>"] = cmp.mapping.complete(),
 
-				["<C-e>"] = cmp.mapping.abort(),
-
-				-- ✅ Enter always confirms
 				["<CR>"] = cmp.mapping.confirm({ select = true }),
 			}),
 
-			-- Sources
 			sources = cmp.config.sources({
 				{ name = "nvim_lsp" },
 				{ name = "luasnip" },
@@ -110,11 +70,9 @@ return {
 				{ name = "buffer", keyword_length = 3, max_item_count = 50 },
 			}),
 
-			-- 🎨 Formatting
 			formatting = {
 				fields = { "kind", "abbr", "menu" },
 				format = function(entry, item)
-					-- Icon ONLY in kind column
 					item.kind = lspkind.symbolic(item.kind, { mode = "symbol" })
 
 					local source = ({

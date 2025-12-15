@@ -7,20 +7,16 @@ return {
 			transparent_mode = true,
 			overrides = {
 				Pmenu = { bg = "NONE" },
-				PmenuSel = { bg = "#504945", fg = "NONE" }, -- Selection color (Dark Grey)
+				PmenuSel = { bg = "#504945", fg = "NONE" },
 				PmenuSbar = { bg = "NONE" },
 				PmenuThumb = { bg = "NONE" },
-
 				NormalFloat = { bg = "NONE" },
-				FloatBorder = { bg = "NONE", fg = "#d65d0e" }, -- Orange border
-
-				BlinkCmpMenu = { bg = "NONE" },
-				BlinkCmpDoc = { bg = "NONE" },
-
-				-- TreeSitter overrides for React/HTML
-				["@tag"] = { fg = "#fabd2f" }, -- Components (Yellow)
-				["@tag.builtin"] = { fg = "#83a598" }, -- HTML tags (Blue)
-				["@tag.attribute"] = { fg = "#fe8019" }, -- Attributes (Orange)
+				FloatBorder = { bg = "NONE", fg = "#504945" },
+				["@tag"] = { fg = "#83a598" },
+				["@tag.builtin"] = { fg = "#83a598" },
+				["@tag.attribute"] = { fg = "#fabd2f" },
+				["@tag.delimiter"] = { fg = "#83a598" },
+				SignColumn = { bg = "NONE" },
 			},
 		})
 		vim.cmd("colorscheme gruvbox")
