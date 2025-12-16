@@ -32,7 +32,24 @@ return {
 			auto_update = true,
 		},
 	},
-
+	{
+		"j-hui/fidget.nvim",
+		event = "LspAttach",
+		opts = {
+			notification = {
+				window = {
+					winblend = 0,
+					border = "none",
+				},
+			},
+			progress = {
+				display = {
+					render_limit = 5,
+					done_ttl = 3,
+				},
+			},
+		},
+	},
 	{
 		"williamboman/mason-lspconfig.nvim",
 		event = { "BufReadPre", "BufNewFile" },
@@ -40,6 +57,7 @@ return {
 			"neovim/nvim-lspconfig",
 			"williamboman/mason.nvim",
 			"hrsh7th/cmp-nvim-lsp",
+			"j-hui/fidget.nvim",
 		},
 		config = function()
 			local cmp_nvim_lsp = require("cmp_nvim_lsp")
@@ -72,6 +90,8 @@ return {
 					map("n", "<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
 
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+					-- Disable formatting for LSPs that we'll handle with conform.nvim
 					local disable_format = {
 						ts_ls = true,
 						lua_ls = true,
@@ -85,18 +105,11 @@ return {
 						client.server_capabilities.documentRangeFormattingProvider = false
 					end
 
-					if client and client.name == "eslint" then
-						local root_dir = client.config.root_dir or vim.fn.getcwd()
-						local workspace_folder = {
-							uri = vim.uri_from_fname(root_dir),
-							name = vim.fn.fnamemodify(root_dir, ":t"),
-						}
-						if not client.config.settings then
-							client.config.settings = {}
-						end
-						client.config.settings.workspaceFolder = workspace_folder
-						client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
-					end
+					-- Inlay hints are disabled by default
+					-- Uncomment to enable:
+					-- if client and client.server_capabilities.inlayHintProvider then
+					-- 	vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
+					-- end
 				end,
 			})
 
@@ -115,19 +128,33 @@ return {
 				pyright = {
 					cmd = { get_mason_bin("pyright-langserver"), "--stdio" },
 					filetypes = { "python" },
+					settings = {
+						python = {
+							analysis = {
+								typeCheckingMode = "basic",
+								autoSearchPaths = true,
+								useLibraryCodeForTypes = true,
+							},
+						},
+					},
 				},
 				clangd = {
-					cmd = { get_mason_bin("clangd"), "--header-insertion=never" },
+					cmd = {
+						get_mason_bin("clangd"),
+						"--background-index",
+						"--clang-tidy",
+						"--header-insertion=iwyu",
+						"--completion-style=detailed",
+						"--function-arg-placeholders",
+					},
 					filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
+					capabilities = vim.tbl_deep_extend("force", capabilities, {
+						offsetEncoding = { "utf-16" },
+					}),
 				},
 				ts_ls = {
 					cmd = { get_mason_bin("typescript-language-server"), "--stdio" },
 					filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
-					init_options = {
-						preferences = {
-							disableSuggestions = true,
-						},
-					},
 				},
 				eslint = {
 					cmd = { get_mason_bin("vscode-eslint-language-server"), "--stdio" },
@@ -140,9 +167,8 @@ return {
 						"svelte",
 						"astro",
 					},
-					root_dir = function(bufnr, on_dir)
-						local fname = vim.api.nvim_buf_get_name(bufnr)
-						local root = vim.fs.root(fname, {
+					root_dir = function(fname)
+						return vim.fs.root(fname, {
 							".eslintrc",
 							".eslintrc.js",
 							".eslintrc.json",
@@ -155,9 +181,6 @@ return {
 							"eslint.config.ts",
 							"package.json",
 						})
-						if root then
-							on_dir(root)
-						end
 					end,
 					on_new_config = function(config, new_root_dir)
 						config.settings.workspaceFolder = {
@@ -197,7 +220,7 @@ return {
 						"typescriptreact",
 					},
 					init_options = {
-						showAbbreviationSuggestions = false,
+						showAbbreviationSuggestions = true,
 						showSuggestionsAsSnippets = true,
 						showExpandedAbbreviation = "always",
 					},
@@ -212,6 +235,16 @@ return {
 						"javascriptreact",
 						"typescript",
 						"typescriptreact",
+					},
+					settings = {
+						tailwindCSS = {
+							experimental = {
+								classRegex = {
+									{ "cva\\(([^)]*)\\)", "[\"'`]([^\"'`]*).*?[\"'`]" },
+									{ "cx\\(([^)]*)\\)", "(?:'|\"|`)([^']*)(?:'|\"|`)" },
+								},
+							},
+						},
 					},
 				},
 			}
@@ -232,10 +265,20 @@ return {
 			end
 
 			vim.diagnostic.config({
-				virtual_text = true,
+				virtual_text = {
+					spacing = 4,
+					prefix = "●",
+				},
 				severity_sort = true,
-				float = { border = "rounded", source = "always" },
+				float = {
+					border = "rounded",
+					source = "always",
+					header = "",
+					prefix = "",
+				},
 				update_in_insert = false,
+				underline = true,
+				signs = true,
 			})
 
 			local signs = { Error = "", Warn = "", Hint = "", Info = "" }
