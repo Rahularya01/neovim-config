@@ -167,8 +167,9 @@ return {
 						"svelte",
 						"astro",
 					},
-					root_dir = function(fname)
-						return vim.fs.root(fname, {
+					root_dir = function(bufnr, on_dir)
+						local fname = vim.api.nvim_buf_get_name(bufnr)
+						local root = vim.fs.root(fname, {
 							".eslintrc",
 							".eslintrc.js",
 							".eslintrc.json",
@@ -181,6 +182,9 @@ return {
 							"eslint.config.ts",
 							"package.json",
 						})
+						if root then
+							on_dir(root)
+						end
 					end,
 					on_new_config = function(config, new_root_dir)
 						config.settings.workspaceFolder = {
