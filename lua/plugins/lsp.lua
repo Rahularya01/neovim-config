@@ -20,6 +20,7 @@ return {
 		opts = {
 			ensure_installed = {
 				"stylua",
+				"luacheck",
 				"prettier",
 				"black",
 				"isort",
@@ -44,12 +45,10 @@ return {
 			local cmp_nvim_lsp = require("cmp_nvim_lsp")
 			local capabilities = cmp_nvim_lsp.default_capabilities()
 
-			-- Helper to find Mason binaries
 			local function get_mason_bin(bin_name)
 				return vim.fn.stdpath("data") .. "/mason/bin/" .. bin_name
 			end
 
-			-- 1. SETUP KEYMAPS & FORMATTING (The "on_attach" replacement)
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 				callback = function(event)
@@ -57,7 +56,6 @@ return {
 						vim.keymap.set(mode, lhs, rhs, { buffer = event.buf, silent = true, desc = desc })
 					end
 
-					-- Restore your Keybindings
 					map("n", "K", vim.lsp.buf.hover, "Hover")
 					map("n", "gd", vim.lsp.buf.definition, "Go to definition")
 					map("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
@@ -73,7 +71,6 @@ return {
 					map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
 					map("n", "<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
 
-					-- Disable Native Formatting (Logic moved here for 0.11+)
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
 					local disable_format = {
 						ts_ls = true,
@@ -88,27 +85,21 @@ return {
 						client.server_capabilities.documentRangeFormattingProvider = false
 					end
 
-					-- FIX: Set workspaceFolder for ESLint
 					if client and client.name == "eslint" then
 						local root_dir = client.config.root_dir or vim.fn.getcwd()
 						local workspace_folder = {
 							uri = vim.uri_from_fname(root_dir),
 							name = vim.fn.fnamemodify(root_dir, ":t"),
 						}
-						
-						-- Update the settings
 						if not client.config.settings then
 							client.config.settings = {}
 						end
 						client.config.settings.workspaceFolder = workspace_folder
-						
-						-- Notify the server of the configuration change
 						client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
 					end
 				end,
 			})
 
-			-- 2. DEFINE SERVERS & CONFIGS
 			local servers = {
 				lua_ls = {
 					cmd = { get_mason_bin("lua-language-server") },
@@ -169,7 +160,6 @@ return {
 						end
 					end,
 					on_new_config = function(config, new_root_dir)
-						-- Ensure workspaceFolder is set correctly
 						config.settings.workspaceFolder = {
 							uri = vim.uri_from_fname(new_root_dir),
 							name = vim.fn.fnamemodify(new_root_dir, ":t"),
@@ -179,7 +169,6 @@ return {
 						validate = "on",
 						packageManager = "npm",
 						useESLintClass = true,
-						-- FIX: Changed from "location" to "auto" for monorepo support
 						workingDirectory = { mode = "auto" },
 						experimental = { useFlatConfig = false },
 						run = "onType",
@@ -227,12 +216,10 @@ return {
 				},
 			}
 
-			-- 3. ENSURE INSTALLED (Mason)
 			require("mason-lspconfig").setup({
 				ensure_installed = vim.tbl_keys(servers),
 			})
 
-			-- 4. REGISTER CONFIGS (Native 0.11+)
 			for name, config in pairs(servers) do
 				config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
 
@@ -244,7 +231,6 @@ return {
 				end
 			end
 
-			-- 5. DIAGNOSTICS UI
 			vim.diagnostic.config({
 				virtual_text = true,
 				severity_sort = true,
