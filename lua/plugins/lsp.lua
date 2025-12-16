@@ -41,37 +41,15 @@ return {
 			"hrsh7th/cmp-nvim-lsp",
 		},
 		config = function()
-			local mason_lspconfig = require("mason-lspconfig")
-			local lspconfig = require("lspconfig")
 			local cmp_nvim_lsp = require("cmp_nvim_lsp")
-
 			local capabilities = cmp_nvim_lsp.default_capabilities()
 
-			local signs = {
-				{ name = "DiagnosticSignError", text = "" },
-				{ name = "DiagnosticSignWarn", text = "" },
-				{ name = "DiagnosticSignHint", text = "" },
-				{ name = "DiagnosticSignInfo", text = "" },
-			}
-			for _, sign in ipairs(signs) do
-				vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
+			-- Helper to find Mason binaries
+			local function get_mason_bin(bin_name)
+				return vim.fn.stdpath("data") .. "/mason/bin/" .. bin_name
 			end
 
-			vim.diagnostic.config({
-				virtual_text = true,
-				underline = true,
-				severity_sort = true,
-				update_in_insert = false,
-				float = {
-					focusable = false,
-					style = "minimal",
-					border = "rounded",
-					source = "always",
-					header = "",
-					prefix = "",
-				},
-			})
-
+			-- 1. SETUP KEYMAPS & FORMATTING (The "on_attach" replacement)
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
 				callback = function(event)
@@ -79,6 +57,7 @@ return {
 						vim.keymap.set(mode, lhs, rhs, { buffer = event.buf, silent = true, desc = desc })
 					end
 
+					-- Restore your Keybindings
 					map("n", "K", vim.lsp.buf.hover, "Hover")
 					map("n", "gd", vim.lsp.buf.definition, "Go to definition")
 					map("n", "gD", vim.lsp.buf.declaration, "Go to declaration")
@@ -86,7 +65,6 @@ return {
 					map("n", "gr", vim.lsp.buf.references, "List references")
 					map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
 					map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
-
 					map("n", "<leader>oi", function()
 						vim.lsp.buf.code_action({ context = { only = { "source" } } })
 					end, "Source actions")
@@ -95,6 +73,7 @@ return {
 					map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
 					map("n", "<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
 
+					-- Disable Native Formatting (Logic moved here for 0.11+)
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
 					local disable_format = {
 						ts_ls = true,
@@ -111,8 +90,11 @@ return {
 				end,
 			})
 
+			-- 2. DEFINE SERVERS & CONFIGS
 			local servers = {
 				lua_ls = {
+					cmd = { get_mason_bin("lua-language-server") },
+					filetypes = { "lua" },
 					settings = {
 						Lua = {
 							diagnostics = { globals = { "vim" } },
@@ -121,80 +103,107 @@ return {
 						},
 					},
 				},
-
-				pyright = {},
-
+				pyright = {
+					cmd = { get_mason_bin("pyright-langserver"), "--stdio" },
+					filetypes = { "python" },
+				},
 				clangd = {
-					cmd = { "clangd", "--header-insertion=never" },
+					cmd = { get_mason_bin("clangd"), "--header-insertion=never" },
+					filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
 				},
-
 				ts_ls = {
-					settings = {
-						typescript = { format = { enable = false } },
-						javascript = { format = { enable = false } },
+					cmd = { get_mason_bin("typescript-language-server"), "--stdio" },
+					filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+					init_options = {
+						preferences = {
+							disableSuggestions = true,
+						},
 					},
 				},
-
 				eslint = {
-					settings = {
-						workingDirectory = { mode = "auto" },
-						format = { enable = false },
+					cmd = { get_mason_bin("vscode-eslint-language-server"), "--stdio" },
+					filetypes = {
+						"javascript",
+						"javascriptreact",
+						"typescript",
+						"typescriptreact",
+						"vue",
+						"svelte",
+						"astro",
 					},
-					root_dir = lspconfig.util.root_pattern(
-						".eslintrc",
-						".eslintrc.js",
-						".eslintrc.cjs",
-						".eslintrc.yaml",
-						".eslintrc.yml",
-						".eslintrc.json",
+					root_dir = vim.fs.root(0, {
 						"eslint.config.js",
 						"eslint.config.mjs",
-						"eslint.config.cjs"
-					),
+						"eslint.config.cjs",
+						".eslintrc.js",
+						".eslintrc.json",
+						"package.json",
+						".git",
+					}),
+					settings = {
+						workingDirectory = { mode = "auto" },
+						experimental = { useFlatConfig = true },
+					},
 				},
-
 				emmet_language_server = {
-					filetypes = { "html", "typescriptreact", "javascriptreact" },
+					cmd = { get_mason_bin("emmet-language-server"), "--stdio" },
+					filetypes = {
+						"html",
+						"css",
+						"scss",
+						"javascript",
+						"javascriptreact",
+						"typescript",
+						"typescriptreact",
+					},
 					init_options = {
 						showAbbreviationSuggestions = false,
 						showSuggestionsAsSnippets = true,
 						showExpandedAbbreviation = "always",
 					},
-					syntaxProfiles = {
-						jsx = { self_closing_tag = true },
+				},
+				tailwindcss = {
+					cmd = { get_mason_bin("tailwindcss-language-server"), "--stdio" },
+					filetypes = {
+						"html",
+						"css",
+						"scss",
+						"javascript",
+						"javascriptreact",
+						"typescript",
+						"typescriptreact",
 					},
 				},
-
-				tailwindcss = {},
 			}
 
-			local lsp_servers = {
-				"lua_ls",
-				"pyright",
-				"clangd",
-				"ts_ls",
-				"eslint",
-				"tailwindcss",
-				"emmet_language_server",
-			}
-
-			mason_lspconfig.setup({
-				ensure_installed = lsp_servers,
+			-- 3. ENSURE INSTALLED (Mason)
+			require("mason-lspconfig").setup({
+				ensure_installed = vim.tbl_keys(servers),
 			})
 
-			local has_native = (vim.lsp and vim.lsp.config and vim.lsp.enable)
+			-- 4. REGISTER CONFIGS (Native 0.11+)
+			for name, config in pairs(servers) do
+				config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
 
-			for _, name in ipairs(lsp_servers) do
-				local opts = vim.tbl_deep_extend("force", servers[name] or {}, {
-					capabilities = capabilities,
-				})
-
-				if has_native then
-					vim.lsp.config(name, opts)
+				if vim.lsp.config then
+					vim.lsp.config[name] = config
 					vim.lsp.enable(name)
 				else
-					lspconfig[name].setup(opts)
+					require("lspconfig")[name].setup(config)
 				end
+			end
+
+			-- 5. DIAGNOSTICS UI
+			vim.diagnostic.config({
+				virtual_text = true,
+				severity_sort = true,
+				float = { border = "rounded", source = "always" },
+			})
+
+			local signs = { Error = "", Warn = "", Hint = "", Info = "" }
+			for type, icon in pairs(signs) do
+				local hl = "DiagnosticSign" .. type
+				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 			end
 		end,
 	},
