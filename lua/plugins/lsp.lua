@@ -87,6 +87,24 @@ return {
 						client.server_capabilities.documentFormattingProvider = false
 						client.server_capabilities.documentRangeFormattingProvider = false
 					end
+
+					-- FIX: Set workspaceFolder for ESLint
+					if client and client.name == "eslint" then
+						local root_dir = client.config.root_dir or vim.fn.getcwd()
+						local workspace_folder = {
+							uri = vim.uri_from_fname(root_dir),
+							name = vim.fn.fnamemodify(root_dir, ":t"),
+						}
+						
+						-- Update the settings
+						if not client.config.settings then
+							client.config.settings = {}
+						end
+						client.config.settings.workspaceFolder = workspace_folder
+						
+						-- Notify the server of the configuration change
+						client.notify("workspace/didChangeConfiguration", { settings = client.config.settings })
+					end
 				end,
 			})
 
@@ -131,18 +149,51 @@ return {
 						"svelte",
 						"astro",
 					},
-					root_dir = vim.fs.root(0, {
-						"eslint.config.js",
-						"eslint.config.mjs",
-						"eslint.config.cjs",
-						".eslintrc.js",
-						".eslintrc.json",
-						"package.json",
-						".git",
-					}),
+					root_dir = function(bufnr, on_dir)
+						local fname = vim.api.nvim_buf_get_name(bufnr)
+						local root = vim.fs.root(fname, {
+							".eslintrc",
+							".eslintrc.js",
+							".eslintrc.json",
+							".eslintrc.cjs",
+							".eslintrc.yml",
+							".eslintrc.yaml",
+							"eslint.config.js",
+							"eslint.config.mjs",
+							"eslint.config.cjs",
+							"eslint.config.ts",
+							"package.json",
+						})
+						if root then
+							on_dir(root)
+						end
+					end,
+					on_new_config = function(config, new_root_dir)
+						-- Ensure workspaceFolder is set correctly
+						config.settings.workspaceFolder = {
+							uri = vim.uri_from_fname(new_root_dir),
+							name = vim.fn.fnamemodify(new_root_dir, ":t"),
+						}
+					end,
 					settings = {
+						validate = "on",
+						packageManager = "npm",
+						useESLintClass = true,
+						-- FIX: Changed from "location" to "auto" for monorepo support
 						workingDirectory = { mode = "auto" },
-						experimental = { useFlatConfig = true },
+						experimental = { useFlatConfig = false },
+						run = "onType",
+						codeAction = {
+							disableRuleComment = { enable = true, location = "separateLine" },
+							showDocumentation = { enable = true },
+						},
+						codeActionOnSave = {
+							enable = false,
+							mode = "all",
+						},
+						format = false,
+						quiet = false,
+						onIgnoredFiles = "off",
 					},
 				},
 				emmet_language_server = {
@@ -201,7 +252,7 @@ return {
 				update_in_insert = false,
 			})
 
-			local signs = { Error = "", Warn = "", Hint = "", Info = "" }
+			local signs = { Error = "", Warn = "", Hint = "", Info = "" }
 			for type, icon in pairs(signs) do
 				local hl = "DiagnosticSign" .. type
 				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
