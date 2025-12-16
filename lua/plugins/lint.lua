@@ -3,20 +3,11 @@ return {
 	event = { "BufReadPre", "BufNewFile" },
 	config = function()
 		local lint = require("lint")
-
 		lint.linters_by_ft = {
 			python = { "pylint" },
-			lua = { "luacheck" }, -- Optional: user preference
-
-			-- REMOVED: javascript/typescript to allow LSP to handle Code Actions
-			-- javascript = { "eslint_d" },
-			-- typescript = { "eslint_d" },
-			-- javascriptreact = { "eslint_d" },
-			-- typescriptreact = { "eslint_d" },
+			lua = { "luacheck" },
 		}
-
 		local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
-
 		vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
 			group = lint_augroup,
 			callback = function()
