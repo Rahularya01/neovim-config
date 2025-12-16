@@ -8,9 +8,10 @@ return {
 			current_line_blame_opts = {
 				virt_text = true,
 				virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
-				delay = 500, -- Delay in ms before showing blame
+				delay = 1000, -- Delay in ms before showing blame (increased for performance)
 				ignore_whitespace = false,
 			},
+			update_debounce = 200,
 			on_attach = function(bufnr)
 				local gs = package.loaded.gitsigns
 

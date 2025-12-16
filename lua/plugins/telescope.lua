@@ -1,13 +1,27 @@
 return {
 	"nvim-telescope/telescope.nvim",
+	cmd = "Telescope",
+	keys = {
+		{ "<leader>ff", "<cmd>Telescope find_files<cr>", desc = "Find files" },
+		{ "<leader>sg", "<cmd>Telescope live_grep<cr>", desc = "Find in files" },
+		{ "<leader>.", "<cmd>Telescope buffers<cr>", desc = "Show all buffers" },
+		{ "<leader>cs", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Go to symbol" },
+		{ "<leader>ws", "<cmd>Telescope lsp_workspace_symbols<cr>", desc = "Workspace symbols" },
+	},
 	dependencies = { "nvim-lua/plenary.nvim" },
-	config = function()
-		local builtin = require("telescope.builtin")
-		-- VS Code mappings
-		vim.keymap.set("n", "<leader>ff", builtin.find_files, { desc = "Find files" })
-		vim.keymap.set("n", "<leader>sg", builtin.live_grep, { desc = "Find in files" })
-		vim.keymap.set("n", "<leader>.", builtin.buffers, { desc = "Show all buffers" })
-		vim.keymap.set("n", "<leader>cs", builtin.lsp_document_symbols, { desc = "Go to symbol" })
-		vim.keymap.set("n", "<leader>ws", builtin.lsp_workspace_symbols, { desc = "Workspace symbols" })
-	end,
+	opts = {
+		defaults = {
+			file_ignore_patterns = { "node_modules", ".git/" },
+			vimgrep_arguments = {
+				"rg",
+				"--color=never",
+				"--no-heading",
+				"--with-filename",
+				"--line-number",
+				"--column",
+				"--smart-case",
+				"--hidden",
+			},
+		},
+	},
 }

@@ -198,6 +198,7 @@ return {
 				virtual_text = true,
 				severity_sort = true,
 				float = { border = "rounded", source = "always" },
+				update_in_insert = false,
 			})
 
 			local signs = { Error = "", Warn = "", Hint = "", Info = "" }

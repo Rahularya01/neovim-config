@@ -22,8 +22,10 @@ vim.opt.undofile = true
 vim.opt.backup = false
 vim.opt.writebackup = false
 vim.opt.swapfile = false
-vim.opt.updatetime = 300
+vim.opt.updatetime = 1000
+vim.opt.timeoutlen = 500
 vim.opt.cmdheight = 0
+vim.opt.lazyredraw = false -- Don't set to true, causes issues with modern plugins
 
 -- Prevents auto-selection of the first completion item.
 -- This allows "Enter" to insert a newline unless you manually select a suggestion.

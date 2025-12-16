@@ -1,7 +1,11 @@
 return {
 	"yetone/avante.nvim",
-	event = "VeryLazy",
-	lazy = false,
+	cmd = { "AvanteAsk", "AvanteChat", "AvanteToggle" },
+	keys = {
+		{ "<leader>aa", "<cmd>AvanteAsk<cr>", desc = "Avante Ask" },
+		{ "<leader>at", "<cmd>AvanteToggle<cr>", desc = "Avante Toggle" },
+		{ "<leader>ac", "<cmd>AvanteChat<cr>", desc = "Avante Chat" },
+	},
 	version = false,
 	build = "make",
 
@@ -12,6 +16,30 @@ return {
 		providers = {
 			copilot = {
 				model = "grok-code-fast-1",
+			},
+		},
+
+		windows = {
+			width = 26,
+			sidebar_header = {
+				enabled = true,
+				align = "center",
+				rounded = true,
+			},
+			input = {
+				prefix = "> ",
+				height = 15,
+			},
+			edit = {
+				border = "rounded",
+				start_insert = true,
+			},
+		},
+
+		highlights = {
+			diff = {
+				current = "DiffText",
+				incoming = "DiffAdd",
 			},
 		},
 	},
