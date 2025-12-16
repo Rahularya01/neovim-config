@@ -25,6 +25,8 @@ return {
 				"isort",
 				"clang-format",
 				"pylint",
+				"prettierd",
+				"eslint_d",
 			},
 			auto_update = true,
 		},
