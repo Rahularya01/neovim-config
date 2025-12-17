@@ -30,7 +30,8 @@ vim.opt.lazyredraw = false
 vim.opt.completeopt = "menu,menuone,noselect"
 
 vim.o.autoread = true
-vim.api.nvim_create_autocmd({ "FocusGained", "BufEnter" }, {
+
+vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
 	command = "if mode() != 'c' | checktime | endif",
-	pattern = "*",
+	pattern = { "*" },
 })

@@ -1,24 +1,27 @@
 return {
 	"nvim-lualine/lualine.nvim",
 	config = function()
+		-- Custom mode component with leading space
 		local mode = {
 			"mode",
 			fmt = function(str)
 				return " " .. str
-				-- return ' ' .. str:sub(1, 1) -- displays only the first character of the mode
 			end,
 		}
 
+		-- Filename component with file status and relative path
 		local filename = {
 			"filename",
-			file_status = true, -- displays file status (readonly status, modified status)
-			path = 0, -- 0 = just filename, 1 = relative path, 2 = absolute path
+			file_status = true,
+			path = 0,
 		}
 
+		-- Helper function to hide components when window is too narrow
 		local hide_in_width = function()
 			return vim.fn.winwidth(0) > 100
 		end
 
+		-- Diagnostics component for LSP errors and warnings
 		local diagnostics = {
 			"diagnostics",
 			sources = { "nvim_diagnostic" },
@@ -30,20 +33,19 @@ return {
 			cond = hide_in_width,
 		}
 
+		-- Git diff component showing added/modified/removed lines
 		local diff = {
 			"diff",
 			colored = false,
-			symbols = { added = " ", modified = " ", removed = " " }, -- changes diff symbols
+			symbols = { added = " ", modified = " ", removed = " " },
 			cond = hide_in_width,
 		}
 
+		-- Main lualine setup
 		require("lualine").setup({
 			options = {
 				icons_enabled = true,
-				theme = "gruvbox", -- match Gruvbox colorscheme (transparent)
-				-- Some useful glyphs:
-				-- https://www.nerdfonts.com/cheat-sheet
-				--
+				theme = "gruvbox",
 				section_separators = { left = "", right = "" },
 				component_separators = { left = "", right = "" },
 				always_divide_middle = false,
