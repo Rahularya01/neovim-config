@@ -10,7 +10,6 @@ return {
 
 		require("ufo").setup({
 			provider_selector = function(bufnr, filetype, buftype)
-				-- ❌ Disable folding for Neo-tree & special buffers
 				if filetype == "neo-tree" or buftype == "nofile" then
 					return nil
 				end
