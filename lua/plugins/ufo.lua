@@ -1,7 +1,7 @@
 return {
 	"kevinhwang91/nvim-ufo",
 	dependencies = { "kevinhwang91/promise-async" },
-	event = "BufReadPre", -- or "BufReadPre" is arguably better for folding
+	event = "BufReadPre",
 	config = function()
 		vim.opt.foldcolumn = "0"
 		vim.opt.foldlevel = 99
@@ -10,6 +10,11 @@ return {
 
 		require("ufo").setup({
 			provider_selector = function(bufnr, filetype, buftype)
+				-- ❌ Disable folding for Neo-tree & special buffers
+				if filetype == "neo-tree" or buftype == "nofile" then
+					return nil
+				end
+
 				return { "lsp", "indent" }
 			end,
 		})
