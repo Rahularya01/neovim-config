@@ -20,5 +20,15 @@ return {
 
 		vim.keymap.set("n", "zR", require("ufo").openAllFolds)
 		vim.keymap.set("n", "zM", require("ufo").closeAllFolds)
+
+		-- Neo-tree manages its own expand/collapse state; keep ufo out of its buffers.
+		vim.api.nvim_create_autocmd("FileType", {
+			pattern = "neo-tree",
+			callback = function(event)
+				require("ufo").detach(event.buf)
+				vim.opt_local.foldenable = false
+			end,
+			desc = "Disable ufo for Neo-tree",
+		})
 	end,
 }
