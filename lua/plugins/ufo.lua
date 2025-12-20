@@ -11,7 +11,7 @@ return {
 		require("ufo").setup({
 			provider_selector = function(bufnr, filetype, buftype)
 				if filetype == "neo-tree" or buftype == "nofile" then
-					return nil
+					return ""
 				end
 
 				return { "lsp", "indent" }
