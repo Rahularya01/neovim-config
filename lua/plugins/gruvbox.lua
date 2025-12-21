@@ -6,7 +6,6 @@ return {
 			contrast = "hard",
 			transparent_mode = true,
 			overrides = {
-				-- UI Overrides
 				Pmenu = { bg = "#282828" }, -- Solid background for popup menu
 				PmenuSel = { bg = "#504945", fg = "NONE" },
 				NormalFloat = { bg = "NONE" }, -- Transparent floats

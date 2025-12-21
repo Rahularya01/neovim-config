@@ -32,15 +32,7 @@ return {
 
 		bufferline.setup({
 			options = {
-				offsets = {
-					{
-						filetype = "neo-tree",
-						text = "File Explorer",
-						text_align = "center",
-						highlight = "Directory",
-						separator = true,
-					},
-				},
+				offsets = {},
 				mode = "buffers",
 				themable = true,
 				numbers = "none",

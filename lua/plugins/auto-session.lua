@@ -10,7 +10,7 @@ return {
 
 			-- Don't save these file types
 			bypass_session_save_file_types = {
-				"neo-tree",
+				"oil",
 				"NvimTree",
 				"dapui_scopes",
 				"dapui_breakpoints",

@@ -1,79 +1,79 @@
 return {
 	"nvim-lualine/lualine.nvim",
+	dependencies = { "nvim-tree/nvim-web-devicons" },
 	config = function()
-		-- Custom mode component with leading space
-		local mode = {
-			"mode",
-			fmt = function(str)
-				return " " .. str
-			end,
-		}
-
-		-- Filename component with file status and relative path
-		local filename = {
-			"filename",
-			file_status = true,
-			path = 0,
-		}
-
-		-- Helper function to hide components when window is too narrow
-		local hide_in_width = function()
-			return vim.fn.winwidth(0) > 100
+		-- 1. Helper: Better Macro Recording (with refresh logic)
+		local function show_macro_recording()
+			local recording_register = vim.fn.reg_recording()
+			if recording_register == "" then
+				return ""
+			end
+			return "● Recording @" .. recording_register
 		end
 
-		-- Diagnostics component for LSP errors and warnings
-		local diagnostics = {
-			"diagnostics",
-			sources = { "nvim_diagnostic" },
-			sections = { "error", "warn" },
-			symbols = { error = " ", warn = " ", info = " ", hint = " " },
-			colored = false,
-			update_in_insert = false,
-			always_visible = false,
-			cond = hide_in_width,
-		}
+		-- Force lualine to refresh when recording macros
 
-		-- Git diff component showing added/modified/removed lines
-		local diff = {
-			"diff",
-			colored = false,
-			symbols = { added = " ", modified = " ", removed = " " },
-			cond = hide_in_width,
-		}
+		vim.api.nvim_create_autocmd("RecordingEnter", {
+			callback = function()
+				require("lualine").refresh({ place = { "statusline" } })
+			end,
+		})
+		vim.api.nvim_create_autocmd("RecordingLeave", {
+			callback = function()
+				local timer = vim.loop.new_timer()
+				timer:start(
+					50,
+					0,
+					vim.schedule_wrap(function()
+						require("lualine").refresh({ place = { "statusline" } })
+					end)
+				)
+			end,
+		})
 
-		-- Main lualine setup
+		-- 2. Helper: Conditional width
+		local hide_in_width = function()
+			return vim.fn.winwidth(0) > 80
+		end
+
 		require("lualine").setup({
 			options = {
-				icons_enabled = true,
 				theme = "gruvbox",
-				section_separators = { left = "", right = "" },
-				component_separators = { left = "", right = "" },
-				always_divide_middle = false,
+				-- Using subtle rounded or slant separators looks more "modern"
+				-- Use { left = '', right = '' } for bubbles
+				section_separators = { left = "", right = "" },
+				component_separators = { left = "", right = "" },
 				globalstatus = true,
+				disabled_filetypes = { statusline = { "dashboard", "alpha", "starter" } },
 			},
 			sections = {
-				lualine_a = { mode },
-				lualine_b = { "branch" },
-				lualine_c = { filename },
+				lualine_a = { { "mode", separator = { left = " " }, right_padding = 2 } },
+				lualine_b = {
+					{ "branch", icon = "" },
+					{ "diff", symbols = { added = " ", modified = " ", removed = " " } },
+				},
+				lualine_c = {
+					{ "filename", file_status = true, path = 1 }, -- path = 1 shows relative path
+				},
 				lualine_x = {
-					diagnostics,
-					diff,
-					{ "encoding", cond = hide_in_width },
+					{
+						show_macro_recording,
+						color = { fg = "#ff9e64", gui = "bold" },
+					},
+					{
+						"diagnostics",
+						sources = { "nvim_diagnostic" },
+						symbols = { error = " ", warn = " ", info = " ", hint = "󰛩 " },
+					},
 					{ "filetype", cond = hide_in_width },
 				},
-				lualine_y = { "location" },
-				lualine_z = { "progress" },
+				lualine_y = { "progress" },
+				lualine_z = { { "location", separator = { right = " " }, left_padding = 2 } },
 			},
 			inactive_sections = {
-				lualine_a = {},
-				lualine_b = {},
 				lualine_c = { { "filename", path = 1 } },
-				lualine_x = { { "location", padding = 0 } },
-				lualine_y = {},
-				lualine_z = {},
+				lualine_x = { "location" },
 			},
-			tabline = {},
-			extensions = { "fugitive" },
 		})
 	end,
 }
