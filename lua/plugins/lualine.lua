@@ -46,6 +46,7 @@ return {
 				globalstatus = true,
 				disabled_filetypes = { statusline = { "dashboard", "alpha", "starter" } },
 			},
+			extensions = { "trouble" },
 			sections = {
 				lualine_a = { { "mode", separator = { left = " " }, right_padding = 2 } },
 				lualine_b = {

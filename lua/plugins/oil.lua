@@ -48,12 +48,12 @@ return {
 				["g?"] = "actions.show_help",
 				["<CR>"] = "actions.select",
 				["<C-v>"] = "actions.select_vsplit",
-				["<C-h>"] = "actions.select_split",
+				["<leader>H"] = "actions.select_split",
 				["<C-t>"] = "actions.select_tab",
 				["<C-p>"] = "actions.preview",
 				["q"] = "actions.close", -- Close Oil
 				["<Esc>"] = "actions.close", -- Close Oil with Escape
-				["<C-l>"] = "actions.refresh",
+				["R"] = "actions.refresh",
 				["-"] = "actions.parent",
 				["_"] = "actions.open_cwd",
 				["`"] = "actions.cd",
@@ -67,6 +67,6 @@ return {
 
 		-- Global keymaps to open Oil
 		vim.keymap.set("n", "-", "<cmd>Oil<CR>", { desc = "Open parent directory" })
-		vim.keymap.set("n", "<leader>e", "<cmd>Oil<CR>", { desc = "Open Oil" })
+		vim.keymap.set("n", "<leader>O", "<cmd>Oil<CR>", { desc = "Open Oil" })
 	end,
 }

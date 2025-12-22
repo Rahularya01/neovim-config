@@ -1,6 +1,7 @@
 return {
 	"rmagatti/auto-session",
 	lazy = false, -- Load immediately to restore session on startup
+
 	config = function()
 		require("auto-session").setup({
 			log_level = "error",
@@ -11,7 +12,7 @@ return {
 			-- Don't save these file types
 			bypass_session_save_file_types = {
 				"oil",
-				"NvimTree",
+				"NeoTree",
 				"dapui_scopes",
 				"dapui_breakpoints",
 				"dapui_stacks",
