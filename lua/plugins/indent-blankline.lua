@@ -8,16 +8,14 @@ return {
 			tab_char = "│",
 		},
 		scope = {
-			enabled = true, -- This turns on highlighting for the current indentation scope
-			show_start = true, -- Adds an underline at the start of the scope (e.g., function definition)
-			show_end = false, -- Keeps it clean by not underlining the end
+			enabled = false, -- Disabled for performance - re-enable if you need scope highlighting
 		},
 		exclude = {
 			filetypes = {
 				"help",
 				"alpha",
 				"dashboard",
-				"neo-tree",
+				"oil",
 				"Trouble",
 				"trouble",
 				"lazy",

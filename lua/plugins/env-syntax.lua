@@ -7,6 +7,7 @@ return {
 			pattern = { ".env", ".env.*", "*.env" },
 			callback = function()
 				vim.bo.filetype = "env"
+				vim.bo.commentstring = "# %s" -- Add this line
 			end,
 		})
 	end,

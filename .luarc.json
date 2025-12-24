@@ -1,3 +1,8 @@
 {
-  "diagnostics.globals": ["vim"]
+  "diagnostics.globals": ["vim"],
+    "diagnostics.disable": [
+        "assign-type-mismatch",
+        "unused-local",
+        "missing-fields"
+    ]
 }

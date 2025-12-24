@@ -1,6 +1,7 @@
 return {
 	"rmagatti/auto-session",
 	lazy = false, -- Load immediately to restore session on startup
+
 	config = function()
 		require("auto-session").setup({
 			log_level = "error",
@@ -9,8 +10,8 @@ return {
 			suppressed_dirs = { "~/", "~/Projects", "~/Downloads", "/" },
 
 			bypass_session_save_file_types = {
-				"neo-tree",
-				"NvimTree",
+				"oil",
+				"NeoTree",
 				"dapui_scopes",
 				"dapui_breakpoints",
 				"dapui_stacks",

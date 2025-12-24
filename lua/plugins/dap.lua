@@ -5,6 +5,7 @@ return {
 			"rcarriga/nvim-dap-ui",
 			"theHamsta/nvim-dap-virtual-text",
 			"nvim-neotest/nvim-nio",
+			"leoluz/nvim-dap-go", -- Added Go support
 		},
 		config = function()
 			local dap = require("dap")
@@ -14,6 +15,9 @@ return {
 			-- Setup
 			dapui.setup()
 			dapvt.setup()
+
+			-- Go Debugging
+			require("dap-go").setup()
 
 			-- Adapters and configurations
 			-- For Python
@@ -34,12 +38,13 @@ return {
 				},
 			}
 
-			-- For C/C++/Rust
+			-- For C/C++
 			dap.adapters.codelldb = {
 				type = "server",
 				port = "${port}",
 				executable = {
-					command = vim.fn.exepath("codelldb"),
+					-- Point directly to Mason's installation
+					command = vim.fn.stdpath("data") .. "/mason/bin/codelldb",
 					args = { "--port", "${port}" },
 				},
 			}
@@ -56,7 +61,6 @@ return {
 				},
 			}
 			dap.configurations.c = dap.configurations.cpp
-			dap.configurations.rust = dap.configurations.cpp
 
 			-- Keymaps
 			vim.keymap.set("n", "<F5>", dap.continue, { desc = "Continue" })

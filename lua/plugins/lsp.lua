@@ -2,6 +2,7 @@ return {
 	{
 		"williamboman/mason.nvim",
 		lazy = false,
+		priority = 1000,
 		opts = {
 			ui = {
 				icons = {
@@ -18,17 +19,46 @@ return {
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
 			ensure_installed = {
+				-- Lua
 				"stylua",
+				"luacheck",
+				-- C/C++
+				"clang-format",
+				"codelldb", -- Debugger
+				-- Web
 				"prettier",
+				"prettierd",
+				"eslint_d",
+				-- Python
 				"black",
 				"isort",
-				"clang-format",
 				"pylint",
+				-- Go
+				"gopls", -- LSP
+				"goimports", -- Formatter
+				"delve", -- Debugger
 			},
 			auto_update = true,
 		},
 	},
-
+	{
+		"j-hui/fidget.nvim",
+		event = "LspAttach",
+		opts = {
+			notification = {
+				window = {
+					winblend = 0,
+					border = "none",
+				},
+			},
+			progress = {
+				display = {
+					render_limit = 5,
+					done_ttl = 3,
+				},
+			},
+		},
+	},
 	{
 		"williamboman/mason-lspconfig.nvim",
 		event = { "BufReadPre", "BufNewFile" },
@@ -36,38 +66,11 @@ return {
 			"neovim/nvim-lspconfig",
 			"williamboman/mason.nvim",
 			"hrsh7th/cmp-nvim-lsp",
+			"j-hui/fidget.nvim",
 		},
 		config = function()
-			local mason_lspconfig = require("mason-lspconfig")
-			local lspconfig = require("lspconfig")
 			local cmp_nvim_lsp = require("cmp_nvim_lsp")
-
 			local capabilities = cmp_nvim_lsp.default_capabilities()
-
-			local signs = {
-				{ name = "DiagnosticSignError", text = "" },
-				{ name = "DiagnosticSignWarn", text = "" },
-				{ name = "DiagnosticSignHint", text = "" },
-				{ name = "DiagnosticSignInfo", text = "" },
-			}
-			for _, sign in ipairs(signs) do
-				vim.fn.sign_define(sign.name, { texthl = sign.name, text = sign.text, numhl = "" })
-			end
-
-			vim.diagnostic.config({
-				virtual_text = true,
-				underline = true,
-				severity_sort = true,
-				update_in_insert = false,
-				float = {
-					focusable = false,
-					style = "minimal",
-					border = "rounded",
-					source = "always",
-					header = "",
-					prefix = "",
-				},
-			})
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
@@ -83,7 +86,6 @@ return {
 					map("n", "gr", vim.lsp.buf.references, "List references")
 					map("n", "<leader>rn", vim.lsp.buf.rename, "Rename symbol")
 					map("n", "<leader>ca", vim.lsp.buf.code_action, "Code action")
-
 					map("n", "<leader>oi", function()
 						vim.lsp.buf.code_action({ context = { only = { "source" } } })
 					end, "Source actions")
@@ -93,13 +95,15 @@ return {
 					map("n", "<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
 
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+					-- Disable formatting for LSPs that we'll handle with conform.nvim
 					local disable_format = {
 						ts_ls = true,
 						lua_ls = true,
 						pyright = true,
-						clangd = true,
-						rust_analyzer = true,
 						eslint = true,
+						clangd = true, -- Let conform handle C/C++
+						gopls = true, -- Let conform handle Go
 					}
 
 					if client and disable_format[client.name] then
@@ -111,6 +115,7 @@ return {
 
 			local servers = {
 				lua_ls = {
+					filetypes = { "lua" },
 					settings = {
 						Lua = {
 							diagnostics = { globals = { "vim" } },
@@ -119,70 +124,122 @@ return {
 						},
 					},
 				},
-
-				pyright = {},
-
+				pyright = {
+					filetypes = { "python" },
+					settings = {
+						python = {
+							analysis = {
+								typeCheckingMode = "basic",
+								autoSearchPaths = true,
+								useLibraryCodeForTypes = true,
+							},
+						},
+					},
+				},
 				clangd = {
-					cmd = { "clangd", "--header-insertion=never" },
+					-- Rely on Mason's path automatically
+					cmd = {
+						"clangd",
+						"--background-index",
+						"--clang-tidy",
+						"--header-insertion=iwyu",
+						"--completion-style=detailed",
+						"--function-arg-placeholders",
+						"--fallback-style=llvm",
+					},
+					filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
+					capabilities = vim.tbl_deep_extend("force", capabilities, {
+						offsetEncoding = { "utf-16" },
+					}),
 				},
-
+				gopls = {
+					filetypes = { "go", "gomod", "gowork", "gotmpl" },
+					settings = {
+						gopls = {
+							completeUnimported = true,
+							usePlaceholders = true,
+							analyses = {
+								unusedparams = true,
+							},
+						},
+					},
+				},
 				ts_ls = {
-					settings = {
-						typescript = { format = { enable = false } },
-						javascript = { format = { enable = false } },
-					},
+					filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
 				},
-
 				eslint = {
-					settings = {
-						workingDirectory = { mode = "auto" },
-						format = { enable = false },
+					filetypes = {
+						"javascript",
+						"javascriptreact",
+						"typescript",
+						"typescriptreact",
+						"vue",
+						"svelte",
+						"astro",
 					},
-					root_dir = lspconfig.util.root_pattern(
-						".eslintrc",
-						".eslintrc.js",
-						".eslintrc.cjs",
-						".eslintrc.yaml",
-						".eslintrc.yml",
-						".eslintrc.json",
-						"eslint.config.js",
-						"eslint.config.mjs",
-						"eslint.config.cjs"
-					),
+					settings = {
+						validate = "on",
+						packageManager = "npm",
+						useESLintClass = true,
+						workingDirectory = { mode = "auto" },
+						experimental = { useFlatConfig = false },
+						run = "onType",
+						codeAction = {
+							disableRuleComment = { enable = true, location = "separateLine" },
+							showDocumentation = { enable = true },
+						},
+						codeActionOnSave = { enable = false, mode = "all" },
+						format = false,
+						quiet = false,
+						onIgnoredFiles = "off",
+					},
 				},
-
-				emmet_language_server = { filetypes = { "html", "typescriptreact", "javascriptreact" } },
-
-				tailwindcss = {},
+				emmet_language_server = {
+					filetypes = {
+						"html",
+						"css",
+						"scss",
+						"javascript",
+						"javascriptreact",
+						"typescript",
+						"typescriptreact",
+					},
+				},
+				tailwindcss = {
+					filetypes = {
+						"html",
+						"css",
+						"scss",
+						"javascript",
+						"javascriptreact",
+						"typescript",
+						"typescriptreact",
+					},
+				},
 			}
 
-			local lsp_servers = {
-				"lua_ls",
-				"pyright",
-				"clangd",
-				"ts_ls",
-				"eslint",
-				"tailwindcss",
-			}
-
-			mason_lspconfig.setup({
-				ensure_installed = lsp_servers,
-				automatic_enable = true,
+			require("mason-lspconfig").setup({
+				ensure_installed = vim.tbl_keys(servers),
 			})
 
-			local has_native = (vim.lsp and vim.lsp.config and vim.lsp.enable)
+		for name, config in pairs(servers) do
+			config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+			vim.lsp.config(name, config)
+		end
 
-			for _, name in ipairs(lsp_servers) do
-				local opts = vim.tbl_deep_extend("force", servers[name] or {}, {
-					capabilities = capabilities,
-				})
+			vim.diagnostic.config({
+				virtual_text = { spacing = 4, prefix = "●" },
+				severity_sort = true,
+				float = { border = "rounded", source = "always", header = "", prefix = "" },
+				update_in_insert = false,
+				underline = true,
+				signs = true,
+			})
 
-				if has_native then
-					vim.lsp.config(name, opts)
-					vim.lsp.enable(name)
-				else
-					lspconfig[name].setup(opts)
-				end
+			local signs = { Error = " ", Warn = " ", Hint = "󰛩 ", Info = " " }
+			for type, icon in pairs(signs) do
+				local hl = "DiagnosticSign" .. type
+				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
 			end
 		end,
 	},
