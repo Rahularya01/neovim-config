@@ -18,7 +18,6 @@ return {
 			c = { "clang-format" },
 			cpp = { "clang-format" },
 			go = { "goimports", "gofumpt" },
-			-- NEW SYNTAX: Use 'stop_after_first = true' inside the table
 			javascript = { "prettierd", "prettier", stop_after_first = true },
 			typescript = { "prettierd", "prettier", stop_after_first = true },
 			javascriptreact = { "prettierd", "prettier", stop_after_first = true },
