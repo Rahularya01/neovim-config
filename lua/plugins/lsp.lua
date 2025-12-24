@@ -96,7 +96,6 @@ return {
 						ts_ls = true,
 						lua_ls = true,
 						pyright = true,
-						clangd = true,
 						eslint = true,
 					}
 
