@@ -19,24 +19,19 @@ return {
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
 			ensure_installed = {
-				-- Lua
 				"stylua",
 				"luacheck",
-				-- C/C++
 				"clang-format",
-				"codelldb", -- Debugger
-				-- Web
+				"codelldb",
 				"prettier",
 				"prettierd",
 				"eslint_d",
-				-- Python
 				"black",
 				"isort",
 				"pylint",
-				-- Go
-				"gopls", -- LSP
-				"goimports", -- Formatter
-				"delve", -- Debugger
+				"gopls",
+				"goimports",
+				"delve",
 			},
 			auto_update = true,
 		},
@@ -46,16 +41,10 @@ return {
 		event = "LspAttach",
 		opts = {
 			notification = {
-				window = {
-					winblend = 0,
-					border = "none",
-				},
+				window = { winblend = 0, border = "none" },
 			},
 			progress = {
-				display = {
-					render_limit = 5,
-					done_ttl = 3,
-				},
+				display = { render_limit = 5, done_ttl = 3 },
 			},
 		},
 	},
@@ -67,6 +56,7 @@ return {
 			"williamboman/mason.nvim",
 			"hrsh7th/cmp-nvim-lsp",
 			"j-hui/fidget.nvim",
+			"p00f/clangd_extensions.nvim", -- Added dependency
 		},
 		config = function()
 			local cmp_nvim_lsp = require("cmp_nvim_lsp")
@@ -94,7 +84,15 @@ return {
 					map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
 					map("n", "<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
 
+					-- C/C++ specific: Switch Source/Header
+					map("n", "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", "Switch Source/Header")
+
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
+
+					-- Enable Inlay Hints if the server supports it (Clangd does)
+					if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
+						vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
+					end
 
 					-- Disable formatting for LSPs that we'll handle with conform.nvim
 					local disable_format = {
@@ -102,8 +100,8 @@ return {
 						lua_ls = true,
 						pyright = true,
 						eslint = true,
-						clangd = true, -- Let conform handle C/C++
-						gopls = true, -- Let conform handle Go
+						clangd = true,
+						gopls = true,
 					}
 
 					if client and disable_format[client.name] then
@@ -151,6 +149,17 @@ return {
 					capabilities = vim.tbl_deep_extend("force", capabilities, {
 						offsetEncoding = { "utf-16" },
 					}),
+					-- Setup clangd_extensions
+					setup_handlers = {
+						function(server_name, opts)
+							require("clangd_extensions").setup({
+								inlay_hints = {
+									inline = vim.fn.has("nvim-0.10") == 1,
+								},
+							})
+							require("lspconfig").clangd.setup(opts)
+						end,
+					},
 				},
 				gopls = {
 					filetypes = { "go", "gomod", "gowork", "gotmpl" },
@@ -158,9 +167,7 @@ return {
 						gopls = {
 							completeUnimported = true,
 							usePlaceholders = true,
-							analyses = {
-								unusedparams = true,
-							},
+							analyses = { unusedparams = true },
 						},
 					},
 				},
@@ -222,10 +229,20 @@ return {
 				ensure_installed = vim.tbl_keys(servers),
 			})
 
-		for name, config in pairs(servers) do
-			config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
-			vim.lsp.config(name, config)
-		end
+			for name, config in pairs(servers) do
+				config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+				-- clangd is handled specially above if utilizing specific setup handlers,
+				-- but mostly mason-lspconfig handles the setup call.
+				-- Ensure we don't double setup if using clangd_extensions manually.
+				if name ~= "clangd" then
+					vim.lsp.config(name, config)
+				else
+					-- Explicitly calling config for clangd to ensure extensions are loaded
+					require("clangd_extensions").setup({
+						server = config,
+					})
+				end
+			end
 
 			vim.diagnostic.config({
 				virtual_text = { spacing = 4, prefix = "●" },

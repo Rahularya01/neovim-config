@@ -5,22 +5,31 @@ return {
 			"rcarriga/nvim-dap-ui",
 			"theHamsta/nvim-dap-virtual-text",
 			"nvim-neotest/nvim-nio",
-			"leoluz/nvim-dap-go", -- Added Go support
+			"williamboman/mason.nvim",
+			"jay-babu/mason-nvim-dap.nvim", -- Bridge mason and dap
+			"leoluz/nvim-dap-go",
 		},
 		config = function()
 			local dap = require("dap")
 			local dapui = require("dapui")
 			local dapvt = require("nvim-dap-virtual-text")
 
-			-- Setup
 			dapui.setup()
 			dapvt.setup()
-
-			-- Go Debugging
 			require("dap-go").setup()
 
-			-- Adapters and configurations
-			-- For Python
+			-- Setup mason-nvim-dap
+			require("mason-nvim-dap").setup({
+				ensure_installed = { "codelldb" },
+				handlers = {
+					function(config)
+						require("mason-nvim-dap").default_setup(config)
+					end,
+					-- Custom override for codelldb if needed, otherwise default_setup handles it
+				},
+			})
+
+			-- Python setup (kept from your original config)
 			dap.adapters.python = {
 				type = "executable",
 				command = "python",
@@ -38,16 +47,9 @@ return {
 				},
 			}
 
-			-- For C/C++
-			dap.adapters.codelldb = {
-				type = "server",
-				port = "${port}",
-				executable = {
-					-- Point directly to Mason's installation
-					command = vim.fn.stdpath("data") .. "/mason/bin/codelldb",
-					args = { "--port", "${port}" },
-				},
-			}
+			-- C/C++ configurations
+			-- mason-nvim-dap sets up the 'adapter' automatically.
+			-- You just need the configurations.
 			dap.configurations.cpp = {
 				{
 					name = "Launch file",
