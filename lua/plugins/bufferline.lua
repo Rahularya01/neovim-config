@@ -1,9 +1,9 @@
 return {
 	"akinsho/bufferline.nvim",
+	event = "VeryLazy",
 	dependencies = {
 		"moll/vim-bbye",
 		"nvim-tree/nvim-web-devicons",
-		"ellisonleao/gruvbox.nvim", -- Gruvbox colorscheme plugin
 	},
 	config = function()
 		local bufferline = require("bufferline")
