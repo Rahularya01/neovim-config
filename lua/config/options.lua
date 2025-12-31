@@ -1,37 +1,98 @@
-vim.opt.number = true
-vim.opt.relativenumber = true
-vim.opt.mouse = "a"
-vim.opt.ignorecase = true
-vim.opt.smartcase = true
-vim.opt.signcolumn = "yes"
-vim.opt.termguicolors = true
-vim.opt.clipboard = "unnamedplus"
-vim.opt.tabstop = 2
-vim.opt.shiftwidth = 2
-vim.opt.expandtab = true
-vim.opt.cursorline = true
-vim.opt.scrolloff = 8
-vim.opt.sidescrolloff = 8
-vim.opt.splitright = true
-vim.opt.splitbelow = true
+local opt = vim.opt
+local g = vim.g
 
-vim.opt.wrap = false
-vim.opt.linebreak = false
+-- Performance optimizations
+g.loaded_gzip = 1
+g.loaded_zip = 1
+g.loaded_zipPlugin = 1
+g.loaded_tar = 1
+g.loaded_tarPlugin = 1
+g.loaded_getscript = 1
+g.loaded_getscriptPlugin = 1
+g.loaded_vimball = 1
+g.loaded_vimballPlugin = 1
+g.loaded_2html_plugin = 1
+g.loaded_matchit = 1
+g.loaded_matchparen = 1
+g.loaded_logiPat = 1
+g.loaded_rrhelper = 1
+g.loaded_netrw = 1
+g.loaded_netrwPlugin = 1
+g.loaded_netrwSettings = 1
+g.loaded_netrwFileHandlers = 1
 
-vim.opt.undofile = true
-vim.opt.backup = false
-vim.opt.writebackup = false
-vim.opt.swapfile = false
-vim.opt.updatetime = 1000
-vim.opt.timeoutlen = 500
-vim.opt.cmdheight = 0
-vim.opt.lazyredraw = false
+-- UI
+opt.number = true
+opt.relativenumber = true
+opt.signcolumn = "yes"
+opt.termguicolors = true
+opt.cursorline = true
+opt.scrolloff = 8
+opt.sidescrolloff = 8
+opt.splitright = true
+opt.splitbelow = true
+opt.wrap = false
+opt.linebreak = false
+opt.cmdheight = 0
+opt.showmode = false
+opt.laststatus = 3 -- Global statusline
 
-vim.opt.completeopt = "menu,menuone,noselect"
+-- Editing
+opt.mouse = "a"
+opt.clipboard = "unnamedplus"
+opt.tabstop = 2
+opt.shiftwidth = 2
+opt.expandtab = true
+opt.smartindent = true
+opt.completeopt = "menu,menuone,noselect"
 
-vim.o.autoread = true
+-- Search
+opt.ignorecase = true
+opt.smartcase = true
+opt.hlsearch = true
+opt.incsearch = true
 
-vim.api.nvim_create_autocmd({ "BufEnter", "CursorHold", "CursorHoldI", "FocusGained" }, {
-	command = "if mode() != 'c' | checktime | endif",
-	pattern = { "*" },
+-- Files
+opt.undofile = true
+opt.backup = false
+opt.writebackup = false
+opt.swapfile = false
+opt.autoread = true
+
+-- Performance
+opt.updatetime = 250 -- Faster CursorHold (was 1000)
+opt.timeoutlen = 300 -- Faster key sequence completion (was 500)
+opt.redrawtime = 1500 -- Max time for syntax highlighting
+opt.synmaxcol = 240 -- Max column for syntax highlight
+
+-- Folding (using ufo, so disable builtin)
+opt.foldenable = true
+opt.foldlevel = 99
+opt.foldlevelstart = 99
+opt.foldcolumn = "0"
+
+-- Auto-reload files changed outside vim
+vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
+	group = vim.api.nvim_create_augroup("checktime", { clear = true }),
+	callback = function()
+		if vim.o.buftype ~= "nofile" then
+			vim.cmd("checktime")
+		end
+	end,
+})
+
+-- Highlight on yank
+vim.api.nvim_create_autocmd("TextYankPost", {
+	group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
+	callback = function()
+		vim.highlight.on_yank({ timeout = 200 })
+	end,
+})
+
+-- Resize splits on window resize
+vim.api.nvim_create_autocmd("VimResized", {
+	group = vim.api.nvim_create_augroup("resize_splits", { clear = true }),
+	callback = function()
+		vim.cmd("tabdo wincmd =")
+	end,
 })

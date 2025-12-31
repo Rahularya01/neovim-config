@@ -1,13 +1,14 @@
 return {
 	"akinsho/git-conflict.nvim",
 	version = "*",
-	event = "VeryLazy",
+	event = { "BufReadPre", "BufNewFile" },
 	config = function()
 		require("git-conflict").setup({
 			default_mappings = true,
 			list_opener = "copen",
 			highlights = {
 				incoming = "DiffAdd",
+
 				current = "DiffChange",
 				ancestor = "DiffDelete",
 			},
