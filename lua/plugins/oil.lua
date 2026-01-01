@@ -2,6 +2,10 @@ return {
 	"stevearc/oil.nvim",
 	-- Optional dependencies
 	dependencies = { "nvim-tree/nvim-web-devicons" },
+	keys = {
+		{ "-", "<cmd>Oil<CR>", desc = "Open parent directory" },
+		{ "<leader>O", "<cmd>Oil<CR>", desc = "Open Oil" },
+	},
 	config = function()
 		require("oil").setup({
 			-- Oil will take over directory buffers (e.g. foo/bar/)
@@ -64,9 +68,5 @@ return {
 				["g\\"] = "actions.toggle_trash",
 			},
 		})
-
-		-- Global keymaps to open Oil
-		vim.keymap.set("n", "-", "<cmd>Oil<CR>", { desc = "Open parent directory" })
-		vim.keymap.set("n", "<leader>O", "<cmd>Oil<CR>", { desc = "Open Oil" })
 	end,
 }
