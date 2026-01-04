@@ -20,7 +20,7 @@ return {
 
 			-- Setup mason-nvim-dap
 			require("mason-nvim-dap").setup({
-				ensure_installed = { "codelldb" },
+				ensure_installed = { "codelldb", "delve" },
 				handlers = {
 					function(config)
 						require("mason-nvim-dap").default_setup(config)
