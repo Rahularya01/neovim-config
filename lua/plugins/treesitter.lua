@@ -27,6 +27,9 @@ return {
 				"cpp",
 				"rust",
 				"go",
+				"gomod",
+				"gowork",
+				"gosum",
 			},
 			auto_install = true,
 			highlight = {

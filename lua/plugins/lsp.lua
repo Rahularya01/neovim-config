@@ -31,6 +31,8 @@ return {
 				"pylint",
 				"gopls",
 				"goimports",
+				"gofumpt",
+				"golangci-lint",
 				"delve",
 			},
 			auto_update = true,
