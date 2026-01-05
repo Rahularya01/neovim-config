@@ -15,7 +15,7 @@ return {
 	},
 	{
 		"WhoIsSethDaniel/mason-tool-installer.nvim",
-		cmd = { "MasonToolsInstall", "MasonToolsUpdate" },
+		event = "VeryLazy",
 		dependencies = { "williamboman/mason.nvim" },
 		opts = {
 			ensure_installed = {
@@ -34,6 +34,7 @@ return {
 				"delve",
 			},
 			auto_update = true,
+			run_on_start = true,
 		},
 	},
 	{
