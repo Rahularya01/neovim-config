@@ -9,12 +9,17 @@ return {
 				auto_trigger = true,
 				debounce = 75,
 				keymap = {
-					accept = "<Tab>", -- Changed from <Tab> to avoid conflicts
+					-- Tab is handled by nvim-cmp smart tab
+					accept = false,
 					accept_word = false,
 					accept_line = false,
 					next = "<M-]>",
 					prev = "<M-[>",
 					dismiss = "<C-]>",
+				},
+				-- Better visual appearance for inline suggestions
+				highlight = {
+					priority = 1000,
 				},
 			},
 			panel = { enabled = false },

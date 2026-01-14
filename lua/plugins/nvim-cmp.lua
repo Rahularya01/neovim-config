@@ -16,6 +16,13 @@ return {
 			},
 		},
 		"onsails/lspkind.nvim",
+		{
+			"zbirenbaum/copilot-cmp",
+			dependencies = { "zbirenbaum/copilot.lua" },
+			config = function()
+				require("copilot_cmp").setup()
+			end,
+		},
 	},
 	config = function()
 		local cmp = require("cmp")
@@ -39,7 +46,9 @@ return {
 
 		cmp.setup({
 			completion = {
-				completeopt = "menu,menuone,noinsert",
+				completeopt = "menu,menuone,noinsert,noselect",
+				keyword_length = 1, -- Start completion after 1 character (like Cursor)
+				-- Auto-trigger completion on typing (default behavior)
 			},
 			enabled = function()
 				local context = require("cmp.config.context")
@@ -76,9 +85,42 @@ return {
 				["<C-Space>"] = cmp.mapping.complete(),
 				["<C-e>"] = cmp.mapping.abort(),
 				["<CR>"] = cmp.mapping.confirm({ select = true }),
+				-- Smart Tab: Accept copilot suggestion, expand snippet, or insert tab
+				["<Tab>"] = cmp.mapping(function(fallback)
+					-- First check for inline copilot suggestion (ghost text)
+					local copilot_suggestion = require("copilot.suggestion")
+					if copilot_suggestion.is_visible() then
+						copilot_suggestion.accept()
+						return
+					end
+					-- Then check if completion menu is visible
+					if cmp.visible() then
+						local entry = cmp.get_selected_entry()
+						if entry and entry.source.name == "copilot" then
+							cmp.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace })
+						else
+							cmp.confirm({ select = true })
+						end
+					elseif luasnip.expand_or_jumpable() then
+						-- If snippet is available, expand or jump
+						luasnip.expand_or_jump()
+					else
+						-- Fall back to normal tab
+						fallback()
+					end
+				end, { "i", "s" }),
+				-- Shift-Tab for going back in snippets
+				["<S-Tab>"] = cmp.mapping(function(fallback)
+					if luasnip.jumpable(-1) then
+						luasnip.jump(-1)
+					else
+						fallback()
+					end
+				end, { "i", "s" }),
 			}),
 			sources = cmp.config.sources({
-				{ name = "nvim_lsp", priority = 1000 },
+				{ name = "copilot", priority = 1000 },
+				{ name = "nvim_lsp", priority = 900 },
 				{ name = "luasnip", priority = 750 },
 				{ name = "path", priority = 500 },
 				{
@@ -106,6 +148,7 @@ return {
 					ellipsis_char = "...",
 					before = function(entry, vim_item)
 						local source_names = {
+							copilot = "Copilot",
 							nvim_lsp = "LSP",
 							luasnip = "Snippet",
 							buffer = "Buffer",
@@ -131,8 +174,8 @@ return {
 				},
 			},
 			performance = {
-				debounce = 100,
-				throttle = 50,
+				debounce = 60, -- Faster debounce for more responsive completion
+				throttle = 30, -- Faster throttle
 				fetching_timeout = 500,
 				max_view_entries = 50,
 			},
