@@ -1,5 +1,24 @@
 return {
 	{
+		"esmuellert/nvim-eslint",
+		event = { "BufReadPre", "BufNewFile" },
+		ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+		config = function()
+			require("nvim-eslint").setup({
+				bin = "eslint_d", -- Use eslint_d for faster performance
+				code_actions = {
+					enable = true,
+				},
+				diagnostics = {
+					enable = true,
+				},
+				formatting = {
+					enable = true,
+				},
+			})
+		end,
+	},
+	{
 		"williamboman/mason.nvim",
 		event = { "BufReadPre", "BufNewFile" }, -- Load when files are opened, not immediately
 		priority = 1000,
@@ -25,7 +44,6 @@ return {
 				"codelldb",
 				"prettier",
 				"prettierd",
-				"eslint_d",
 				"black",
 				"isort",
 				"pylint",
@@ -113,7 +131,6 @@ return {
 						ts_ls = true,
 						lua_ls = true,
 						pyright = true,
-						eslint = true,
 						clangd = true,
 						gopls = true,
 					}
@@ -177,33 +194,7 @@ return {
 				ts_ls = {
 					filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
 				},
-				eslint = {
-					filetypes = {
-						"javascript",
-						"javascriptreact",
-						"typescript",
-						"typescriptreact",
-						"vue",
-						"svelte",
-						"astro",
-					},
-					settings = {
-						validate = "on",
-						packageManager = "npm",
-						useESLintClass = true,
-						workingDirectory = { mode = "auto" },
-						experimental = { useFlatConfig = false },
-						run = "onType",
-						codeAction = {
-							disableRuleComment = { enable = true, location = "separateLine" },
-							showDocumentation = { enable = true },
-						},
-						codeActionOnSave = { enable = false, mode = "all" },
-						format = false,
-						quiet = false,
-						onIgnoredFiles = "off",
-					},
-				},
+
 				emmet_language_server = {
 					filetypes = {
 						"html",
