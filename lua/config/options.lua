@@ -71,6 +71,24 @@ opt.foldlevel = 99
 opt.foldlevelstart = 99
 opt.foldcolumn = "0"
 
+-- List characters (show whitespace)
+opt.list = false -- Enable with :set list
+opt.listchars = {
+	tab = "▸ ",
+	trail = "·",
+	extends = "…",
+	precedes = "…",
+	nbsp = "␣",
+}
+
+-- Conceal (for markdown, json, etc.)
+opt.conceallevel = 0 -- 0=off, 1=one char, 2=hide, 3=hide and cursorline
+
+-- Spell checking
+opt.spell = false -- Enable with :set spell
+opt.spelllang = { "en_us" }
+opt.spelloptions = { "camel" } -- Treat camelCase as separate words
+
 -- Auto-reload files changed outside vim
 vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 	group = vim.api.nvim_create_augroup("checktime", { clear = true }),

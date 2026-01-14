@@ -57,7 +57,7 @@ return {
 					return true
 				end
 				-- Disable in telescope prompts
-				local buftype = vim.api.nvim_buf_get_option(0, "buftype")
+				local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
 				if buftype == "prompt" then
 					return false
 				end

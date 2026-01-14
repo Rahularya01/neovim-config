@@ -1,7 +1,7 @@
 return {
 	{
 		"williamboman/mason.nvim",
-		lazy = false,
+		event = { "BufReadPre", "BufNewFile" }, -- Load when files are opened, not immediately
 		priority = 1000,
 		opts = {
 			ui = {
@@ -36,7 +36,7 @@ return {
 				"delve",
 			},
 			auto_update = true,
-			run_on_start = true,
+			run_on_start = false, -- Don't run on startup to avoid lag
 		},
 	},
 	{
@@ -62,7 +62,18 @@ return {
 			"p00f/clangd_extensions.nvim", -- Added dependency
 		},
 		config = function()
-			local cmp_nvim_lsp = require("cmp_nvim_lsp")
+			local ok, lspconfig = pcall(require, "lspconfig")
+			if not ok then
+				vim.notify("Failed to load lspconfig", vim.log.levels.ERROR)
+				return
+			end
+
+			local ok_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
+			if not ok_cmp then
+				vim.notify("Failed to load cmp_nvim_lsp", vim.log.levels.ERROR)
+				return
+			end
+
 			local capabilities = cmp_nvim_lsp.default_capabilities()
 
 			vim.api.nvim_create_autocmd("LspAttach", {
@@ -152,17 +163,6 @@ return {
 					capabilities = vim.tbl_deep_extend("force", capabilities, {
 						offsetEncoding = { "utf-16" },
 					}),
-					-- Setup clangd_extensions
-					setup_handlers = {
-						function(server_name, opts)
-							require("clangd_extensions").setup({
-								inlay_hints = {
-									inline = vim.fn.has("nvim-0.10") == 1,
-								},
-							})
-							require("lspconfig").clangd.setup(opts)
-						end,
-					},
 				},
 				gopls = {
 					filetypes = { "go", "gomod", "gowork", "gotmpl" },
@@ -228,24 +228,49 @@ return {
 				},
 			}
 
-			require("mason-lspconfig").setup({
-				ensure_installed = vim.tbl_keys(servers),
-			})
-
-			for name, config in pairs(servers) do
-				config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
-				-- clangd is handled specially above if utilizing specific setup handlers,
-				-- but mostly mason-lspconfig handles the setup call.
-				-- Ensure we don't double setup if using clangd_extensions manually.
-				if name ~= "clangd" then
-					vim.lsp.config(name, config)
-				else
-					-- Explicitly calling config for clangd to ensure extensions are loaded
-					require("clangd_extensions").setup({
-						server = config,
-					})
-				end
+			local ok_mason, mason_lspconfig = pcall(require, "mason-lspconfig")
+			if not ok_mason then
+				vim.notify("Failed to load mason-lspconfig", vim.log.levels.ERROR)
+				return
 			end
+
+			mason_lspconfig.setup({
+				ensure_installed = vim.tbl_keys(servers),
+				handlers = {
+					-- Default handler for most servers
+					function(server_name)
+						local config = servers[server_name]
+						if config then
+							config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+							local ok, err = pcall(function()
+								lspconfig[server_name].setup(config)
+							end)
+							if not ok then
+								vim.notify(string.format("Failed to setup LSP server %s: %s", server_name, err), vim.log.levels.WARN)
+							end
+						end
+					end,
+					-- Special handler for clangd with extensions
+					clangd = function()
+						local config = servers.clangd
+						if config then
+							config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+							local ok_clangd, clangd_ext = pcall(require, "clangd_extensions")
+							if ok_clangd then
+								clangd_ext.setup({
+									server = config,
+									inlay_hints = {
+										inline = vim.fn.has("nvim-0.10") == 1,
+									},
+								})
+							else
+								-- Fallback to regular clangd setup if extensions fail
+								lspconfig.clangd.setup(config)
+							end
+						end
+					end,
+				},
+			})
 
 			vim.diagnostic.config({
 				virtual_text = { spacing = 4, prefix = "●" },

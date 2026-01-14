@@ -1,6 +1,6 @@
 return {
 	"rmagatti/auto-session",
-	lazy = false, -- Load immediately to restore session on startup
+	event = "VimEnter", -- Load after startup to not block, but early enough for session restore
 
 	config = function()
 		require("auto-session").setup({

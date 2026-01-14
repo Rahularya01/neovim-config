@@ -1,3 +1,8 @@
+-- 0. Performance: Enable lua loader for faster startup (Neovim 0.9+)
+if vim.loader then
+	vim.loader.enable()
+end
+
 -- 1. Set Leader Keys (Must be before lazy setup)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
@@ -5,6 +10,11 @@ vim.g.maplocalleader = " "
 -- 2. Load Core Options
 require("config.options")
 require("config.keymaps")
+
+-- 2.5. Initialize health checks (deferred to not block startup)
+vim.defer_fn(function()
+	require("config.health").setup()
+end, 2000) -- Run after 2 seconds
 
 -- 3. Bootstrap Lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
@@ -33,6 +43,7 @@ require("lazy").setup("plugins", {
 	},
 	change_detection = {
 		enabled = false, -- Stops notifications on config change
+		notify = false, -- Use nvim-notify for better notifications
 	},
 	performance = {
 		cache = {
@@ -50,6 +61,9 @@ require("lazy").setup("plugins", {
 				"zipPlugin",
 			},
 		},
+	},
+	ui = {
+		border = "rounded",
 	},
 })
 

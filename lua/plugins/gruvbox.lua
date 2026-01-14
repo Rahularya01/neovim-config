@@ -1,7 +1,7 @@
 return {
 	"ellisonleao/gruvbox.nvim",
 	priority = 1000,
-	lazy = false,
+	event = "VimEnter", -- Load after startup to not block
 	config = function()
 		-- VS Code Gruvbox Dark "Hard" Palette
 		-- Source: src/shared.ts from the uploaded extension

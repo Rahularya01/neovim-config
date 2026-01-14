@@ -1,0 +1,33 @@
+# Neovim data directories
+*.log
+*.swp
+*.swo
+*~
+.*.sw?
+
+# Lazy lock file (optional - some prefer to commit this)
+# lazy-lock.json
+
+# Session files
+Session.vim
+Sessionx.vim
+
+# Temporary files
+*.tmp
+*.bak
+*.orig
+
+# OS specific
+.DS_Store
+Thumbs.db
+
+# Local config overrides (if you have any)
+local/
+
+# Plugin compiled files
+packer_compiled.lua
+
+# Personal notes or sensitive configs
+notes.md
+secrets.lua
+*.local.lua

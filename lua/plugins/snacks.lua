@@ -1,7 +1,7 @@
 return {
     "folke/snacks.nvim",
     priority = 1000,
-    lazy = false,
+    event = "VeryLazy",
     opts = {
         -- Better vim.ui.input
         input = { enabled = true },

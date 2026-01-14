@@ -14,7 +14,7 @@ return {
 		{ "<leader>sc", "<cmd>Telescope commands<cr>", desc = "Search commands" },
 		{ "<leader>sr", "<cmd>Telescope resume<cr>", desc = "Resume last search" },
 		{ "<leader>cs", "<cmd>Telescope lsp_document_symbols<cr>", desc = "Document symbols" },
-		{ "<leader>ws", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", desc = "Workspace symbols" },
+		{ "<leader>gws", "<cmd>Telescope lsp_dynamic_workspace_symbols<cr>", desc = "Workspace symbols" },
 		{ "<leader>sd", "<cmd>Telescope diagnostics bufnr=0<cr>", desc = "Document diagnostics" },
 		{ "<leader>sD", "<cmd>Telescope diagnostics<cr>", desc = "Workspace diagnostics" },
 		{ "<leader>gc", "<cmd>Telescope git_commits<cr>", desc = "Git commits" },
@@ -36,7 +36,7 @@ return {
 			defaults = {
 				prompt_prefix = " ",
 				selection_caret = " ",
-				path_display = { "smart" },
+				path_display = { "filename_first" },
 				sorting_strategy = "ascending",
 				layout_strategy = "horizontal",
 				layout_config = {

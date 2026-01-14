@@ -284,8 +284,5 @@ return {
 				},
 			},
 		})
-
-		-- Keymaps for buffer navigation and closing can be defined here if needed
-		local opts = { noremap = true, silent = true }
 	end,
 }

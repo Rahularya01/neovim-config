@@ -15,8 +15,12 @@ map("n", "<S-h>", ":bprev<CR>", { desc = "Previous buffer" })
 -- Window splitting
 map("n", "<leader>v", ":vsplit<CR>", { desc = "Split window right" })
 
--- Clear search highlights
-map("n", "<Esc>", ":nohl<CR>", { desc = "Clear search highlights" })
+-- Clear search highlights (only when search is active)
+map("n", "<Esc>", function()
+	if vim.v.hlsearch and vim.v.hlsearch == 1 then
+		vim.cmd("nohlsearch")
+	end
+end, { desc = "Clear search highlights" })
 
 -- Move lines (Alt-Shift-j/k) - M is Alt
 map("n", "<M-J>", ":m .+1<CR>==", { desc = "Move line down" })
@@ -43,8 +47,16 @@ map("n", "<leader>w", ":w<CR>", { desc = "Save file" })
 -- Terminal toggle
 map("n", "<C-\\>", ":ToggleTerm<CR>", { desc = "Toggle terminal" })
 
-map("n", "<C-x>", ":bd<CR>", { desc = "Close current buffer" })
-
 -- Close ALL buffers with Leader + bc
 -- :%bd deletes all buffers. If you have unsaved changes, Vim will prompt you.
 map("n", "<leader>bc", ":silent! %bd!<CR>", { desc = "Close all buffers silently" })
+
+-- Toggle listchars (show whitespace)
+map("n", "<leader>ul", function()
+	vim.opt.list = not vim.opt.list:get()
+end, { desc = "Toggle listchars (show whitespace)" })
+
+-- Toggle spell checking
+map("n", "<leader>us", function()
+	vim.opt.spell = not vim.opt.spell:get()
+end, { desc = "Toggle spell checking" })
