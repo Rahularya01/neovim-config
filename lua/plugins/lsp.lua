@@ -241,12 +241,16 @@ return {
 					function(server_name)
 						local config = servers[server_name]
 						if config then
-							config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+							config.capabilities =
+								vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
 							local ok, err = pcall(function()
 								lspconfig[server_name].setup(config)
 							end)
 							if not ok then
-								vim.notify(string.format("Failed to setup LSP server %s: %s", server_name, err), vim.log.levels.WARN)
+								vim.notify(
+									string.format("Failed to setup LSP server %s: %s", server_name, err),
+									vim.log.levels.WARN
+								)
 							end
 						end
 					end,
@@ -254,7 +258,8 @@ return {
 					clangd = function()
 						local config = servers.clangd
 						if config then
-							config.capabilities = vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
+							config.capabilities =
+								vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
 							local ok_clangd, clangd_ext = pcall(require, "clangd_extensions")
 							if ok_clangd then
 								clangd_ext.setup({
