@@ -8,7 +8,6 @@ function M.check_tools()
 	local tools = {
 		"git",
 		"rg", -- ripgrep for telescope
-		"fd", -- optional but recommended for telescope
 	}
 
 	local missing = {}
@@ -19,10 +18,7 @@ function M.check_tools()
 	end
 
 	if #missing > 0 then
-		vim.notify(
-			string.format("Missing recommended tools: %s", table.concat(missing, ", ")),
-			vim.log.levels.WARN
-		)
+		vim.notify(string.format("Missing recommended tools: %s", table.concat(missing, ", ")), vim.log.levels.WARN)
 	end
 end
 

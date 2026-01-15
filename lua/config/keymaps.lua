@@ -32,7 +32,7 @@ map("v", "<M-K>", ":m '<-2<CR>gv=gv", { desc = "Move selection up" })
 map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
 
 -- Close buffer (Space x - mapped to closeActiveEditor in VSCode)
-map("n", "<C-x>", ":bd<CR>", { desc = "Close buffer" })
+map("n", "<leader>bd", ":bd<CR>", { desc = "Close buffer" })
 
 -- Insert mode escape
 map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
