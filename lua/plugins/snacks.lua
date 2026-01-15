@@ -15,5 +15,24 @@ return {
 			},
 		},
 		terminal = { enabled = true },
+		notifier = { enabled = true },
+		indent = { enabled = true },
+		lazygit = { enabled = true },
+	},
+	keys = {
+		{
+			"<leader>lg",
+			function()
+				Snacks.lazygit()
+			end,
+			desc = "LazyGit",
+		},
+		{
+			"<leader>un",
+			function()
+				Snacks.notifier.show_history()
+			end,
+			desc = "Notification History",
+		},
 	},
 }
