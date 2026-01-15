@@ -70,7 +70,12 @@ return {
 					{ "filetype", cond = hide_in_width },
 				},
 				lualine_y = { "progress" },
-				lualine_z = { { "location", separator = { right = " " }, left_padding = 2 } },
+				lualine_z = {
+					{ "location", separator = { right = " " }, left_padding = 2 },
+					{
+						require("opencode").statusline,
+					},
+				},
 			},
 			inactive_sections = {
 				lualine_c = { { "filename", path = 1 } },

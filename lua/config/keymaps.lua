@@ -2,11 +2,15 @@
 
 local map = vim.keymap.set
 
--- Better window navigation
-map("n", "<C-h>", "<C-w>h", { desc = "Go to left window" })
-map("n", "<C-j>", "<C-w>j", { desc = "Go to lower window" })
-map("n", "<C-k>", "<C-w>k", { desc = "Go to upper window" })
-map("n", "<C-l>", "<C-w>l", { desc = "Go to right window" })
+-- Better window navigation (tmux-aware)
+map("n", "<C-h>", "<cmd><C-U>TmuxNavigateLeft<cr>", { desc = "Go to left window" })
+map("n", "<C-j>", "<cmd><C-U>TmuxNavigateDown<cr>", { desc = "Go to lower window" })
+map("n", "<C-k>", "<cmd><C-U>TmuxNavigateUp<cr>", { desc = "Go to upper window" })
+map("n", "<C-l>", "<cmd><C-U>TmuxNavigateRight<cr>", { desc = "Go to right window" })
+map("t", "<C-h>", "<C-\\><C-n><cmd><C-U>TmuxNavigateLeft<cr>", { desc = "Go to left window" })
+map("t", "<C-j>", "<C-\\><C-n><cmd><C-U>TmuxNavigateDown<cr>", { desc = "Go to lower window" })
+map("t", "<C-k>", "<C-\\><C-n><cmd><C-U>TmuxNavigateUp<cr>", { desc = "Go to upper window" })
+map("t", "<C-l>", "<C-\\><C-n><cmd><C-U>TmuxNavigateRight<cr>", { desc = "Go to right window" })
 
 -- Buffer navigation (Shift-L/H)
 map("n", "<S-l>", ":bnext<CR>", { desc = "Next buffer" })
@@ -33,6 +37,7 @@ map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
 
 -- Close buffer (Space x - mapped to closeActiveEditor in VSCode)
 map("n", "<leader>bd", ":bd<CR>", { desc = "Close buffer" })
+map("n", "<C-x>", ":bd<CR>", { desc = "Close buffer" })
 
 -- Insert mode escape
 map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
