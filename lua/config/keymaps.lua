@@ -44,7 +44,6 @@ map("i", "jk", "<Esc>", { desc = "Exit insert mode" })
 
 -- Quickfix and location lists
 map("n", "<leader>q", ":copen<CR>", { desc = "Open quickfix list" })
-map("n", "<leader>l", ":lopen<CR>", { desc = "Open location list" })
 
 -- Alternative save
 map("n", "<leader>w", ":w<CR>", { desc = "Save file" })
