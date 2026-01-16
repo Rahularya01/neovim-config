@@ -1,13 +1,14 @@
 return {
 	"folke/snacks.nvim",
 	priority = 1000,
-	event = "VeryLazy",
+	lazy = false,
 	opts = {
 		bigfile = { enabled = true },
 		input = { enabled = true },
 		picker = {
 			enabled = true,
 		},
+		dashboard = { enabled = true },
 		terminal = { enabled = true },
 		notifier = { enabled = true },
 		indent = { enabled = true },
