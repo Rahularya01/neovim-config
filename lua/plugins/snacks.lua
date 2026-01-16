@@ -3,9 +3,8 @@ return {
 	priority = 1000,
 	event = "VeryLazy",
 	opts = {
-		-- Better vim.ui.input
+		bigfile = { enabled = true },
 		input = { enabled = true },
-		-- Better vim.ui.select
 		picker = {
 			enabled = true,
 		},
@@ -13,9 +12,17 @@ return {
 		notifier = { enabled = true },
 		indent = { enabled = true },
 		lazygit = { enabled = true },
+		image = { enabled = true },
+		scroll = { enabled = true },
 	},
 	keys = {
 		-- Top Pickers
+		{
+			"<leader>.",
+			function()
+				Snacks.picker.buffers()
+			end,
+		},
 		{
 			"<leader>ff",
 			function()
@@ -30,6 +37,7 @@ return {
 			end,
 			desc = "Grep",
 		},
+
 		-- Other Snacks Utilities
 		{
 			"<leader>lg",
