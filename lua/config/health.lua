@@ -7,7 +7,7 @@ local M = {}
 function M.check_tools()
 	local tools = {
 		"git",
-		"rg", -- ripgrep for telescope
+		"rg", -- ripgrep for live grep
 	}
 
 	local missing = {}

@@ -8,11 +8,6 @@ return {
 		-- Better vim.ui.select
 		picker = {
 			enabled = true,
-			-- Explicitly map Ctrl+j and Ctrl+k for navigation
-			keys = {
-				next = "<C-j>",
-				prev = "<C-k>",
-			},
 		},
 		terminal = { enabled = true },
 		notifier = { enabled = true },
@@ -20,6 +15,22 @@ return {
 		lazygit = { enabled = true },
 	},
 	keys = {
+		-- Top Pickers
+		{
+			"<leader>ff",
+			function()
+				Snacks.picker.files()
+			end,
+			desc = "Find Files",
+		},
+		{
+			"<leader>sg",
+			function()
+				Snacks.picker.grep()
+			end,
+			desc = "Grep",
+		},
+		-- Other Snacks Utilities
 		{
 			"<leader>lg",
 			function()

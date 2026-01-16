@@ -56,7 +56,7 @@ return {
 				if vim.api.nvim_get_mode().mode == "c" then
 					return true
 				end
-				-- Disable in telescope prompts
+				-- Disable in picker prompts
 				local buftype = vim.api.nvim_get_option_value("buftype", { buf = 0 })
 				if buftype == "prompt" then
 					return false
