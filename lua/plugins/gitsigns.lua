@@ -3,12 +3,11 @@ return {
 		"lewis6991/gitsigns.nvim",
 		event = { "BufReadPre", "BufNewFile" },
 		opts = {
-			-- Enable auto git blame on the current line
 			current_line_blame = true,
 			current_line_blame_opts = {
 				virt_text = true,
-				virt_text_pos = "eol", -- 'eol' | 'overlay' | 'right_align'
-				delay = 1000, -- Delay in ms before showing blame (increased for performance)
+				virt_text_pos = "eol",
+				delay = 1000,
 				ignore_whitespace = false,
 			},
 			update_debounce = 200,
@@ -21,7 +20,7 @@ return {
 					vim.keymap.set(mode, l, r, opts)
 				end
 
-				-- Navigation
+
 				map("n", "]c", function()
 					if vim.wo.diff then
 						return "]c"
@@ -42,7 +41,7 @@ return {
 					return "<Ignore>"
 				end, { expr = true })
 
-				-- Actions
+
 				map("n", "<leader>hs", gs.stage_hunk, { desc = "Stage hunk" })
 				map("n", "<leader>hr", gs.reset_hunk, { desc = "Reset hunk" })
 				map("v", "<leader>hs", function()
@@ -65,7 +64,7 @@ return {
 				end, { desc = "Diff this ~" })
 				map("n", "<leader>td", gs.toggle_deleted, { desc = "Toggle deleted" })
 
-				-- Text object
+
 				map({ "o", "x" }, "ih", ":<C-U>Gitsigns select_hunk<CR>", { desc = "Select hunk" })
 			end,
 		},
