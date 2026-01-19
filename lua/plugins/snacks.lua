@@ -14,7 +14,6 @@ return {
 		indent = { enabled = true },
 		lazygit = { enabled = true },
 		image = { enabled = true },
-		scroll = { enabled = true },
 	},
 	keys = {
 		-- Top Pickers
