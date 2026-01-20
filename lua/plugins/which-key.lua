@@ -27,7 +27,5 @@ return {
 			border = "rounded",
 			padding = { 2, 2 },
 		},
-		-- v3 uses a new layout engine. The deprecated 'layout' option is removed.
-		-- 'filter' replaces 'ignore_missing' and 'hidden'. Defaults are usually sufficient.
 	},
 }

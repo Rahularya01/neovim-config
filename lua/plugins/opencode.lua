@@ -18,7 +18,7 @@ return {
 		end, { desc = "Start New Opencode Session" })
 
 		vim.keymap.set({ "n", "x" }, "<C-a>", function()
-			opencode.ask("@buffer: ", { submit = false })
+			opencode.ask("@buffer: ", { submit = true })
 		end, { desc = "Ask Opencode about buffer" })
 
 		vim.keymap.set("n", "<leader>as", function()
