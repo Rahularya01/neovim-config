@@ -16,13 +16,6 @@ return {
 			},
 		},
 		"onsails/lspkind.nvim",
-		{
-			"zbirenbaum/copilot-cmp",
-			dependencies = { "zbirenbaum/copilot.lua" },
-			config = function()
-				require("copilot_cmp").setup()
-			end,
-		},
 	},
 	config = function()
 		local cmp = require("cmp")
@@ -87,25 +80,16 @@ return {
 				["<CR>"] = cmp.mapping.confirm({ select = true }),
 				-- Smart Tab: Accept copilot suggestion, expand snippet, or insert tab
 				["<Tab>"] = cmp.mapping(function(fallback)
-					-- First check for inline copilot suggestion (ghost text)
 					local copilot_suggestion = require("copilot.suggestion")
 					if copilot_suggestion.is_visible() then
 						copilot_suggestion.accept()
 						return
 					end
-					-- Then check if completion menu is visible
 					if cmp.visible() then
-						local entry = cmp.get_selected_entry()
-						if entry and entry.source.name == "copilot" then
-							cmp.confirm({ select = true, behavior = cmp.ConfirmBehavior.Replace })
-						else
-							cmp.confirm({ select = true })
-						end
+						cmp.confirm({ select = true })
 					elseif luasnip.expand_or_jumpable() then
-						-- If snippet is available, expand or jump
 						luasnip.expand_or_jump()
 					else
-						-- Fall back to normal tab
 						fallback()
 					end
 				end, { "i", "s" }),
@@ -119,7 +103,6 @@ return {
 				end, { "i", "s" }),
 			}),
 			sources = cmp.config.sources({
-				{ name = "copilot", priority = 1000 },
 				{ name = "nvim_lsp", priority = 900 },
 				{ name = "luasnip", priority = 750 },
 				{ name = "path", priority = 500 },
@@ -148,7 +131,6 @@ return {
 					ellipsis_char = "...",
 					before = function(entry, vim_item)
 						local source_names = {
-							copilot = "Copilot",
 							nvim_lsp = "LSP",
 							luasnip = "Snippet",
 							buffer = "Buffer",
