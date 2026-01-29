@@ -6,7 +6,7 @@ return {
 			"theHamsta/nvim-dap-virtual-text",
 			"nvim-neotest/nvim-nio",
 			"williamboman/mason.nvim",
-			"jay-babu/mason-nvim-dap.nvim", -- Bridge mason and dap
+			"jay-babu/mason-nvim-dap.nvim",
 			"leoluz/nvim-dap-go",
 		},
 		config = function()
@@ -18,18 +18,15 @@ return {
 			dapvt.setup()
 			require("dap-go").setup()
 
-			-- Setup mason-nvim-dap
 			require("mason-nvim-dap").setup({
 				ensure_installed = { "codelldb", "delve" },
 				handlers = {
 					function(config)
 						require("mason-nvim-dap").default_setup(config)
 					end,
-					-- Custom override for codelldb if needed, otherwise default_setup handles it
 				},
 			})
 
-			-- Python setup (kept from your original config)
 			dap.adapters.python = {
 				type = "executable",
 				command = "python",
@@ -47,9 +44,6 @@ return {
 				},
 			}
 
-			-- C/C++ configurations
-			-- mason-nvim-dap sets up the 'adapter' automatically.
-			-- You just need the configurations.
 			dap.configurations.cpp = {
 				{
 					name = "Launch file",
@@ -64,7 +58,6 @@ return {
 			}
 			dap.configurations.c = dap.configurations.cpp
 
-			-- Keymaps
 			vim.keymap.set("n", "<F5>", dap.continue, { desc = "Continue" })
 			vim.keymap.set("n", "<F10>", dap.step_over, { desc = "Step over" })
 			vim.keymap.set("n", "<F11>", dap.step_into, { desc = "Step into" })
