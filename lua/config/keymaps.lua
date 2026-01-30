@@ -36,7 +36,9 @@ map("n", "<leader>q", ":copen<CR>", { desc = "Open quickfix list" })
 
 map("n", "<leader>w", ":w<CR>", { desc = "Save file" })
 
-map("n", "<C-\\>", ":ToggleTerm<CR>", { desc = "Toggle terminal" })
+map("n", "<C-\\>", function()
+  Snacks.terminal()
+end, { desc = "Toggle terminal" })
 
 map("n", "<leader>bc", ":silent! %bd!<CR>", { desc = "Close all buffers silently" })
 
