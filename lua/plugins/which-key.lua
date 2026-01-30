@@ -9,19 +9,19 @@ return {
     local wk = require("which-key")
     wk.setup(opts)
 
-    -- Register key groups
-    wk.register({
-      ["<leader>b"] = { name = "+buffer", desc = "Buffer" },
-      ["<leader>c"] = { name = "+code", desc = "Code/LSP" },
-      ["<leader>d"] = { name = "+debug", desc = "Debug" },
-      ["<leader>f"] = { name = "+find/files", desc = "Find" },
-      ["<leader>g"] = { name = "+git", desc = "Git" },
-      ["<leader>l"] = { name = "+lsp", desc = "LSP" },
-      ["<leader>s"] = { name = "+search", desc = "Search" },
-      ["<leader>u"] = { name = "+ui/toggles", desc = "UI" },
-      ["<leader>w"] = { name = "+workspace/session", desc = "Workspace" },
-      ["<leader>x"] = { name = "+diagnostics/trouble", desc = "Diagnostics" },
-    }, { mode = { "n", "v" } })
+    wk.add({
+      { "<leader>b", group = "buffer" },
+      { "<leader>c", group = "code" },
+      { "<leader>d", group = "debug" },
+      { "<leader>f", group = "find/files" },
+      { "<leader>g", group = "git" },
+      { "<leader>l", group = "lsp" },
+      { "<leader>s", group = "search" },
+      { "<leader>u", group = "ui/toggles" },
+      { "<leader>w", group = "workspace/session" },
+      { "<leader>x", group = "diagnostics/trouble" },
+      mode = { "n", "v" },
+    })
   end,
   opts = {
     plugins = {
