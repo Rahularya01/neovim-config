@@ -78,21 +78,16 @@ return {
 				["<C-Space>"] = cmp.mapping.complete(),
 				["<C-e>"] = cmp.mapping.abort(),
 				["<CR>"] = cmp.mapping.confirm({ select = true }),
-				-- Smart Tab: Accept copilot suggestion, expand snippet, or insert tab
-				["<Tab>"] = cmp.mapping(function(fallback)
-					local copilot_suggestion = require("copilot.suggestion")
-					if copilot_suggestion.is_visible() then
-						copilot_suggestion.accept()
-						return
-					end
-					if cmp.visible() then
-						cmp.confirm({ select = true })
-					elseif luasnip.expand_or_jumpable() then
-						luasnip.expand_or_jump()
-					else
-						fallback()
-					end
-				end, { "i", "s" }),
+			-- Smart Tab: Confirm cmp completion, expand snippet, or insert tab
+			["<Tab>"] = cmp.mapping(function(fallback)
+				if cmp.visible() then
+					cmp.confirm({ select = true })
+				elseif luasnip.expand_or_jumpable() then
+					luasnip.expand_or_jump()
+				else
+					fallback()
+				end
+			end, { "i", "s" }),
 				-- Shift-Tab for going back in snippets
 				["<S-Tab>"] = cmp.mapping(function(fallback)
 					if luasnip.jumpable(-1) then
