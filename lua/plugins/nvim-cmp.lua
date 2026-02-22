@@ -78,24 +78,14 @@ return {
 				["<C-Space>"] = cmp.mapping.complete(),
 				["<C-e>"] = cmp.mapping.abort(),
 				["<CR>"] = cmp.mapping.confirm({ select = true }),
-			-- Smart Tab: Confirm cmp completion, expand snippet, or insert tab
-			["<Tab>"] = cmp.mapping(function(fallback)
-				if cmp.visible() then
-					cmp.confirm({ select = true })
-				elseif luasnip.expand_or_jumpable() then
-					luasnip.expand_or_jump()
+			-- Shift-Tab for going back in snippets
+			["<S-Tab>"] = cmp.mapping(function(fallback)
+				if luasnip.jumpable(-1) then
+					luasnip.jump(-1)
 				else
 					fallback()
 				end
 			end, { "i", "s" }),
-				-- Shift-Tab for going back in snippets
-				["<S-Tab>"] = cmp.mapping(function(fallback)
-					if luasnip.jumpable(-1) then
-						luasnip.jump(-1)
-					else
-						fallback()
-					end
-				end, { "i", "s" }),
 			}),
 			sources = cmp.config.sources({
 				{ name = "nvim_lsp", priority = 900 },
