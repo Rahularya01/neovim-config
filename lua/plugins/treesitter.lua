@@ -23,8 +23,6 @@ return {
 				"markdown",
 				"markdown_inline",
 				"bash",
-				"c",
-				"cpp",
 				"rust",
 				"go",
 				"gomod",

@@ -11,10 +11,6 @@ return {
 			bypass_session_save_file_types = {
 				"oil",
 				"NeoTree",
-				"dapui_scopes",
-				"dapui_breakpoints",
-				"dapui_stacks",
-				"dapui_watches",
 			},
 
 			post_restore_cmds = {

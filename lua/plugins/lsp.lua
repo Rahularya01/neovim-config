@@ -40,18 +40,16 @@ return {
 			ensure_installed = {
 				"stylua",
 				"luacheck",
-				"clang-format",
-				"codelldb",
 				"prettier",
 				"prettierd",
 				"black",
 				"isort",
 				"pylint",
+				"basedpyright",
 				"gopls",
 				"goimports",
 				"gofumpt",
 				"golangci-lint",
-				"delve",
 			},
 			auto_update = true,
 			run_on_start = false, -- Don't run on startup to avoid lag
@@ -77,7 +75,6 @@ return {
 			"williamboman/mason.nvim",
 			"hrsh7th/cmp-nvim-lsp",
 			"j-hui/fidget.nvim",
-			"p00f/clangd_extensions.nvim", -- Added dependency
 		},
 		config = function()
 			local ok, lspconfig = pcall(require, "lspconfig")
@@ -116,22 +113,18 @@ return {
 					map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
 					map("n", "<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
 
-					-- C/C++ specific: Switch Source/Header
-					map("n", "<leader>ch", "<cmd>ClangdSwitchSourceHeader<cr>", "Switch Source/Header")
-
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
 
-					-- Enable Inlay Hints if the server supports it (Clangd does)
+					-- Enable inlay hints if the server supports it
 					if client and client.server_capabilities.inlayHintProvider and vim.lsp.inlay_hint then
 						vim.lsp.inlay_hint.enable(true, { bufnr = event.buf })
 					end
 
 					-- Disable formatting for LSPs that we'll handle with conform.nvim
 					local disable_format = {
-						ts_ls = true,
+						vtsls = true,
 						lua_ls = true,
-						pyright = true,
-						clangd = true,
+						basedpyright = true,
 						gopls = true,
 					}
 
@@ -153,10 +146,10 @@ return {
 						},
 					},
 				},
-				pyright = {
+				basedpyright = {
 					filetypes = { "python" },
 					settings = {
-						python = {
+						basedpyright = {
 							analysis = {
 								typeCheckingMode = "basic",
 								autoSearchPaths = true,
@@ -164,22 +157,6 @@ return {
 							},
 						},
 					},
-				},
-				clangd = {
-					-- Rely on Mason's path automatically
-					cmd = {
-						"clangd",
-						"--background-index",
-						"--clang-tidy",
-						"--header-insertion=iwyu",
-						"--completion-style=detailed",
-						"--function-arg-placeholders",
-						"--fallback-style=llvm",
-					},
-					filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
-					capabilities = vim.tbl_deep_extend("force", capabilities, {
-						offsetEncoding = { "utf-16" },
-					}),
 				},
 				gopls = {
 					filetypes = { "go", "gomod", "gowork", "gotmpl" },
@@ -191,8 +168,30 @@ return {
 						},
 					},
 				},
-				ts_ls = {
+				vtsls = {
 					filetypes = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
+					settings = {
+						vtsls = {
+							autoUseWorkspaceTsdk = true,
+							experimental = {
+								completion = {
+									enableServerSideFuzzyMatch = true,
+								},
+							},
+						},
+						typescript = {
+							updateImportsOnFileMove = { enabled = "always" },
+							suggest = {
+								completeFunctionCalls = true,
+							},
+						},
+						javascript = {
+							updateImportsOnFileMove = { enabled = "always" },
+							suggest = {
+								completeFunctionCalls = true,
+							},
+						},
+					},
 				},
 
 				emmet_language_server = {
@@ -228,7 +227,6 @@ return {
 			mason_lspconfig.setup({
 				ensure_installed = vim.tbl_keys(servers),
 				handlers = {
-					-- Default handler for most servers
 					function(server_name)
 						local config = servers[server_name]
 						if config then
@@ -242,26 +240,6 @@ return {
 									string.format("Failed to setup LSP server %s: %s", server_name, err),
 									vim.log.levels.WARN
 								)
-							end
-						end
-					end,
-					-- Special handler for clangd with extensions
-					clangd = function()
-						local config = servers.clangd
-						if config then
-							config.capabilities =
-								vim.tbl_deep_extend("force", {}, capabilities, config.capabilities or {})
-							local ok_clangd, clangd_ext = pcall(require, "clangd_extensions")
-							if ok_clangd then
-								clangd_ext.setup({
-									server = config,
-									inlay_hints = {
-										inline = vim.fn.has("nvim-0.10") == 1,
-									},
-								})
-							else
-								-- Fallback to regular clangd setup if extensions fail
-								lspconfig.clangd.setup(config)
 							end
 						end
 					end,
