@@ -4,7 +4,7 @@ return {
 	config = function()
 		local lint = require("lint")
 		local linters_by_ft = {
-			python = { "pylint" },
+			python = { "ruff" },
 			lua = { "luacheck" },
 			go = { "golangci-lint" },
 		}

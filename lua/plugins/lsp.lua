@@ -44,12 +44,14 @@ return {
 				"prettierd",
 				"black",
 				"isort",
-				"pylint",
+				"ruff",
 				"basedpyright",
 				"gopls",
 				"goimports",
 				"gofumpt",
 				"golangci-lint",
+				"clangd",
+				"clang-format",
 			},
 			auto_update = true,
 			run_on_start = false, -- Don't run on startup to avoid lag
@@ -126,6 +128,7 @@ return {
 						lua_ls = true,
 						basedpyright = true,
 						gopls = true,
+						clangd = true,
 					}
 
 					if client and disable_format[client.name] then
@@ -215,6 +218,9 @@ return {
 						"typescript",
 						"typescriptreact",
 					},
+				},
+				clangd = {
+					filetypes = { "c", "cpp", "objc", "objcpp", "cuda", "proto" },
 				},
 			}
 

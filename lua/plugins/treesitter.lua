@@ -13,6 +13,8 @@ return {
 				"vim",
 				"vimdoc",
 				"query",
+				"c",
+				"cpp",
 				"python",
 				"javascript",
 				"typescript",

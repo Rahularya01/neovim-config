@@ -26,6 +26,8 @@ return {
 			yaml = { "prettierd", "prettier", stop_after_first = true },
 			markdown = { "prettierd", "prettier", stop_after_first = true },
 			python = { "isort", "black" },
+			c = { "clang-format" },
+			cpp = { "clang-format" },
 		},
 		format_on_save = { timeout_ms = 1000, lsp_fallback = true },
 	},
