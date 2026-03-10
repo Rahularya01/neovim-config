@@ -75,7 +75,7 @@ return {
 		dependencies = {
 			"neovim/nvim-lspconfig",
 			"williamboman/mason.nvim",
-			"hrsh7th/cmp-nvim-lsp",
+			"saghen/blink.cmp",
 			"j-hui/fidget.nvim",
 		},
 		config = function()
@@ -85,13 +85,7 @@ return {
 				return
 			end
 
-			local ok_cmp, cmp_nvim_lsp = pcall(require, "cmp_nvim_lsp")
-			if not ok_cmp then
-				vim.notify("Failed to load cmp_nvim_lsp", vim.log.levels.ERROR)
-				return
-			end
-
-			local capabilities = cmp_nvim_lsp.default_capabilities()
+			local capabilities = require("blink.cmp").get_lsp_capabilities()
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
