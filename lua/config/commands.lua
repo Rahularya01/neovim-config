@@ -50,12 +50,6 @@ vim.api.nvim_create_user_command("RemoveComments", function()
 		local text = node_text(parent)
 		local trimmed = vim.trim(text)
 
-		-- Matches:
-		-- {/* comment */}
-		-- { /* comment */ }
-		-- {/*
-		--   comment
-		-- */}
 		if trimmed:match("^%{%s*/%*.*%*/%s*%}$") then
 			return true
 		end
@@ -87,7 +81,6 @@ vim.api.nvim_create_user_command("RemoveComments", function()
 		return a[2] > b[2]
 	end)
 
-	-- dedupe overlapping identical ranges
 	local deduped = {}
 	local seen = {}
 
@@ -105,7 +98,6 @@ vim.api.nvim_create_user_command("RemoveComments", function()
 		vim.api.nvim_buf_set_text(bufnr, r[1], r[2], r[3], r[4], { "" })
 	end
 
-	-- collapse repeated blank lines to a single blank line
 	local lines = vim.api.nvim_buf_get_lines(bufnr, 0, -1, false)
 	local cleaned = {}
 	local prev_blank = false
