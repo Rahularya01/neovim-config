@@ -9,6 +9,7 @@ vim.g.maplocalleader = " "
 
 -- 2. Load Core Options
 require("config.options")
+require("config.commands")
 require("config.keymaps")
 
 -- 2.5. Initialize health checks (deferred to not block startup)
@@ -66,4 +67,3 @@ require("lazy").setup("plugins", {
 		border = "rounded",
 	},
 })
-
