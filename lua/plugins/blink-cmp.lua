@@ -5,16 +5,7 @@ return {
 	opts = {
 		keymap = {
 			preset = "enter",
-			["<Tab>"] = {
-				function(cmp)
-					if cmp.snippet_active() then
-						return cmp.accept()
-					end
-					return cmp.select_and_accept()
-				end,
-				"snippet_forward",
-				"fallback",
-			},
+			["<Tab>"] = { "fallback" },
 			["<S-Tab>"] = { "fallback" },
 			["<C-k>"] = { "select_prev", "fallback" },
 			["<C-j>"] = { "select_next", "fallback" },
