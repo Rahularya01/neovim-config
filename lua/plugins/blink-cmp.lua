@@ -5,18 +5,23 @@ return {
 	opts = {
 		keymap = {
 			preset = "enter",
-			["<Tab>"] = { "fallback" },
-			["<S-Tab>"] = { "fallback" },
 			["<C-k>"] = { "select_prev", "fallback" },
 			["<C-j>"] = { "select_next", "fallback" },
 			["<C-space>"] = { "show", "fallback" },
-			["<CR>"] = { "accept", "fallback" },
-			["<C-b>"] = { "cancel", "fallback" },
+			["<C-e>"] = { "cancel", "fallback" },
 		},
 		appearance = {
 			nerd_font_variant = "mono",
 		},
 		completion = {
+			trigger = {
+				show_on_keyword = true,
+				show_on_trigger_character = true,
+			},
+			ghost_text = { enabled = true },
+			list = {
+				selection = { preselect = true, auto_insert = false },
+			},
 			documentation = {
 				auto_show = true,
 				auto_show_delay_ms = 200,
@@ -30,17 +35,24 @@ return {
 				winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
 				draw = {
 					columns = {
-						{ "kind_icon" },
+						{ "kind_icon", width = { fixed = 2 } },
 						{ "label", "label_description", gap = 1 },
 						{ "kind" },
 					},
 				},
 			},
 		},
+		signature = {
+			enabled = true,
+			window = { border = "single" },
+		},
 		sources = {
 			default = { "lsp", "path", "snippets", "buffer" },
+			per_filetype = {
+				markdown = { "path", "snippets", "buffer" },
+			},
 		},
-		fuzzy = { implementation = "prefer_rust_with_warning" },
+		fuzzy = { implementation = "prefer_rust" },
 	},
 	opts_extend = { "sources.default" },
 }
