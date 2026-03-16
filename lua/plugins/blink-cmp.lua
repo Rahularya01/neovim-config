@@ -18,10 +18,10 @@ return {
 	},
 	opts = {
 		keymap = {
-			preset = "enter",
+			preset = "super-tab",
 			["<C-k>"] = { "select_prev", "fallback" },
 			["<C-j>"] = { "select_next", "fallback" },
-			["<C-space>"] = { "show", "fallback" },
+			["<CR>"] = { "accept", "fallback" },
 			["<C-e>"] = { "cancel", "fallback" },
 		},
 		appearance = {
