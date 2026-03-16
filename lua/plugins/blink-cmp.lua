@@ -1,7 +1,7 @@
 return {
 	"saghen/blink.cmp",
 	dependencies = { "rafamadriz/friendly-snippets" },
-	version = "1.*",
+	version = "*",
 	opts = {
 		keymap = {
 			preset = "enter",
@@ -52,7 +52,12 @@ return {
 				markdown = { "path", "snippets", "buffer" },
 			},
 		},
-		fuzzy = { implementation = "prefer_rust" },
+		fuzzy = {
+			implementation = "prefer_rust",
+			prebuilt_binaries = {
+				force_version = "v1.9.1",
+			},
+		},
 	},
 	opts_extend = { "sources.default" },
 }
