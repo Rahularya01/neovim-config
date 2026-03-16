@@ -1,7 +1,21 @@
 return {
 	"saghen/blink.cmp",
-	dependencies = { "rafamadriz/friendly-snippets" },
 	version = "*",
+	dependencies = {
+		"rafamadriz/friendly-snippets",
+		{
+			"Exafunction/windsurf.nvim",
+			dependencies = { "nvim-lua/plenary.nvim" },
+			config = function()
+				require("codeium").setup({
+					enable_cmp_source = false,
+					virtual_text = {
+						enabled = false,
+					},
+				})
+			end,
+		},
+	},
 	opts = {
 		keymap = {
 			preset = "enter",
@@ -47,9 +61,16 @@ return {
 			window = { border = "single" },
 		},
 		sources = {
-			default = { "lsp", "path", "snippets", "buffer" },
+			default = { "lsp", "path", "snippets", "buffer", "codeium" },
 			per_filetype = {
-				markdown = { "path", "snippets", "buffer" },
+				markdown = { "path", "snippets", "buffer", "codeium" },
+			},
+			providers = {
+				codeium = {
+					name = "Codeium",
+					module = "codeium.blink",
+					async = true,
+				},
 			},
 		},
 		fuzzy = {
