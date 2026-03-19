@@ -13,7 +13,7 @@ return {
       { "<leader>b", group = "buffer" },
       { "<leader>c", group = "code" },
       { "<leader>d", group = "debug" },
-      { "<leader>f", group = "find/files" },
+      { "<leader>f", group = "find" },
       { "<leader>g", group = "git" },
       { "<leader>l", group = "lsp" },
       { "<leader>s", group = "search" },

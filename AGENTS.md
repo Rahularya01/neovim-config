@@ -20,7 +20,7 @@
 - **Commands**:
   - Show line diagnostics: `vim.diagnostic.open_float()`
   - Navigate diagnostics: `[d` (previous) / `]d` (next)
-  - List all diagnostics: `:Telescope diagnostics`
+  - List all diagnostics: `<leader>xx` (Trouble) or `<leader>sd` (Snacks diagnostics picker)
 
 ### Testing & Validation
 Since this is a config repository, validation is manual:

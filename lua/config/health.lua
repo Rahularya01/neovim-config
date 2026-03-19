@@ -18,14 +18,6 @@ function M.check_tools()
 	end
 end
 
-function M.check_lsp()
-	local ok, mason = pcall(require, "mason")
-	if ok then
-		return true
-	end
-	return false
-end
-
 function M.setup()
 	vim.defer_fn(function()
 		M.check_tools()
