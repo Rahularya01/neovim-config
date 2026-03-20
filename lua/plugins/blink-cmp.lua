@@ -3,21 +3,9 @@ return {
 	version = "*",
 	dependencies = {
 		"rafamadriz/friendly-snippets",
-		{
-			"Exafunction/windsurf.nvim",
-			dependencies = { "nvim-lua/plenary.nvim" },
-			config = function()
-				require("codeium").setup({
-					enable_cmp_source = false,
-					virtual_text = {
-						enabled = false,
-					},
-				})
-			end,
-		},
+		"giuxtaposition/blink-cmp-copilot",
 	},
 	opts = {
-
 		keymap = {
 			preset = "super-tab",
 			["<C-k>"] = { "select_prev", "fallback" },
@@ -63,14 +51,15 @@ return {
 			window = { border = "single" },
 		},
 		sources = {
-			default = { "lsp", "path", "snippets", "buffer", "codeium" },
+			default = { "lsp", "path", "snippets", "buffer", "copilot" },
 			per_filetype = {
-				markdown = { "path", "snippets", "buffer", "codeium" },
+				markdown = { "path", "snippets", "buffer", "copilot" },
 			},
 			providers = {
-				codeium = {
-					name = "Codeium",
-					module = "codeium.blink",
+				copilot = {
+					name = "copilot",
+					module = "blink-cmp-copilot",
+					score_offset = 100,
 					async = true,
 				},
 			},
