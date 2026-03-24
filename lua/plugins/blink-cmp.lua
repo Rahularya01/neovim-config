@@ -3,7 +3,7 @@ return {
 	version = "*",
 	dependencies = {
 		"rafamadriz/friendly-snippets",
-		"giuxtaposition/blink-cmp-copilot",
+		"Exafunction/windsurf.nvim",
 	},
 	opts = {
 		keymap = {
@@ -46,23 +46,19 @@ return {
 				},
 			},
 		},
+
 		signature = {
 			enabled = true,
 			window = { border = "single" },
 		},
 		sources = {
-			default = { "lsp", "path", "snippets", "buffer", "copilot" },
+			default = { "lsp", "path", "snippets", "buffer", "codeium" },
 			per_filetype = {
-				markdown = { "path", "snippets", "buffer", "copilot" },
+				markdown = { "path", "snippets", "buffer" },
 				terminal = { "path", "snippets", "buffer" },
 			},
 			providers = {
-				copilot = {
-					name = "copilot",
-					module = "blink-cmp-copilot",
-					score_offset = 100,
-					async = true,
-				},
+				codeium = { name = "Codeium", module = "codeium.blink", async = true },
 			},
 		},
 		fuzzy = {
@@ -72,5 +68,6 @@ return {
 			},
 		},
 	},
+
 	opts_extend = { "sources.default" },
 }
