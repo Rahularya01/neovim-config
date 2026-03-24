@@ -3,121 +3,127 @@
 ## Build/Lint/Test Commands
 
 ### Formatting
-- **Format current buffer**: `<leader>f` (handled by `conform.nvim`)
-- **Format entire codebase**: `stylua .` (in project root)
-- **Configured Formatters** (via `lua/plugins/formatting.lua`):
-  - **Lua**: `stylua`
-  - **Python**: `isort`, `black`
-  - **Web**: `prettierd` or `prettier` (JS, TS, HTML, CSS, JSON, YAML, Markdown)
-  - **C/C++**: `clang-format`
-  - **Go**: `goimports`, `gofumpt`
+- **Format buffer**: `<leader>f` (uses `conform.nvim`)
+- **Format codebase**: `stylua .` (run from project root)
+- **Formatters by filetype**:
+  - Lua: `stylua`
+  - Python: `isort`, `black`
+  - Web: `prettierd` or `prettier` (JS/TS/HTML/CSS/JSON/YAML/Markdown)
+  - C/C++: `clang-format`
+  - Go: `goimports`, `gofumpt`
 
 ### Linting
-- **Engine**: LSP diagnostics + `mfussenegger/nvim-lint`
-- **Lua**: `lua_ls` configured via `.luarc.json`
-  - *Globals*: `vim`
-  - *Disabled*: `assign-type-mismatch`, `unused-local`, `missing-fields`
-- **Commands**:
-  - Show line diagnostics: `vim.diagnostic.open_float()`
-  - Navigate diagnostics: `[d` (previous) / `]d` (next)
-  - List all diagnostics: `<leader>xx` (Trouble) or `<leader>sd` (Snacks diagnostics picker)
+- **Engine**: LSP diagnostics + `nvim-lint`
+- **Lua**: `lua_ls` via `.luarc.json` (globals: `vim`; disabled: `assign-type-mismatch`, `unused-local`, `missing-fields`)
+- **Navigate**: `[d` (prev) / `]d` (next) diagnostic
+- **Show**: `<leader>xx` (Trouble) or `<leader>sd` (Snacks picker)
+- **Float**: `vim.diagnostic.open_float()`
 
-### Testing & Validation
-Since this is a config repository, validation is manual:
-1. **Reload**: `nvim --clean -u init.lua` to simulate a fresh start.
-2. **Health**: `:checkhealth` to verify tool requirements.
-3. **LSP**: `:LspInfo` to check server attachment.
-4. **Plugins**: `:Lazy status` to check for errors.
+### Testing
+Config validation is manual (no test runner):
+1. **Reload**: `nvim --clean -u init.lua` (fresh start test)
+2. **Health**: `:checkhealth` (tool requirements)
+3. **LSP**: `:LspInfo` (server status)
+4. **Plugins**: `:Lazy status` (plugin errors)
 
 ### Plugin Management
 - **Manager**: `folke/lazy.nvim`
-- **Lockfile**: `lazy-lock.json` (Tracked: **YES**. Commit changes to this file to pin versions).
-- **Commands**: `:Lazy sync`, `:Lazy update`, `:Lazy clean`.
+- **Lockfile**: `lazy-lock.json` (commit changes to pin versions)
+- **Commands**: `:Lazy sync`, `:Lazy update`, `:Lazy clean`
 
 ---
 
 ## Code Style Guidelines
 
 ### File Structure
-- `init.lua`: Entry point, bootstrap `lazy.nvim`, loads `config/`.
-- `lua/config/`: Core settings (`options.lua`, `keymaps.lua`, `health.lua`).
-- `lua/plugins/`: Plugin specs. **One file per plugin**.
-- `lua/plugins/lsp.lua`: Centralized LSP server config.
+- `init.lua`: Entry point, bootstrap lazy.nvim, load `config/`
+- `lua/config/`: Core settings (`options.lua`, `keymaps.lua`, `commands.lua`, `health.lua`)
+- `lua/plugins/`: Plugin specs, **one file per plugin**
+- `lua/plugins/lsp.lua`: Centralized LSP configuration
 
 ### File Naming
-- **Plugin files**: kebab-case (e.g., `nvim-cmp.lua`, `neo-tree.lua`).
-- **Config files**: snake_case/lowercase (e.g., `options.lua`).
+- Plugin files: `kebab-case.lua` (e.g., `nvim-cmp.lua`, `neo-tree.lua`)
+- Config files: `snake_case.lua` (e.g., `options.lua`)
 
-### Plugin Specification Pattern
-Return a Lua table in `lua/plugins/*.lua`:
+### Plugin Spec Pattern
 ```lua
 return {
   "author/plugin-name",
-  branch = "main", -- Optional
+  branch = "main",
   dependencies = { "dep1" },
-  event = "VeryLazy", -- PREFERRED: explicit lazy loading
+  event = "VeryLazy",
   cmd = "CommandName",
   ft = { "filetype" },
-  keys = { -- Define plugin-specific keymaps here
+  keys = {
     { "<leader>x", "<cmd>Cmd<cr>", desc = "Description" },
   },
-  opts = { -- Plugin options (passed to setup)
-    setting = true,
-  },
+  opts = { setting = true },
   config = function(_, opts)
-    require("plugin").setup(opts) -- Only needed for custom logic
+    require("plugin").setup(opts)
   end,
 }
 ```
 
 ### Indentation & Formatting
-- **Style**: 2 spaces, no tabs (`expandtab = true`).
-- **Tool**: `stylua` is authoritative.
-- **Alignment**: Align values in tables for readability.
+- **Style**: 2 spaces, no tabs (`expandtab = true`)
+- **Tool**: `stylua` (authoritative)
+- **Tables**: Align values for readability
+- **Quotes**: Double quotes for strings
 
 ### Naming Conventions
-- **Variables**: `snake_case` (`local my_var`)
-- **Constants**: `UPPER_SNAKE_CASE` (`local MAX_WIDTH`)
-- **Module Imports**: `lowercase` (`require("config.options")`)
+- Variables: `snake_case` (`local my_var`)
+- Constants: `UPPER_SNAKE_CASE` (`local MAX_WIDTH`)
+- Modules: `lowercase` (`require("config.options")`)
+- Functions: `snake_case` (`local function my_func()`)
 
 ### Keybindings
 - **Function**: `vim.keymap.set(mode, lhs, rhs, opts)`
-- **Opts**: Must include `desc`. Use `silent = true` where appropriate.
+- **Required opts**: Always include `desc`
+- **Silent**: Use `silent = true` where appropriate
 - **Location**:
   - Global: `lua/config/keymaps.lua`
-  - Plugin-specific: `keys` table in plugin spec.
+  - Plugin-specific: `keys` table in plugin spec
+
+### Imports & Requires
+- Use `pcall(require, "module")` for risky imports outside lazy specs
+- Prefer local aliases: `local opt = vim.opt`
+- Group requires at top of file
 
 ### Error Handling
-- Use `pcall(require, "module")` for risky imports outside `lazy` specs.
-- Use `vim.notify("msg", vim.log.levels.ERROR)` for errors.
+- `pcall()` for optional dependencies
+- `vim.notify("msg", vim.log.levels.ERROR)` for user-facing errors
+- Check executables: `vim.fn.executable("cmd") == 1`
 
 ### Autocommands
-- Always wrap in an `augroup` with `clear = true`.
+Always wrap in augroup with `clear = true`:
 ```lua
 vim.api.nvim_create_autocmd("Event", {
   group = vim.api.nvim_create_augroup("GroupName", { clear = true }),
-  callback = function() ... end,
+  callback = function() end,
 })
 ```
 
 ---
 
-## Workflow Instructions for Agents
+## Agent Workflows
 
-### 1. Adding a New Plugin
-- **Check**: Verify it doesn't exist in `lua/plugins/`.
-- **Create**: Add `lua/plugins/<name>.lua`.
-- **Configure**: Use the **Plugin Specification Pattern**. Default to `lazy = true` via `event`, `cmd`, or `keys`.
-- **Dependencies**: List them in `dependencies = {}`.
+### Adding a New Plugin
+1. Check `lua/plugins/` for existing plugin
+2. Create `lua/plugins/<name>.lua`
+3. Follow **Plugin Spec Pattern**, use lazy loading (`event`, `cmd`, `keys`)
+4. Add dependencies in `dependencies = {}`
 
-### 2. Modifying Configuration
-- **Options**: Edit `lua/config/options.lua`. Use `vim.opt`.
-- **Keymaps**: Edit `lua/config/keymaps.lua` OR the specific plugin file if the map is bound to that plugin.
+### Modifying Configuration
+- Options: Edit `lua/config/options.lua` (use `vim.opt`)
+- Keymaps: Edit `lua/config/keymaps.lua` or plugin file
+- Commands: Edit `lua/config/commands.lua`
 
-### 3. Debugging
-- Use `print(vim.inspect(my_table))` to view data in `:messages`.
-- Use `vim.notify("debug message")` for floating notifications.
+### Debugging
+- Inspect: `print(vim.inspect(my_table))` → check `:messages`
+- Notify: `vim.notify("debug message")` for floating popup
+- Profile: Use `:Lazy profile` for startup timing
 
-### 4. Safety
-- **Paths**: ALWAYS use absolute paths for file operations.
-- **Git**: Create atomic commits. Do not force push.
+### Safety
+- **Paths**: Use absolute paths for file operations
+- **Git**: Atomic commits, never force push to main
+- **LSP**: Ensure `lua_ls` attaches for Lua files
