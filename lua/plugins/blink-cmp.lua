@@ -3,17 +3,17 @@ return {
 	version = "*",
 	dependencies = {
 		"rafamadriz/friendly-snippets",
-		"Exafunction/windsurf.nvim",
 	},
 	opts = {
 		keymap = {
-			preset = "super-tab",
+			preset = "default",
 			["<C-k>"] = { "select_prev", "fallback" },
 			["<C-j>"] = { "select_next", "fallback" },
 			["<CR>"] = { "accept", "fallback" },
 			["<C-space>"] = { "show", "fallback" },
 			["<C-e>"] = { "cancel", "fallback" },
 		},
+
 		appearance = {
 			nerd_font_variant = "mono",
 		},
@@ -52,14 +52,12 @@ return {
 			window = { border = "single" },
 		},
 		sources = {
-			default = { "lsp", "path", "snippets", "buffer", "codeium" },
+			default = { "lsp", "path", "snippets", "buffer" },
 			per_filetype = {
 				markdown = { "path", "snippets", "buffer" },
 				terminal = { "path", "snippets", "buffer" },
 			},
-			providers = {
-				codeium = { name = "Codeium", module = "codeium.blink", async = true },
-			},
+			providers = {},
 		},
 		fuzzy = {
 			implementation = "prefer_rust",
