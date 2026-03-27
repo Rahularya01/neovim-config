@@ -28,6 +28,7 @@ return {
 				"snippet_forward",
 				"fallback",
 			},
+
 			["<C-k>"] = { "select_prev", "fallback" },
 			["<C-j>"] = { "select_next", "fallback" },
 			["<CR>"] = { "accept", "fallback" },
