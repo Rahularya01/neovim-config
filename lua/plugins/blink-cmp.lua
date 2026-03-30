@@ -3,32 +3,11 @@ return {
 	version = "*",
 	dependencies = {
 		"rafamadriz/friendly-snippets",
-		"fang2hou/blink-copilot",
 	},
 
 	opts = {
 		keymap = {
-			preset = "super-tab",
-			["<Tab>"] = {
-				function(cmp)
-					local suggestion = require("copilot.suggestion")
-
-					if not vim.b.copilot_suggestion_hidden and suggestion.is_visible() then
-						suggestion.accept()
-						return true
-					end
-				end,
-				function(cmp)
-					if cmp.snippet_active() then
-						return cmp.accept()
-					end
-
-					return cmp.select_and_accept()
-				end,
-				"snippet_forward",
-				"fallback",
-			},
-
+			preset = "default",
 			["<C-k>"] = { "select_prev", "fallback" },
 			["<C-j>"] = { "select_next", "fallback" },
 			["<CR>"] = { "accept", "fallback" },
@@ -44,7 +23,7 @@ return {
 				show_on_keyword = true,
 				show_on_trigger_character = true,
 			},
-			ghost_text = { enabled = vim.g.ai_cmp },
+			ghost_text = { enabled = false },
 			list = {
 				selection = { preselect = true, auto_insert = false },
 			},
@@ -74,18 +53,10 @@ return {
 			window = { border = "single" },
 		},
 		sources = {
-			default = { "copilot", "lsp", "path", "snippets", "buffer" },
+			default = { "lsp", "path", "snippets", "buffer" },
 			per_filetype = {
 				markdown = { "path", "snippets", "buffer" },
 				terminal = { "path", "snippets", "buffer" },
-			},
-			providers = {
-				copilot = {
-					name = "copilot",
-					module = "blink-copilot",
-					score_offset = 100,
-					async = true,
-				},
 			},
 		},
 		fuzzy = {
