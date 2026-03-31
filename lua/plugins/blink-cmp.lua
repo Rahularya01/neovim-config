@@ -3,8 +3,6 @@ return {
 	version = "*",
 	dependencies = {
 		"rafamadriz/friendly-snippets",
-		"fang2hou/blink-copilot",
-		"zbirenbaum/copilot.lua",
 	},
 
 	config = function(_, opts)
@@ -18,14 +16,6 @@ return {
 				function(cmp)
 					if cmp.is_menu_visible() then
 						return cmp.select_and_accept()
-					end
-				end,
-				function()
-					local suggestion = require("copilot.suggestion")
-
-					if suggestion.is_visible() then
-						suggestion.accept()
-						return true
 					end
 				end,
 				function(cmp)
@@ -85,17 +75,9 @@ return {
 			window = { border = "single" },
 		},
 		sources = {
-			default = { "copilot", "lsp", "path", "snippets", "buffer" },
+			default = { "lsp", "path", "snippets", "buffer" },
 			per_filetype = {
 				terminal = { "path", "snippets", "buffer" },
-			},
-			providers = {
-				copilot = {
-					name = "copilot",
-					module = "blink-copilot",
-					score_offset = 100,
-					async = true,
-				},
 			},
 		},
 		fuzzy = {
