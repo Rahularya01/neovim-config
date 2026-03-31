@@ -19,7 +19,7 @@ end, 2000) -- Run after 2 seconds
 
 -- 3. Bootstrap Lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
-if not (vim.uv or vim.loop).fs_stat(lazypath) then
+if not vim.uv.fs_stat(lazypath) then
 	vim.fn.system({
 		"git",
 		"clone",
@@ -57,7 +57,6 @@ require("lazy").setup("plugins", {
 				"matchparen",
 				"netrwPlugin",
 				"tarPlugin",
-				"tohtml",
 				"tutor",
 				"zipPlugin",
 			},

@@ -2,6 +2,7 @@ local opt = vim.opt
 local g = vim.g
 
 g.have_nerd_font = true
+g.ai_cmp = true -- enable copilot ghost text + blink source
 
 opt.number = true
 opt.relativenumber = true
@@ -46,6 +47,8 @@ opt.foldenable = true
 opt.foldlevel = 99
 opt.foldlevelstart = 99
 opt.foldcolumn = "0"
+opt.foldmethod = "expr"
+opt.foldexpr = "v:lua.vim.lsp.foldexpr()"
 
 opt.list = false
 opt.listchars = {
@@ -76,7 +79,7 @@ vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 vim.api.nvim_create_autocmd("TextYankPost", {
 	group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
 	callback = function()
-		vim.highlight.on_yank({ timeout = 200 })
+		vim.hl.on_yank({ timeout = 200 })
 	end,
 })
 

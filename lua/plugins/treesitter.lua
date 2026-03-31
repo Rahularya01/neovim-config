@@ -1,100 +1,53 @@
 return {
-	"nvim-treesitter/nvim-treesitter",
-	branch = "master", -- use compat branch; main rewrite lacks configs module used by textobjects
-	build = ":TSUpdate",
-	event = { "BufReadPost", "BufNewFile" },
-	dependencies = {
-		"nvim-treesitter/nvim-treesitter-textobjects",
-	},
-	config = function()
-		require("nvim-treesitter.configs").setup({
-			ensure_installed = {
-				"lua",
-				"vim",
-				"vimdoc",
-				"query",
-				"c",
-				"cpp",
-				"python",
-				"javascript",
-				"typescript",
-				"tsx",
-				"json",
-				"html",
-				"css",
-				"markdown",
-				"markdown_inline",
-				"bash",
-				"rust",
-				"go",
-				"gomod",
-				"gowork",
-				"gosum",
-			},
-			auto_install = true,
-			highlight = {
-				enable = true,
-				additional_vim_regex_highlighting = false,
-			},
-			indent = {
-				enable = true,
-			},
-			incremental_selection = {
-				enable = true,
-				keymaps = {
-					init_selection = "<C-space>",
-					node_incremental = "<C-space>",
-					scope_incremental = false,
-					node_decremental = "<bs>",
-				},
-			},
-			textobjects = {
-				select = {
-					enable = true,
-					lookahead = true,
-					keymaps = {
-						["af"] = "@function.outer",
-						["if"] = "@function.inner",
-						["ac"] = "@class.outer",
-						["ic"] = "@class.inner",
-						["aa"] = "@parameter.outer",
-						["ia"] = "@parameter.inner",
-					},
-				},
-				move = {
-					enable = true,
-					set_jumps = true,
-					goto_next_start = {
-						["]f"] = "@function.outer",
-						["]c"] = "@class.outer",
-						["]a"] = "@parameter.inner",
-					},
-					goto_next_end = {
-						["]F"] = "@function.outer",
-						["]C"] = "@class.outer",
-						["]A"] = "@parameter.inner",
-					},
-					goto_previous_start = {
-						["[f"] = "@function.outer",
-						["[c"] = "@class.outer",
-						["[a"] = "@parameter.inner",
-					},
-					goto_previous_end = {
-						["[F"] = "@function.outer",
-						["[C"] = "@class.outer",
-						["[A"] = "@parameter.inner",
-					},
-				},
-				swap = {
-					enable = true,
-					swap_next = {
-						["<leader>a"] = "@parameter.inner",
-					},
-					swap_previous = {
-						["<leader>A"] = "@parameter.inner",
-					},
-				},
-			},
-		})
-	end,
+  "nvim-treesitter/nvim-treesitter",
+  lazy = false,
+  build = ":TSUpdate",
+  config = function()
+    require("nvim-treesitter").setup({
+      install_dir = vim.fn.stdpath("data") .. "/site",
+    })
+
+    -- Install parsers for all languages used in this config.
+    -- This is a no-op if parsers are already up to date.
+    require("nvim-treesitter").install({
+      "bash",
+      "c",
+      "cpp",
+      "css",
+      "diff",
+      "go",
+      "gomod",
+      "html",
+      "javascript",
+      "json",
+      "lua",
+      "luadoc",
+      "markdown",
+      "markdown_inline",
+      "python",
+      "query",
+      "regex",
+      "rust",
+      "toml",
+      "tsx",
+      "typescript",
+      "vim",
+      "vimdoc",
+      "yaml",
+    })
+
+    -- Enable treesitter highlighting and folding for all filetypes that have a parser.
+    vim.api.nvim_create_autocmd("FileType", {
+      group = vim.api.nvim_create_augroup("treesitter_attach", { clear = true }),
+      callback = function(ev)
+        local ok = pcall(vim.treesitter.start, ev.buf)
+        if ok then
+          -- Use treesitter-based folding when a parser is available
+          local win = vim.api.nvim_get_current_win()
+          vim.wo[win][0].foldmethod = "expr"
+          vim.wo[win][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
+        end
+      end,
+    })
+  end,
 }

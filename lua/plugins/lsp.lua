@@ -111,8 +111,8 @@ return {
 						vim.lsp.buf.code_action({ context = { only = { "source" } } })
 					end, "Source actions")
 
-					map("n", "[d", vim.diagnostic.goto_prev, "Previous diagnostic")
-					map("n", "]d", vim.diagnostic.goto_next, "Next diagnostic")
+				map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, "Previous diagnostic")
+				map("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, "Next diagnostic")
 					map("n", "<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
 
 					local client = vim.lsp.get_client_by_id(event.data.client_id)
@@ -258,14 +258,15 @@ return {
 				float = { border = "rounded", source = "always", header = "", prefix = "" },
 				update_in_insert = false,
 				underline = true,
-				signs = true,
+				signs = {
+					text = {
+						[vim.diagnostic.severity.ERROR] = " ",
+						[vim.diagnostic.severity.WARN] = " ",
+						[vim.diagnostic.severity.HINT] = "󰛩 ",
+						[vim.diagnostic.severity.INFO] = " ",
+					},
+				},
 			})
-
-			local signs = { Error = " ", Warn = " ", Hint = "󰛩 ", Info = " " }
-			for type, icon in pairs(signs) do
-				local hl = "DiagnosticSign" .. type
-				vim.fn.sign_define(hl, { text = icon, texthl = hl, numhl = "" })
-			end
 		end,
 	},
 }

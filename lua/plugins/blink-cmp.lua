@@ -3,11 +3,41 @@ return {
 	version = "*",
 	dependencies = {
 		"rafamadriz/friendly-snippets",
+		"fang2hou/blink-copilot",
+		"zbirenbaum/copilot.lua",
 	},
+
+	config = function(_, opts)
+		require("blink.cmp").setup(opts)
+	end,
 
 	opts = {
 		keymap = {
-			preset = "default",
+			preset = "super-tab",
+			["<Tab>"] = {
+				function(cmp)
+					if cmp.is_menu_visible() then
+						return cmp.select_and_accept()
+					end
+				end,
+				function()
+					local suggestion = require("copilot.suggestion")
+
+					if suggestion.is_visible() then
+						suggestion.accept()
+						return true
+					end
+				end,
+				function(cmp)
+					if cmp.snippet_active() then
+						return cmp.accept()
+					end
+
+					return cmp.select_and_accept()
+				end,
+				"snippet_forward",
+				"fallback",
+			},
 			["<C-k>"] = { "select_prev", "fallback" },
 			["<C-j>"] = { "select_next", "fallback" },
 			["<CR>"] = { "accept", "fallback" },
@@ -35,7 +65,9 @@ return {
 					winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:BlinkCmpDocCursorLine,Search:None",
 				},
 			},
+
 			menu = {
+				auto_show = true,
 				border = "single",
 				winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
 				draw = {
@@ -53,10 +85,17 @@ return {
 			window = { border = "single" },
 		},
 		sources = {
-			default = { "lsp", "path", "snippets", "buffer" },
+			default = { "copilot", "lsp", "path", "snippets", "buffer" },
 			per_filetype = {
-				markdown = { "path", "snippets", "buffer" },
 				terminal = { "path", "snippets", "buffer" },
+			},
+			providers = {
+				copilot = {
+					name = "copilot",
+					module = "blink-copilot",
+					score_offset = 100,
+					async = true,
+				},
 			},
 		},
 		fuzzy = {

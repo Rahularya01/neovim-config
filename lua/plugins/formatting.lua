@@ -6,7 +6,7 @@ return {
 		{
 			"<leader>f",
 			function()
-				require("conform").format({ async = true, lsp_fallback = true })
+				require("conform").format({ async = true, lsp_format = "fallback" })
 			end,
 			mode = { "n", "v" },
 			desc = "format buffer",
@@ -29,6 +29,6 @@ return {
 			c = { "clang-format" },
 			cpp = { "clang-format" },
 		},
-		format_on_save = { timeout_ms = 1000, lsp_fallback = true },
+		format_on_save = { timeout_ms = 1000, lsp_format = "fallback" },
 	},
 }

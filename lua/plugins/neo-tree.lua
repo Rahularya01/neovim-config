@@ -11,15 +11,13 @@ return {
 		keys = {
 			{ "<leader>e", "<cmd>Neotree toggle<CR>", desc = "Toggle NeoTree" },
 		},
-
 		opts = {
-			-- 1. General UI Settings
+
 			close_if_last_window = true,
 			popup_border_style = "rounded",
 			enable_git_status = true,
 			enable_diagnostics = true,
 
-			-- 2. Visuals & Icons Configuration
 			default_component_configs = {
 				indent = {
 					with_expanders = true,
@@ -53,7 +51,6 @@ return {
 				},
 			},
 
-			-- 3. Filesystem Specific Settings
 			filesystem = {
 				follow_current_file = {
 					enabled = true,
@@ -72,9 +69,8 @@ return {
 					},
 				},
 
-				-- 4. Keymaps (Your custom mapping)
 				window = {
-					width = 35, -- ADD THIS LINE (Default is 40)
+					width = 35,
 					mappings = {
 						["l"] = "open",
 						["h"] = "close_node",
