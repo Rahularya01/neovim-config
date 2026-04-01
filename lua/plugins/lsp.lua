@@ -86,12 +86,12 @@ return {
 			end
 
 			local ok_blink, blink = pcall(require, "blink.cmp")
-			if not ok_blink then
-				vim.notify("Failed to load blink.cmp", vim.log.levels.ERROR)
-				return
+			local capabilities
+			if ok_blink then
+				capabilities = blink.get_lsp_capabilities()
+			else
+				capabilities = vim.lsp.protocol.make_client_capabilities()
 			end
-
-			local capabilities = blink.get_lsp_capabilities()
 
 			vim.api.nvim_create_autocmd("LspAttach", {
 				group = vim.api.nvim_create_augroup("UserLspConfig", { clear = true }),
@@ -111,8 +111,12 @@ return {
 						vim.lsp.buf.code_action({ context = { only = { "source" } } })
 					end, "Source actions")
 
-				map("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, "Previous diagnostic")
-				map("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, "Next diagnostic")
+					map("n", "[d", function()
+						vim.diagnostic.jump({ count = -1 })
+					end, "Previous diagnostic")
+					map("n", "]d", function()
+						vim.diagnostic.jump({ count = 1 })
+					end, "Next diagnostic")
 					map("n", "<leader>ld", vim.diagnostic.open_float, "Line diagnostics")
 
 					local client = vim.lsp.get_client_by_id(event.data.client_id)

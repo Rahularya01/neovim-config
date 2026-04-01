@@ -3,7 +3,6 @@ local g = vim.g
 
 g.have_nerd_font = true
 g.ai_cmp = true -- enable copilot ghost text + blink source
-
 opt.number = true
 opt.relativenumber = true
 opt.signcolumn = "yes"

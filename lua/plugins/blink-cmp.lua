@@ -1,52 +1,20 @@
 return {
 	"saghen/blink.cmp",
-	version = "*",
-	dependencies = {
-		"rafamadriz/friendly-snippets",
-	},
-
-	config = function(_, opts)
-		require("blink.cmp").setup(opts)
-	end,
-
+	dependencies = { "rafamadriz/friendly-snippets", "fang2hou/blink-copilot" },
+	version = "1.*",
 	opts = {
 		keymap = {
-			preset = "super-tab",
-			["<Tab>"] = {
-				function(cmp)
-					if cmp.is_menu_visible() then
-						return cmp.select_and_accept()
-					end
-				end,
-				function(cmp)
-					if cmp.snippet_active() then
-						return cmp.accept()
-					end
-
-					return cmp.select_and_accept()
-				end,
-				"snippet_forward",
-				"fallback",
-			},
+			preset = "default",
 			["<C-k>"] = { "select_prev", "fallback" },
 			["<C-j>"] = { "select_next", "fallback" },
-			["<CR>"] = { "accept", "fallback" },
 			["<C-space>"] = { "show", "fallback" },
-			["<C-e>"] = { "cancel", "fallback" },
+			["<CR>"] = { "accept", "fallback" },
+			["<C-b>"] = { "cancel", "fallback" },
 		},
-
 		appearance = {
 			nerd_font_variant = "mono",
 		},
 		completion = {
-			trigger = {
-				show_on_keyword = true,
-				show_on_trigger_character = true,
-			},
-			ghost_text = { enabled = false },
-			list = {
-				selection = { preselect = true, auto_insert = false },
-			},
 			documentation = {
 				auto_show = true,
 				auto_show_delay_ms = 200,
@@ -55,38 +23,30 @@ return {
 					winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:BlinkCmpDocCursorLine,Search:None",
 				},
 			},
-
 			menu = {
-				auto_show = true,
 				border = "single",
 				winhighlight = "Normal:Normal,FloatBorder:FloatBorder,CursorLine:BlinkCmpMenuSelection,Search:None",
 				draw = {
 					columns = {
-						{ "kind_icon", width = { fixed = 2 } },
+						{ "kind_icon" },
 						{ "label", "label_description", gap = 1 },
 						{ "kind" },
 					},
 				},
 			},
 		},
-
-		signature = {
-			enabled = true,
-			window = { border = "single" },
-		},
 		sources = {
-			default = { "lsp", "path", "snippets", "buffer" },
-			per_filetype = {
-				terminal = { "path", "snippets", "buffer" },
+			default = { "lsp", "path", "snippets", "buffer", "copilot" },
+			providers = {
+				copilot = {
+					name = "copilot",
+					module = "blink-copilot",
+					score_offset = 100,
+					async = true,
+				},
 			},
 		},
-		fuzzy = {
-			implementation = "prefer_rust",
-			prebuilt_binaries = {
-				force_version = "v1.9.1",
-			},
-		},
+		fuzzy = { implementation = "prefer_rust_with_warning" },
 	},
-
 	opts_extend = { "sources.default" },
 }
