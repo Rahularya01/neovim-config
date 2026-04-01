@@ -4,7 +4,7 @@ return {
 	version = "1.*",
 	opts = {
 		keymap = {
-			preset = "default",
+			preset = "super-tab",
 			["<C-k>"] = { "select_prev", "fallback" },
 			["<C-j>"] = { "select_next", "fallback" },
 			["<C-space>"] = { "show", "fallback" },

@@ -73,7 +73,20 @@ return {
 				lualine_z = {
 					{ "location", separator = { right = " " }, left_padding = 2 },
 					{
-						require("opencode").statusline,
+						function()
+							return ""
+						end,
+						color = function()
+							local status = require("sidekick.status").get()
+							if status then
+								return status.kind == "Error" and "DiagnosticError"
+									or status.busy and "DiagnosticWarn"
+									or "Special"
+							end
+						end,
+						cond = function()
+							return require("sidekick.status").get() ~= nil
+						end,
 					},
 				},
 			},
