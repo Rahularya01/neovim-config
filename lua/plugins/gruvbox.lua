@@ -3,21 +3,9 @@ return {
 	priority = 1000,
 	event = "VimEnter",
 	config = function()
-		local colors = {
-			bg0 = "#1d2021",
-			bg1 = "#3c3836",
-			bg_visual = "#504945",
-			fg = "#ebdbb2",
-
-			red = "#fb4934",
-			green = "#b8bb26",
-			yellow = "#fabd2f",
-			blue = "#83a598",
-			purple = "#d3869b",
-			aqua = "#8ec07c",
-			orange = "#fe8019",
-			gray = "#928374",
-		}
+		local colors = require("config.gruvbox-palette")
+		-- bg2 doubles as the visual selection background
+		colors.bg_visual = colors.bg2
 
 		require("gruvbox").setup({
 			contrast = "hard",

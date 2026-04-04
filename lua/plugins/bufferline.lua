@@ -2,33 +2,11 @@ return {
 	"akinsho/bufferline.nvim",
 	event = "VeryLazy",
 	dependencies = {
-		"moll/vim-bbye",
 		"nvim-tree/nvim-web-devicons",
 	},
 	config = function()
 		local bufferline = require("bufferline")
-
-		-- Gruvbox color palette
-		local colors = {
-			bg = "#282828",
-			fg = "#ebdbb2",
-			bg0 = "#1d2021",
-			bg1 = "#3c3836",
-			bg2 = "#504945",
-			bg3 = "#665c54",
-			fg0 = "#fbf1c7",
-			fg1 = "#ebdbb2",
-			fg2 = "#d5c4a1",
-			fg3 = "#bdae93",
-			red = "#fb4934",
-			green = "#b8bb26",
-			yellow = "#fabd2f",
-			blue = "#83a598",
-			purple = "#d3869b",
-			aqua = "#8ec07c",
-			orange = "#fe8019",
-			gray = "#928374",
-		}
+		local colors = require("config.gruvbox-palette")
 
 		bufferline.setup({
 			options = {
@@ -44,7 +22,7 @@ return {
 				mode = "buffers",
 				themable = true,
 				numbers = "none",
-				close_command = "Bdelete! %d",
+				close_command = "bdelete! %d",
 				buffer_close_icon = "✗",
 				close_icon = "✗",
 				modified_icon = "●",

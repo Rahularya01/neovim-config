@@ -104,6 +104,20 @@ return {
 			end,
 			desc = "Grep",
 		},
+		{
+			"<leader>S",
+			function()
+				Snacks.picker.grep()
+			end,
+			desc = "Search (grep)",
+		},
+		{
+			"<leader>sw",
+			function()
+				Snacks.picker.grep_word()
+			end,
+			desc = "Search current word",
+		},
 
 		-- Other Snacks Utilities
 		{

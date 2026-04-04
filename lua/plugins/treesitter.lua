@@ -36,17 +36,11 @@ return {
       "yaml",
     })
 
-    -- Enable treesitter highlighting and folding for all filetypes that have a parser.
+    -- Enable treesitter highlighting for all filetypes that have a parser.
     vim.api.nvim_create_autocmd("FileType", {
       group = vim.api.nvim_create_augroup("treesitter_attach", { clear = true }),
       callback = function(ev)
-        local ok = pcall(vim.treesitter.start, ev.buf)
-        if ok then
-          -- Use treesitter-based folding when a parser is available
-          local win = vim.api.nvim_get_current_win()
-          vim.wo[win][0].foldmethod = "expr"
-          vim.wo[win][0].foldexpr = "v:lua.vim.treesitter.foldexpr()"
-        end
+        pcall(vim.treesitter.start, ev.buf)
       end,
     })
   end,
