@@ -47,7 +47,7 @@ opt.foldlevel = 99
 opt.foldlevelstart = 99
 opt.foldcolumn = "0"
 opt.foldmethod = "expr"
-opt.foldexpr = "v:lua.vim.lsp.foldexpr()"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
 opt.list = false
 opt.listchars = {
