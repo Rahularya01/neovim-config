@@ -28,6 +28,7 @@ return {
       skip_confirm_for_simple_edits = false,
       save_confirm = true,
       view_options = {
+        initial_mode = "preview",
         show_hidden = true,
         is_hidden_file = function(name, bufnr)
           return vim.startswith(name, ".")

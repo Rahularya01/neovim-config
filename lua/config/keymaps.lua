@@ -57,3 +57,6 @@ end, { desc = "Open all folds" })
 map("n", "zM", function()
 	vim.opt.foldlevel = 0
 end, { desc = "Close all folds" })
+
+
+map("n", "-", "<cmd>Oil<CR>", { desc = "Open Oil file explorer" })
