@@ -111,7 +111,6 @@ return {
 - **snacks.nvim**: Picker (files, grep, buffers), terminal, lazygit, GitHub issue/PR picker
 - **neo-tree.lua**: File explorer
 - **oil.lua**: File operations UI
-- **bufferline.lua**: Tab bar for buffers
 - **lualine.lua**: Status line
 - **treesitter.lua**: Syntax highlighting & code parsing
 

@@ -50,3 +50,13 @@ end, { desc = "Toggle listchars (show whitespace)" })
 map("n", "<leader>us", function()
 	vim.opt.spell = not vim.opt.spell:get()
 end, { desc = "Toggle spell checking" })
+
+map("n", "zR", function()
+	vim.opt.foldlevel = 99
+end, { desc = "Open all folds" })
+map("n", "zM", function()
+	vim.opt.foldlevel = 0
+end, { desc = "Close all folds" })
+
+
+map("n", "-", "<cmd>Oil<CR>", { desc = "Open Oil file explorer" })

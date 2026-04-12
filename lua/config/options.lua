@@ -42,7 +42,12 @@ opt.timeoutlen = 300
 opt.redrawtime = 1500
 opt.synmaxcol = 240
 
--- Fold settings managed by ufo.lua
+opt.foldenable = true
+opt.foldlevel = 99
+opt.foldlevelstart = 99
+opt.foldcolumn = "0"
+opt.foldmethod = "expr"
+opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
 opt.list = false
 opt.listchars = {
