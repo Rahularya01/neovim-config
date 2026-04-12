@@ -42,6 +42,7 @@ return {
 				"luacheck",
 				"prettier",
 				"prettierd",
+				"eslint_d",
 				"black",
 				"isort",
 				"ruff",
