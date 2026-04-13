@@ -8,8 +8,8 @@ vim.api.nvim_create_user_command("RemoveComments", function()
 		return
 	end
 
-	local ok_parser, parser = pcall(vim.treesitter.get_parser, bufnr)
-	if not ok_parser or not parser then
+	local parser = vim.treesitter.get_parser(bufnr)
+	if not parser then
 		vim.notify("RemoveComments: no Treesitter parser for current buffer", vim.log.levels.WARN)
 		return
 	end
