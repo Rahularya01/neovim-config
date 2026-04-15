@@ -35,7 +35,6 @@ map("v", "<M-K>", ":m '<-2<CR>gv=gv", { desc = "Move selection up", silent = tru
 map({ "i", "x", "n", "s" }, "<C-s>", "<cmd>w<cr><esc>", { desc = "Save file" })
 
 -- Buffer management
-map("n", "<leader>bd", "<cmd>bd<cr>", { desc = "Close buffer", silent = true })
 map("n", "<C-x>", "<cmd>bd<cr>", { desc = "Close buffer", silent = true })
 map("n", "<leader>bc", "<cmd>silent! %bd!<cr>", { desc = "Close all buffers silently", silent = true })
 
@@ -47,11 +46,6 @@ map("n", "<leader>q", "<cmd>copen<cr>", { desc = "Open quickfix list", silent = 
 
 -- Save
 map("n", "<leader>w", "<cmd>w<cr>", { desc = "Save file", silent = true })
-
--- Terminal
-map("n", "<C-\\>", function()
-  Snacks.terminal()
-end, { desc = "Toggle terminal" })
 
 -- Toggle options
 map("n", "<leader>ul", function()

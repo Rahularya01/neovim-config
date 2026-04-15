@@ -43,6 +43,12 @@ return {
 				max_height = 15,
 			},
 		},
+		quickfile = { enabled = true },
+		scroll = { enabled = true },
+		scope = { enabled = true },
+		statuscolumn = { enabled = true },
+		words = { enabled = true },
+		bufdelete = { enabled = true },
 	},
 
 	keys = {
@@ -119,6 +125,91 @@ return {
 			desc = "Search current word",
 		},
 
+		-- Terminal
+		{
+			"<C-\\>",
+			function()
+				Snacks.terminal.toggle()
+			end,
+			desc = "Toggle terminal",
+		},
+		{
+			"<C-\\>",
+			function()
+				Snacks.terminal.toggle()
+			end,
+			mode = "t",
+			desc = "Toggle terminal",
+		},
+		{
+			"<leader>tt",
+			function()
+				Snacks.terminal.toggle(nil, { count = vim.v.count1 })
+			end,
+			desc = "Toggle terminal (count)",
+		},
+		{
+			"<leader>tl",
+			function()
+				local terms = Snacks.terminal.list()
+				if #terms == 0 then
+					Snacks.terminal.toggle()
+					return
+				end
+				local items = {}
+				for _, term in ipairs(terms) do
+					local count = term.opts.count or 1
+					table.insert(items, {
+						text = "Terminal " .. count,
+						count = count,
+					})
+				end
+				Snacks.picker.pick({
+					source = "terminals",
+					items = items,
+					format = function(item)
+						return { { item.text, "SnacksPickerLabel" } }
+					end,
+					confirm = function(picker, item)
+						picker:close()
+						if item then
+							Snacks.terminal.toggle(nil, { count = item.count })
+						end
+					end,
+				})
+			end,
+			desc = "List terminals",
+		},
+		-- Buffer delete
+		{
+			"<leader>bd",
+			function()
+				Snacks.bufdelete()
+			end,
+			desc = "Delete buffer",
+		},
+		{
+			"<leader>bD",
+			function()
+				Snacks.bufdelete({ force = true })
+			end,
+			desc = "Delete buffer (force)",
+		},
+		-- LSP Word references
+		{
+			"]r",
+			function()
+				Snacks.words.jump(vim.v.count1)
+			end,
+			desc = "Next reference",
+		},
+		{
+			"[r",
+			function()
+				Snacks.words.jump(-vim.v.count1)
+			end,
+			desc = "Prev reference",
+		},
 		-- Other Snacks Utilities
 		{
 			"<leader>lg",
