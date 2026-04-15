@@ -119,7 +119,7 @@ return {
 - **nvim-lint**: Linting via LSP + nvim-lint engine
 - **trouble.lua**: Diagnostic list UI
 - **gitsigns.lua**: Git change indicators in gutter
-- **spectre.lua**: Find & replace
+- **grug-far.lua**: Find & replace (rip-grep/ast-grep powered)
 
 ---
 

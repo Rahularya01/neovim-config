@@ -258,7 +258,6 @@ return {
 			})
 
 			vim.diagnostic.config({
-				virtual_text = { spacing = 4, prefix = "●" },
 				severity_sort = true,
 				float = { border = "rounded", source = "always", header = "", prefix = "" },
 				update_in_insert = false,
