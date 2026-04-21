@@ -51,11 +51,11 @@ opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
 
 opt.list = false
 opt.listchars = {
-	tab = "▸ ",
-	trail = "·",
-	extends = "…",
-	precedes = "…",
-	nbsp = "␣",
+  tab = "▸ ",
+  trail = "·",
+  extends = "…",
+  precedes = "…",
+  nbsp = "␣",
 }
 
 opt.conceallevel = 0
@@ -67,24 +67,24 @@ opt.spelllang = { "en_us" }
 opt.spelloptions = { "camel" }
 
 vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
-	group = vim.api.nvim_create_augroup("checktime", { clear = true }),
-	callback = function()
-		if vim.o.buftype ~= "nofile" then
-			vim.cmd("checktime")
-		end
-	end,
+  group = vim.api.nvim_create_augroup("checktime", { clear = true }),
+  callback = function()
+    if vim.o.buftype ~= "nofile" then
+      vim.cmd("checktime")
+    end
+  end,
 })
 
 vim.api.nvim_create_autocmd("TextYankPost", {
-	group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
-	callback = function()
-		vim.hl.on_yank({ timeout = 200 })
-	end,
+  group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
+  callback = function()
+    vim.highlight.on_yank({ timeout = 200 })
+  end,
 })
 
 vim.api.nvim_create_autocmd("VimResized", {
-	group = vim.api.nvim_create_augroup("resize_splits", { clear = true }),
-	callback = function()
-		vim.cmd("tabdo wincmd =")
-	end,
+  group = vim.api.nvim_create_augroup("resize_splits", { clear = true }),
+  callback = function()
+    vim.cmd("tabdo wincmd =")
+  end,
 })

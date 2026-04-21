@@ -1,27 +1,32 @@
 local M = {}
 
 function M.check_tools()
-	local tools = {
-		"git",
-		"rg",
-	}
+  local tools = {
+    "git",
+    "rg",
+    "node",
+    "python3",
+    "go",
+    "stylua",
+    "prettier",
+  }
 
-	local missing = {}
-	for _, tool in ipairs(tools) do
-		if vim.fn.executable(tool) == 0 then
-			table.insert(missing, tool)
-		end
-	end
+  local missing = {}
+  for _, tool in ipairs(tools) do
+    if vim.fn.executable(tool) == 0 then
+      table.insert(missing, tool)
+    end
+  end
 
-	if #missing > 0 then
-		vim.notify(string.format("Missing recommended tools: %s", table.concat(missing, ", ")), vim.log.levels.WARN)
-	end
+  if #missing > 0 then
+    vim.notify(string.format("Missing recommended tools: %s", table.concat(missing, ", ")), vim.log.levels.WARN)
+  end
 end
 
 function M.setup()
-	vim.defer_fn(function()
-		M.check_tools()
-	end, 1000)
+  vim.defer_fn(function()
+    M.check_tools()
+  end, 1000)
 end
 
 return M
