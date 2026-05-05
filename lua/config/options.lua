@@ -1,3 +1,6 @@
+-- Add mason bin to PATH so formatters and linters are found
+vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin:" .. vim.env.PATH
+
 local opt = vim.opt
 local g = vim.g
 

@@ -29,6 +29,7 @@ return {
       c = { "clang-format" },
       cpp = { "clang-format" },
       proto = { "clang-format" },
+      java = { "google-java-format" },
     },
     format_on_save = { timeout_ms = 3000, lsp_format = "fallback" },
   },

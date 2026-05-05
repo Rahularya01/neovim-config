@@ -7,9 +7,15 @@ return {
       python = { "ruff" },
       lua = { "luacheck" },
       go = { "golangci-lint" },
+      c = { "cpplint" },
+      cpp = { "cpplint" },
     }
     if vim.fn.executable("golangci-lint") == 0 then
       linters_by_ft.go = nil
+    end
+    if vim.fn.executable("cpplint") == 0 then
+      linters_by_ft.c = nil
+      linters_by_ft.cpp = nil
     end
     lint.linters_by_ft = linters_by_ft
     local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })

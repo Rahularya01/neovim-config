@@ -53,6 +53,9 @@ return {
         "golangci-lint",
         "clangd",
         "clang-format",
+        "jdtls",
+        "google-java-format",
+        "cpplint",
       },
       auto_update = true,
       run_on_start = false, -- Don't run on startup to avoid lag
