@@ -5,6 +5,24 @@ return {
   opts = {
     keymap = {
       preset = "super-tab",
+      ["<Tab>"] = {
+        function(cmp)
+          if vim.b[vim.api.nvim_get_current_buf()].nes_state then
+            cmp.hide()
+            return require("copilot-lsp.nes").apply_pending_nes() and require("copilot-lsp.nes").walk_cursor_end_edit()
+          end
+
+          local ok_suggestion, suggestion = pcall(require, "copilot.suggestion")
+          if ok_suggestion and suggestion.is_visible() then
+            suggestion.accept()
+            return true
+          end
+
+          return cmp.select_and_accept()
+        end,
+        "snippet_forward",
+        "fallback",
+      },
       ["<C-k>"] = { "select_prev", "fallback" },
       ["<C-j>"] = { "select_next", "fallback" },
       ["<C-space>"] = { "show", "fallback" },

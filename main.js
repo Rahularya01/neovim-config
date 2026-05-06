@@ -1,1 +1,3 @@
-// create a simple express server
+let b = 5;
+
+console.log(a);
