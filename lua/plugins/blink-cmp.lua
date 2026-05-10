@@ -7,15 +7,17 @@ return {
       preset = "super-tab",
       ["<Tab>"] = {
         function(cmp)
-          if vim.b[vim.api.nvim_get_current_buf()].nes_state then
-            cmp.hide()
-            return require("copilot-lsp.nes").apply_pending_nes() and require("copilot-lsp.nes").walk_cursor_end_edit()
+          if require("sidekick").nes_jump_or_apply() then
+            return true
           end
 
-          local ok_suggestion, suggestion = pcall(require, "copilot.suggestion")
-          if ok_suggestion and suggestion.is_visible() then
-            suggestion.accept()
-            return true
+          local ok, suggestion = pcall(vim.fn["copilot#GetDisplayedSuggestion"])
+          if ok and suggestion.text and suggestion.text ~= "" then
+            local accept = vim.fn["copilot#Accept"]("")
+            if accept ~= "" then
+              vim.api.nvim_feedkeys(accept, "n", false)
+              return true
+            end
           end
 
           return cmp.select_and_accept()

@@ -1,57 +1,31 @@
 return {
-  "zbirenbaum/copilot.lua",
-  dependencies = {
-    {
-      "copilotlsp-nvim/copilot-lsp",
-      init = function()
-        vim.g.copilot_nes_debounce = 500
+  "github/copilot.vim",
+  cmd = "Copilot",
+  event = "BufWinEnter",
+  init = function()
+    vim.g.copilot_no_tab_map = true
+    vim.g.copilot_hide_during_completion = false
+  end,
+  config = function()
+    vim.api.nvim_create_augroup("github_copilot", { clear = true })
+    vim.api.nvim_create_autocmd({ "FileType", "BufUnload" }, {
+      group = "github_copilot",
+      callback = function(args)
+        vim.fn["copilot#On" .. args.event]()
       end,
-    },
-  },
-  cmd = { "Copilot" },
-  event = "VeryLazy",
-  opts = {
-    suggestion = {
-      enabled = true,
-      auto_trigger = true,
-      hide_during_completion = false,
-      keymap = {
-        accept = false,
-        accept_word = false,
-        accept_line = false,
-        next = false,
-        prev = false,
-        dismiss = false,
-      },
-    },
-    nes = {
-      enabled = true,
-      auto_trigger = true,
-      keymap = {
-        accept_and_goto = "<tab>",
-        accept = false,
-        dismiss = "<Esc>",
-      },
-    },
-    panel = {
-      enabled = true,
-      auto_refresh = true,
-    },
-  },
+    })
+    vim.fn["copilot#OnFileType"]()
+  end,
   keys = {
     {
       "<M-[>",
-      function()
-        require("copilot.suggestion").prev()
-      end,
+      "<Plug>(copilot-previous)",
       mode = "i",
       desc = "Previous Copilot Suggestion",
     },
     {
       "<M-]>",
-      function()
-        require("copilot.suggestion").next()
-      end,
+      "<Plug>(copilot-next)",
       mode = "i",
       desc = "Next Copilot Suggestion",
     },

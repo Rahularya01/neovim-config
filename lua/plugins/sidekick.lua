@@ -11,6 +11,17 @@ return {
   },
   keys = {
     {
+      "<tab>",
+      function()
+        if not require("sidekick").nes_jump_or_apply() then
+          return "<tab>"
+        end
+      end,
+      mode = { "n" },
+      expr = true,
+      desc = "Goto/Apply Next Edit Suggestion",
+    },
+    {
       "<C-.>",
       function()
         require("sidekick.cli").focus()
