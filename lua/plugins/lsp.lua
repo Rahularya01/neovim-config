@@ -247,7 +247,6 @@ return {
         bashls = {
           filetypes = { "sh", "bash", "zsh" },
         },
-        copilot = {},
       }
 
       local ok_mason, mason_lspconfig = pcall(require, "mason-lspconfig")

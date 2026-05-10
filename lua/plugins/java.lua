@@ -13,7 +13,8 @@ return {
       pattern = "java",
       callback = function()
         local jdtls_pkg = mason_registry.get_package("jdtls")
-        local jdtls_path = jdtls_pkg and jdtls_pkg.get_install_path and jdtls_pkg:get_install_path() or (vim.fn.stdpath("data") .. "/mason/packages/jdtls")
+        local jdtls_path = jdtls_pkg and jdtls_pkg.get_install_path and jdtls_pkg:get_install_path()
+          or (vim.fn.stdpath("data") .. "/mason/packages/jdtls")
 
         local lombok_jar = vim.fn.glob(jdtls_path .. "/lombok-*.jar", 1, 1)[1] or ""
 
@@ -30,7 +31,9 @@ return {
           os_config = "config_win"
         end
 
-        local workspace_dir = vim.fn.stdpath("data") .. "/jdtls-workspace/" .. vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
+        local workspace_dir = vim.fn.stdpath("data")
+          .. "/jdtls-workspace/"
+          .. vim.fn.fnamemodify(vim.fn.getcwd(), ":p:h:t")
 
         local ok_blink, blink = pcall(require, "blink.cmp")
         local capabilities
@@ -50,8 +53,10 @@ return {
             "-Dlog.level=ALL",
             "-Xmx1g",
             "--add-modules=ALL-SYSTEM",
-            "--add-opens", "java.base/java.util=ALL-UNNAMED",
-            "--add-opens", "java.base/java.lang=ALL-UNNAMED",
+            "--add-opens",
+            "java.base/java.util=ALL-UNNAMED",
+            "--add-opens",
+            "java.base/java.lang=ALL-UNNAMED",
           },
           root_dir = require("jdtls.setup").find_root({ ".git", "mvnw", "gradlew", "pom.xml", "build.gradle" }),
           settings = {
@@ -103,23 +108,83 @@ return {
 
             local opts = { buffer = bufnr, silent = true }
             vim.keymap.set("n", "K", vim.lsp.buf.hover, vim.tbl_extend("force", opts, { desc = "Hover" }))
-            vim.keymap.set("n", "gd", vim.lsp.buf.definition, vim.tbl_extend("force", opts, { desc = "Go to definition" }))
-            vim.keymap.set("n", "gD", vim.lsp.buf.declaration, vim.tbl_extend("force", opts, { desc = "Go to declaration" }))
-            vim.keymap.set("n", "gi", vim.lsp.buf.implementation, vim.tbl_extend("force", opts, { desc = "Go to implementation" }))
-            vim.keymap.set("n", "gr", vim.lsp.buf.references, vim.tbl_extend("force", opts, { desc = "List references" }))
-            vim.keymap.set("n", "<leader>rn", vim.lsp.buf.rename, vim.tbl_extend("force", opts, { desc = "Rename symbol" }))
-            vim.keymap.set("n", "<leader>ca", vim.lsp.buf.code_action, vim.tbl_extend("force", opts, { desc = "Code action" }))
-            vim.keymap.set("n", "[d", function() vim.diagnostic.jump({ count = -1 }) end, vim.tbl_extend("force", opts, { desc = "Previous diagnostic" }))
-            vim.keymap.set("n", "]d", function() vim.diagnostic.jump({ count = 1 }) end, vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))
-            vim.keymap.set("n", "<leader>ld", vim.diagnostic.open_float, vim.tbl_extend("force", opts, { desc = "Line diagnostics" }))
+            vim.keymap.set(
+              "n",
+              "gd",
+              vim.lsp.buf.definition,
+              vim.tbl_extend("force", opts, { desc = "Go to definition" })
+            )
+            vim.keymap.set(
+              "n",
+              "gD",
+              vim.lsp.buf.declaration,
+              vim.tbl_extend("force", opts, { desc = "Go to declaration" })
+            )
+            vim.keymap.set(
+              "n",
+              "gi",
+              vim.lsp.buf.implementation,
+              vim.tbl_extend("force", opts, { desc = "Go to implementation" })
+            )
+            vim.keymap.set(
+              "n",
+              "gr",
+              vim.lsp.buf.references,
+              vim.tbl_extend("force", opts, { desc = "List references" })
+            )
+            vim.keymap.set(
+              "n",
+              "<leader>rn",
+              vim.lsp.buf.rename,
+              vim.tbl_extend("force", opts, { desc = "Rename symbol" })
+            )
+            vim.keymap.set(
+              "n",
+              "<leader>ca",
+              vim.lsp.buf.code_action,
+              vim.tbl_extend("force", opts, { desc = "Code action" })
+            )
+            vim.keymap.set("n", "[d", function()
+              vim.diagnostic.jump({ count = -1 })
+            end, vim.tbl_extend("force", opts, { desc = "Previous diagnostic" }))
+            vim.keymap.set("n", "]d", function()
+              vim.diagnostic.jump({ count = 1 })
+            end, vim.tbl_extend("force", opts, { desc = "Next diagnostic" }))
+            vim.keymap.set(
+              "n",
+              "<leader>ld",
+              vim.diagnostic.open_float,
+              vim.tbl_extend("force", opts, { desc = "Line diagnostics" })
+            )
 
             -- Java specific
-            vim.keymap.set("n", "<leader>co", jdtls.organize_imports, vim.tbl_extend("force", opts, { desc = "Organize imports" }))
-            vim.keymap.set("n", "<leader>cv", jdtls.extract_variable, vim.tbl_extend("force", opts, { desc = "Extract variable" }))
-            vim.keymap.set("v", "<leader>cv", function() jdtls.extract_variable(true) end, vim.tbl_extend("force", opts, { desc = "Extract variable" }))
-            vim.keymap.set("n", "<leader>cc", jdtls.extract_constant, vim.tbl_extend("force", opts, { desc = "Extract constant" }))
-            vim.keymap.set("v", "<leader>cc", function() jdtls.extract_constant(true) end, vim.tbl_extend("force", opts, { desc = "Extract constant" }))
-            vim.keymap.set("v", "<leader>cm", function() jdtls.extract_method(true) end, vim.tbl_extend("force", opts, { desc = "Extract method" }))
+            vim.keymap.set(
+              "n",
+              "<leader>co",
+              jdtls.organize_imports,
+              vim.tbl_extend("force", opts, { desc = "Organize imports" })
+            )
+            vim.keymap.set(
+              "n",
+              "<leader>cv",
+              jdtls.extract_variable,
+              vim.tbl_extend("force", opts, { desc = "Extract variable" })
+            )
+            vim.keymap.set("v", "<leader>cv", function()
+              jdtls.extract_variable(true)
+            end, vim.tbl_extend("force", opts, { desc = "Extract variable" }))
+            vim.keymap.set(
+              "n",
+              "<leader>cc",
+              jdtls.extract_constant,
+              vim.tbl_extend("force", opts, { desc = "Extract constant" })
+            )
+            vim.keymap.set("v", "<leader>cc", function()
+              jdtls.extract_constant(true)
+            end, vim.tbl_extend("force", opts, { desc = "Extract constant" }))
+            vim.keymap.set("v", "<leader>cm", function()
+              jdtls.extract_method(true)
+            end, vim.tbl_extend("force", opts, { desc = "Extract method" }))
           end,
         }
 
