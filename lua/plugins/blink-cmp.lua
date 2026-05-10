@@ -1,6 +1,9 @@
 return {
   "saghen/blink.cmp",
-  dependencies = { "rafamadriz/friendly-snippets", "fang2hou/blink-copilot" },
+  dependencies = {
+    "rafamadriz/friendly-snippets",
+    "fang2hou/blink-copilot",
+  },
   version = "1.*",
   opts = {
     keymap = {
@@ -9,6 +12,14 @@ return {
         function(cmp)
           if require("sidekick").nes_jump_or_apply() then
             return true
+          end
+
+          if cmp.is_menu_visible() then
+            if cmp.snippet_active() then
+              return cmp.accept()
+            else
+              return cmp.select_and_accept()
+            end
           end
 
           local ok, suggestion = pcall(vim.fn["copilot#GetDisplayedSuggestion"])
@@ -20,7 +31,11 @@ return {
             end
           end
 
-          return cmp.select_and_accept()
+          if cmp.snippet_active() then
+            return cmp.accept()
+          else
+            return cmp.select_and_accept()
+          end
         end,
         "snippet_forward",
         "fallback",
