@@ -1,10 +1,12 @@
 local map = vim.keymap.set
 
 -- Window navigation (tmux-aware, terminal mode only -- normal mode handled by plugin)
-map("t", "<C-h>", "<C-\\><C-n><cmd>TmuxNavigateLeft<cr>", { desc = "Go to left window", silent = true })
-map("t", "<C-j>", "<C-\\><C-n><cmd>TmuxNavigateDown<cr>", { desc = "Go to lower window", silent = true })
-map("t", "<C-k>", "<C-\\><C-n><cmd>TmuxNavigateUp<cr>", { desc = "Go to upper window", silent = true })
-map("t", "<C-l>", "<C-\\><C-n><cmd>TmuxNavigateRight<cr>", { desc = "Go to right window", silent = true })
+if not vim.g.vscode then
+  map("t", "<C-h>", "<C-\\><C-n><cmd>TmuxNavigateLeft<cr>", { desc = "Go to left window", silent = true })
+  map("t", "<C-j>", "<C-\\><C-n><cmd>TmuxNavigateDown<cr>", { desc = "Go to lower window", silent = true })
+  map("t", "<C-k>", "<C-\\><C-n><cmd>TmuxNavigateUp<cr>", { desc = "Go to upper window", silent = true })
+  map("t", "<C-l>", "<C-\\><C-n><cmd>TmuxNavigateRight<cr>", { desc = "Go to right window", silent = true })
+end
 
 -- Buffer navigation
 map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next buffer", silent = true })
@@ -59,3 +61,7 @@ end, { desc = "Open all folds", silent = true })
 map("n", "zM", function()
   vim.opt.foldlevel = 0
 end, { desc = "Close all folds", silent = true })
+
+if vim.g.vscode then
+  require("config.keymaps-vscode")
+end

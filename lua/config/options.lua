@@ -4,6 +4,11 @@ vim.env.PATH = vim.fn.stdpath("data") .. "/mason/bin:" .. vim.env.PATH
 local opt = vim.opt
 local g = vim.g
 
+-- vscode-neovim forwards echoed messages (e.g. "N lines yanked") to the Output panel and may focus it.
+if vim.g.vscode then
+  opt.report = 99999
+end
+
 g.have_nerd_font = true
 g.ai_cmp = false
 opt.number = true
@@ -81,6 +86,9 @@ vim.api.nvim_create_autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 vim.api.nvim_create_autocmd("TextYankPost", {
   group = vim.api.nvim_create_augroup("highlight_yank", { clear = true }),
   callback = function()
+    if vim.g.vscode then
+      return
+    end
     vim.highlight.on_yank({ timeout = 200 })
   end,
 })

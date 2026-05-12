@@ -1,5 +1,8 @@
+local platform = require("config.platform")
+
 return {
   "mfussenegger/nvim-lint",
+  cond = platform.not_vscode,
   event = { "BufReadPre", "BufNewFile" },
   config = function()
     local lint = require("lint")

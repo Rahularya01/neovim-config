@@ -1,5 +1,8 @@
+local platform = require("config.platform")
+
 return {
   "stevearc/oil.nvim",
+  cond = platform.not_vscode,
   dependencies = { "nvim-tree/nvim-web-devicons" },
   keys = {
     { "-", "<cmd>Oil<CR>", desc = "Open parent directory" },

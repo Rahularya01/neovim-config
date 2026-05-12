@@ -1,5 +1,8 @@
+local platform = require("config.platform")
+
 return {
   "akinsho/bufferline.nvim",
+  cond = platform.not_vscode,
   event = "VeryLazy",
   dependencies = {
     "nvim-tree/nvim-web-devicons",

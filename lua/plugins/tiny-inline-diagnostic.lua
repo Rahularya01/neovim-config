@@ -1,5 +1,8 @@
+local platform = require("config.platform")
+
 return {
   "rachartier/tiny-inline-diagnostic.nvim",
+  cond = platform.not_vscode,
   event = "LspAttach",
   priority = 1000,
   opts = {

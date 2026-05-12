@@ -1,5 +1,8 @@
+local platform = require("config.platform")
+
 return {
   "github/copilot.vim",
+  cond = platform.not_vscode,
   event = "BufWinEnter",
   cmd = "Copilot",
   init = function()
@@ -7,7 +10,7 @@ return {
     vim.g.copilot_hide_during_completion = false
   end,
   config = function()
-    -- copilot.vim loads lazily after VimEnter, so Init() never ran automatically
+    
     vim.fn["copilot#Init"]()
     vim.fn["copilot#OnFileType"]()
   end,

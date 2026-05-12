@@ -1,5 +1,8 @@
+local platform = require("config.platform")
+
 return {
   "saghen/blink.cmp",
+  cond = platform.not_vscode,
   dependencies = {
     "rafamadriz/friendly-snippets",
     "fang2hou/blink-copilot",

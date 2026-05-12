@@ -1,5 +1,8 @@
+local platform = require("config.platform")
+
 return {
   "folke/trouble.nvim",
+  cond = platform.not_vscode,
   cmd = { "Trouble" },
   keys = {
     {

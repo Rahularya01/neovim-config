@@ -1,5 +1,8 @@
+local platform = require("config.platform")
+
 return {
   "stevearc/conform.nvim",
+  cond = platform.not_vscode,
   event = { "BufWritePre" },
   cmd = { "ConformInfo" },
   keys = {

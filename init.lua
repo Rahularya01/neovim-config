@@ -17,6 +17,8 @@ vim.defer_fn(function()
   require("config.health").setup()
 end, 2000) -- Run after 2 seconds
 
+
+
 -- 3. Bootstrap Lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
