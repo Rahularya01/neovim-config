@@ -1,6 +1,9 @@
+local platform = require("config.platform")
+
 return {
   {
     "esmuellert/nvim-eslint",
+    cond = platform.not_vscode,
     event = { "BufReadPre", "BufNewFile" },
     ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
     config = function()
@@ -20,6 +23,7 @@ return {
   },
   {
     "williamboman/mason.nvim",
+    cond = platform.not_vscode,
     event = { "BufReadPre", "BufNewFile" }, -- Load when files are opened, not immediately
     priority = 1000,
     opts = {
@@ -34,6 +38,7 @@ return {
   },
   {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
+    cond = platform.not_vscode,
     event = "VeryLazy",
     dependencies = { "williamboman/mason.nvim" },
     opts = {
@@ -63,6 +68,7 @@ return {
   },
   {
     "j-hui/fidget.nvim",
+    cond = platform.not_vscode,
     event = "LspAttach",
     opts = {
       notification = {
@@ -75,6 +81,7 @@ return {
   },
   {
     "williamboman/mason-lspconfig.nvim",
+    cond = platform.not_vscode,
     event = { "BufReadPre", "BufNewFile" },
     dependencies = {
       "neovim/nvim-lspconfig",

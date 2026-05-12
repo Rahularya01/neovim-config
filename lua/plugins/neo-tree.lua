@@ -1,6 +1,9 @@
+local platform = require("config.platform")
+
 return {
   {
     "nvim-neo-tree/neo-tree.nvim",
+    cond = platform.not_vscode,
     branch = "v3.x",
     dependencies = {
       "nvim-lua/plenary.nvim",

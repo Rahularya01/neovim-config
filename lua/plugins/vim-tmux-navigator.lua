@@ -1,5 +1,8 @@
+local platform = require("config.platform")
+
 return {
   "christoomey/vim-tmux-navigator",
+  cond = platform.not_vscode,
   cmd = {
     "TmuxNavigateLeft",
     "TmuxNavigateDown",

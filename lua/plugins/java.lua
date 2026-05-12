@@ -1,5 +1,8 @@
+local platform = require("config.platform")
+
 return {
   "mfussenegger/nvim-jdtls",
+  cond = platform.not_vscode,
   ft = { "java" },
   dependencies = {
     "williamboman/mason.nvim",
