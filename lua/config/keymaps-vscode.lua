@@ -71,6 +71,7 @@ map("n", "<leader>.", action("workbench.action.showAllEditors"), { desc = "Show 
 map("n", "<leader>sg", action("workbench.action.findInFiles"), { desc = "Find in files", silent = true })
 map("n", "<leader>/", action("workbench.action.findInFiles"), { desc = "Find in files", silent = true })
 map("n", "<leader>s/", action("actions.find"), { desc = "Find in buffer", silent = true })
+map("n", "<leader>sf", action("actions.find"), { desc = "Find in buffer", silent = true })
 map("n", "<leader><S-s>", action("workbench.action.replaceInFiles"), { desc = "Replace in files", silent = true })
 map("n", "<leader>sp", action("editor.action.startFindReplaceAction"), { desc = "Find replace", silent = true })
 map("n", "<leader>cs", action("workbench.action.gotoSymbol"), { desc = "Go to symbol", silent = true })
