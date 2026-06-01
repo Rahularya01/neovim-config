@@ -27,6 +27,15 @@ map(
   { desc = "Previous editor in group", silent = true }
 )
 
+map({ "n", "i", "x" }, "<C-s>", action("workbench.action.files.save"), { desc = "Save file", silent = true })
+map("i", "<A-Space>", action("editor.action.triggerSuggest"), { desc = "Trigger suggest", silent = true })
+map(
+  { "n", "x" },
+  "<C-A-t>",
+  action("workbench.action.terminal.openNativeConsole"),
+  { desc = "Open native console", silent = true }
+)
+
 map("n", "<C-x>", action("workbench.action.closeActiveEditor"), { desc = "Close active editor", silent = true })
 
 map({ "n", "x" }, "<A-S-j>", action("editor.action.moveLinesDownAction"), { desc = "Move lines down", silent = true })
