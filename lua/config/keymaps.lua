@@ -14,12 +14,16 @@ map("n", "<S-h>", "<cmd>bprev<cr>", { desc = "Previous buffer", silent = true })
 map("n", "<leader>v", "<cmd>vsplit<cr>", { desc = "Split window right", silent = true })
 map("n", "<leader>rc", "<cmd>RemoveComments<cr>", { desc = "Remove comments", silent = true })
 
--- Search
+-- Search / NES dismiss
 map("n", "<Esc>", function()
+	local ok, cursor_tab = pcall(require, "cursor_tab_completion")
+	if ok and cursor_tab.has_nes and cursor_tab.has_nes() then
+		cursor_tab.dismiss()
+	end
 	if vim.v.hlsearch == 1 then
 		vim.cmd("nohlsearch")
 	end
-end, { desc = "Clear search highlights", silent = true })
+end, { desc = "Dismiss NES / clear search highlights", silent = true })
 
 -- Line movement
 map("n", "<M-J>", ":m .+1<CR>==", { desc = "Move line down", silent = true })
