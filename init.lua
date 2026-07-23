@@ -1,25 +1,28 @@
--- 0. Performance: Enable lua loader for faster startup (Neovim 0.9+)
+-- 0. Make user-local tools available to plugins and language servers.
+local local_bin = vim.fn.expand("~/.local/bin")
+local local_go_bin = vim.fn.expand("~/.local/go/bin")
+vim.env.PATH = table.concat({ local_bin, local_go_bin, vim.env.PATH }, ":")
+
+-- 1. Performance: Enable lua loader for faster startup (Neovim 0.9+)
 if vim.loader then
   vim.loader.enable()
 end
 
--- 1. Set Leader Keys (Must be before lazy setup)
+-- 2. Set Leader Keys (Must be before lazy setup)
 vim.g.mapleader = " "
 vim.g.maplocalleader = " "
 
--- 2. Load Core Options
+-- 3. Load Core Options
 require("config.options")
 require("config.commands")
 require("config.keymaps")
 
--- 2.5. Initialize health checks (deferred to not block startup)
+-- 3.5. Initialize health checks (deferred to not block startup)
 vim.defer_fn(function()
   require("config.health").setup()
 end, 2000) -- Run after 2 seconds
 
-
-
--- 3. Bootstrap Lazy.nvim
+-- 4. Bootstrap Lazy.nvim
 local lazypath = vim.fn.stdpath("data") .. "/lazy/lazy.nvim"
 if not vim.uv.fs_stat(lazypath) then
   vim.fn.system({
@@ -33,7 +36,7 @@ if not vim.uv.fs_stat(lazypath) then
 end
 vim.opt.rtp:prepend(lazypath)
 
--- 4. Load Plugins
+-- 5. Load Plugins
 require("lazy").setup("plugins", {
   defaults = {
     lazy = true, -- Default all plugins to lazy loading

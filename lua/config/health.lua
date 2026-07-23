@@ -7,6 +7,7 @@ function M.check_tools()
     "node",
     "python3",
     "go",
+    "tree-sitter",
     "stylua",
     "prettier",
   }

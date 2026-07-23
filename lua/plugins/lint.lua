@@ -13,6 +13,12 @@ return {
       c = { "cpplint" },
       cpp = { "cpplint" },
     }
+    if vim.fn.executable("luacheck") == 0 then
+      linters_by_ft.lua = nil
+    end
+    if vim.fn.executable("ruff") == 0 then
+      linters_by_ft.python = nil
+    end
     if vim.fn.executable("golangci-lint") == 0 then
       linters_by_ft.go = nil
     end

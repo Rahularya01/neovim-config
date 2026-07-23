@@ -5,39 +5,19 @@ return {
   cond = platform.not_vscode,
   dependencies = {
     "rafamadriz/friendly-snippets",
-    "fang2hou/blink-copilot",
   },
   version = "1.*",
   opts = {
     keymap = {
-      preset = "super-tab",
+      -- Official enter preset: <CR> accepts, <Tab>/<S-Tab> move snippet placeholders.
+      -- https://cmp.saghen.dev/configuration/keymap.html#enter
+      preset = "enter",
       ["<Tab>"] = {
-        function(cmp)
-          if require("sidekick").nes_jump_or_apply() then
+        function()
+          -- Keep Tab for Cursor ghost-text accept; blink completions use <CR>.
+          local cursor_tab_completion = require("cursor_tab_completion")
+          if cursor_tab_completion.accept() then
             return true
-          end
-
-          if cmp.is_menu_visible() then
-            if cmp.snippet_active() then
-              return cmp.accept()
-            else
-              return cmp.select_and_accept()
-            end
-          end
-
-          local ok, suggestion = pcall(vim.fn["copilot#GetDisplayedSuggestion"])
-          if ok and suggestion.text and suggestion.text ~= "" then
-            local accept = vim.fn["copilot#Accept"]("")
-            if accept ~= "" then
-              vim.api.nvim_feedkeys(accept, "n", false)
-              return true
-            end
-          end
-
-          if cmp.snippet_active() then
-            return cmp.accept()
-          else
-            return cmp.select_and_accept()
           end
         end,
         "snippet_forward",
@@ -74,15 +54,7 @@ return {
       },
     },
     sources = {
-      default = { "lsp", "path", "snippets", "buffer", "copilot" },
-      providers = {
-        copilot = {
-          name = "copilot",
-          module = "blink-copilot",
-          score_offset = 100,
-          async = true,
-        },
-      },
+      default = { "lsp", "path", "snippets", "buffer" },
     },
     fuzzy = { implementation = "prefer_rust_with_warning" },
   },
