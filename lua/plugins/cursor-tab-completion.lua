@@ -15,12 +15,15 @@ return {
       "<Tab>",
       function()
         if require("cursor_tab_completion").nes_jump_or_apply() then
-          return ""
+          return
         end
-        return "<Tab>"
+        vim.api.nvim_feedkeys(
+          vim.api.nvim_replace_termcodes("<Tab>", true, false, true),
+          "n",
+          false
+        )
       end,
       mode = "n",
-      expr = true,
       silent = true,
       desc = "Cursor Tab NES jump/apply",
     },

@@ -1,0 +1,10 @@
+{
+  "enableSkillCommands": true,
+  "subagents": {
+    "agentOverrides": {
+      "config-writer": {
+        "model": "opencode/deepseek-v4-flash-free"
+      }
+    }
+  }
+}

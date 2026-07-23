@@ -44,6 +44,7 @@ return {
     opts = {
       ensure_installed = {
         "stylua",
+        "luacheck",
         "prettier",
         "prettierd",
         "eslint_d",
@@ -57,8 +58,6 @@ return {
         "golangci-lint",
         "clangd",
         "clang-format",
-        "jdtls",
-        "google-java-format",
         "cpplint",
       },
       auto_update = true,
@@ -288,7 +287,7 @@ return {
           text = {
             [vim.diagnostic.severity.ERROR] = " ",
             [vim.diagnostic.severity.WARN] = " ",
-            [vim.diagnostic.severity.HINT] = "󰛩 ",
+            [vim.diagnostic.severity.HINT] = " ",
             [vim.diagnostic.severity.INFO] = " ",
           },
         },
