@@ -12,17 +12,7 @@ return {
       -- Official enter preset: <CR> accepts, <Tab>/<S-Tab> move snippet placeholders.
       -- https://cmp.saghen.dev/configuration/keymap.html#enter
       preset = "enter",
-      ["<Tab>"] = {
-        function()
-          -- Keep Tab for Cursor ghost-text accept; blink completions use <CR>.
-          local cursor_tab_completion = require("cursor_tab_completion")
-          if cursor_tab_completion.accept() then
-            return true
-          end
-        end,
-        "snippet_forward",
-        "fallback",
-      },
+      ["<Tab>"] = { "snippet_forward", "fallback" },
       ["<C-k>"] = { "select_prev", "fallback" },
       ["<C-j>"] = { "select_next", "fallback" },
       ["<C-space>"] = { "show", "fallback" },
