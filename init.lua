@@ -42,7 +42,7 @@ require("lazy").setup("plugins", {
     lazy = true, -- Default all plugins to lazy loading
   },
   install = {
-    colorscheme = { "gruvbox" },
+    colorscheme = { "catppuccin" },
   },
   checker = {
     enabled = false, -- Don't check for plugin updates automatically
