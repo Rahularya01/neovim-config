@@ -2,16 +2,28 @@ return {
   "catppuccin/nvim",
   name = "catppuccin",
   priority = 1000,
-  event = "VimEnter",
+  lazy = false,
   config = function()
     require("catppuccin").setup({
       flavour = "mocha",
       transparent_background = true,
       integrations = {
-        cmp = true,
+        blink_cmp = {
+          style = "bordered",
+        },
+        diffview = true,
+        fidget = true,
+        flash = true,
         gitsigns = true,
+        grug_far = true,
+        lsp_trouble = true,
+        mason = true,
         native_lsp = { enabled = true },
-        telescope = { enabled = true },
+        neotree = true,
+        nvim_surround = true,
+        snacks = {
+          enabled = true,
+        },
         treesitter = true,
         which_key = true,
       },

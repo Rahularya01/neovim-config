@@ -31,3 +31,5 @@ packer_compiled.lua
 notes.md
 secrets.lua
 *.local.lua
+config.bat
+node_modules

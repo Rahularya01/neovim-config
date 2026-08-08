@@ -6,10 +6,27 @@ return {
   event = "VeryLazy",
   dependencies = {
     "nvim-tree/nvim-web-devicons",
+    "catppuccin/nvim",
   },
   config = function()
     local bufferline = require("bufferline")
-    local colors = require("config.gruvbox-palette")
+    local palette = require("catppuccin.palettes").get_palette("mocha")
+    local colors = {
+      bg = palette.base,
+      bg0 = palette.crust,
+      bg1 = palette.mantle,
+      fg0 = palette.text,
+      fg1 = palette.text,
+      fg2 = palette.subtext1,
+      fg3 = palette.subtext0,
+      red = palette.red,
+      green = palette.green,
+      yellow = palette.yellow,
+      blue = palette.blue,
+      aqua = palette.teal,
+      orange = palette.peach,
+      gray = palette.overlay1,
+    }
 
     bufferline.setup({
       options = {
