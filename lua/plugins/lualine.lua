@@ -4,7 +4,10 @@ return {
   "nvim-lualine/lualine.nvim",
   cond = platform.not_vscode,
   event = "VeryLazy",
-  dependencies = { "nvim-tree/nvim-web-devicons" },
+  dependencies = {
+    "nvim-tree/nvim-web-devicons",
+    "catppuccin/nvim",
+  },
   config = function()
     local function show_macro_recording()
       local recording_register = vim.fn.reg_recording()
@@ -39,10 +42,12 @@ return {
       return vim.fn.winwidth(0) > 80
     end
 
+    local palette = require("catppuccin.palettes").get_palette("mocha")
+
     require("lualine").setup({
       options = {
-        theme = "gruvbox",
-        
+        theme = "catppuccin-mocha",
+
         section_separators = { left = "", right = "" },
         component_separators = { left = "", right = "" },
         globalstatus = true,
@@ -56,12 +61,12 @@ return {
           { "diff", symbols = { added = " ", modified = " ", removed = " " } },
         },
         lualine_c = {
-          { "filename", file_status = true, path = 1 }, 
+          { "filename", file_status = true, path = 1 },
         },
         lualine_x = {
           {
             show_macro_recording,
-            color = { fg = "#ff9e64", gui = "bold" },
+            color = { fg = palette.peach, gui = "bold" },
           },
           {
             "diagnostics",
