@@ -6,7 +6,7 @@ return {
 		wk.setup(opts)
 
 		wk.add({
-			{ "<leader>a", group = "ai/sidekick" },
+			{ "<leader>a", group = "ai/herdr" },
 			{ "<leader>b", group = "buffer" },
 			{ "<leader>c", group = "code" },
 			{ "<leader>d", group = "debug" },

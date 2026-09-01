@@ -11,7 +11,6 @@ return {
         blink_cmp = {
           style = "bordered",
         },
-        diffview = true,
         fidget = true,
         flash = true,
         gitsigns = true,
@@ -19,7 +18,6 @@ return {
         lsp_trouble = true,
         mason = true,
         native_lsp = { enabled = true },
-        neotree = true,
         nvim_surround = true,
         snacks = {
           enabled = true,

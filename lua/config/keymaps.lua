@@ -1,10 +1,14 @@
 local map = vim.keymap.set
 
--- Window navigation (tmux-aware, terminal mode only -- normal mode handled by plugin)
-map("t", "<C-h>", "<C-\\><C-n><cmd>TmuxNavigateLeft<cr>", { desc = "Go to left window", silent = true })
-map("t", "<C-j>", "<C-\\><C-n><cmd>TmuxNavigateDown<cr>", { desc = "Go to lower window", silent = true })
-map("t", "<C-k>", "<C-\\><C-n><cmd>TmuxNavigateUp<cr>", { desc = "Go to upper window", silent = true })
-map("t", "<C-l>", "<C-\\><C-n><cmd>TmuxNavigateRight<cr>", { desc = "Go to right window", silent = true })
+-- Navigate Neovim windows. Herdr owns navigation between its outer panes.
+map("n", "<C-h>", "<C-w>h", { desc = "Go to left Neovim window", silent = true })
+map("n", "<C-j>", "<C-w>j", { desc = "Go to lower Neovim window", silent = true })
+map("n", "<C-k>", "<C-w>k", { desc = "Go to upper Neovim window", silent = true })
+map("n", "<C-l>", "<C-w>l", { desc = "Go to right Neovim window", silent = true })
+map("t", "<C-h>", "<C-\\><C-n><C-w>h", { desc = "Go to left Neovim window", silent = true })
+map("t", "<C-j>", "<C-\\><C-n><C-w>j", { desc = "Go to lower Neovim window", silent = true })
+map("t", "<C-k>", "<C-\\><C-n><C-w>k", { desc = "Go to upper Neovim window", silent = true })
+map("t", "<C-l>", "<C-\\><C-n><C-w>l", { desc = "Go to right Neovim window", silent = true })
 
 -- Buffer navigation
 map("n", "<S-l>", "<cmd>bnext<cr>", { desc = "Next buffer", silent = true })

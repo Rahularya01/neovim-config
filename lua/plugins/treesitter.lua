@@ -7,34 +7,9 @@ return {
 			install_dir = vim.fn.stdpath("data") .. "/site",
 		})
 
-		-- Install parsers for all languages used in this config.
-		-- This is a no-op if parsers are already up to date.
-		require("nvim-treesitter").install({
-			"bash",
-			"c",
-			"cpp",
-			"css",
-			"diff",
-			"go",
-			"gomod",
-			"html",
-			"javascript",
-			"json",
-			"lua",
-			"luadoc",
-			"markdown",
-			"markdown_inline",
-			"python",
-			"query",
-			"regex",
-			"rust",
-			"toml",
-			"tsx",
-			"typescript",
-			"vim",
-			"vimdoc",
-			"yaml",
-		})
+		-- Parser downloads are intentionally manual. Starting an install for every
+		-- language on each launch made startup noisy and retried failed downloads.
+		-- Run :TSUpdate after plugin updates, or :TSInstall <language> as needed.
 
 		-- Enable treesitter highlighting for all filetypes that have a parser.
 		vim.api.nvim_create_autocmd("FileType", {
