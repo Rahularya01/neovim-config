@@ -6,8 +6,9 @@ return {
   config = function()
     require("catppuccin").setup({
       flavour = "mocha",
-      transparent_background = true,
+      transparent_background = false,
       integrations = {
+        barbar = true,
         blink_cmp = {
           style = "bordered",
         },
@@ -19,6 +20,7 @@ return {
         mason = true,
         native_lsp = { enabled = true },
         nvim_surround = true,
+        nvimtree = true,
         snacks = {
           enabled = true,
         },

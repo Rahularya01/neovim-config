@@ -6,13 +6,14 @@ return {
 		wk.setup(opts)
 
 		wk.add({
-			{ "<leader>a", group = "ai/herdr" },
+			{ "<leader>a", group = "ai" },
 			{ "<leader>b", group = "buffer" },
 			{ "<leader>c", group = "code" },
 			{ "<leader>d", group = "debug" },
 			{ "<leader>f", group = "find/format" },
 			{ "<leader>g", group = "git" },
 			{ "<leader>l", group = "lsp" },
+			{ "<leader>n", group = "npm/packages" },
 			{ "<leader>r", group = "run" },
 			{ "<leader>s", group = "search" },
 			{ "<leader>t", group = "terminal" },

@@ -12,7 +12,20 @@ return {
       -- Official enter preset: <CR> accepts, <Tab>/<S-Tab> move snippet placeholders.
       -- https://cmp.saghen.dev/configuration/keymap.html#enter
       preset = "enter",
-      ["<Tab>"] = { "snippet_forward", "fallback" },
+      ["<Tab>"] = {
+        -- Accept a visible Copilot ghost-text suggestion first (copilot.lua's
+        -- own accept keymap is disabled; see copilot.lua), otherwise fall
+        -- through to normal snippet-forward/completion behavior.
+        function()
+          local ok, suggestion = pcall(require, "copilot.suggestion")
+          if ok and suggestion.is_visible() then
+            suggestion.accept()
+            return true
+          end
+        end,
+        "snippet_forward",
+        "fallback",
+      },
       ["<C-k>"] = { "select_prev", "fallback" },
       ["<C-j>"] = { "select_next", "fallback" },
       ["<C-space>"] = { "show", "fallback" },

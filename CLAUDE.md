@@ -60,7 +60,8 @@ lua/config/           # Core configuration modules
   ├── options.lua     # Editor settings, autocommands (cursor line, undo, autocomplete, etc.)
   ├── keymaps.lua     # Global keybindings (navigation, buffer management, toggles)
   ├── commands.lua    # Custom Neovim commands
-  └── health.lua      # Health check configuration
+  ├── health.lua      # Health check configuration
+  └── platform.lua    # Platform/host detection (e.g. `not_vscode` guard used by plugin specs)
 lua/plugins/          # Plugin specifications (one file per plugin, lazy-loaded)
 lazy-lock.json        # Plugin version lock file (commit changes to pin versions)
 ```
@@ -109,17 +110,21 @@ return {
 
 **Navigation & UI**
 - **snacks.nvim**: Picker (files, grep, buffers), terminal, lazygit, GitHub issue/PR picker
-- **neo-tree.lua**: File explorer
-- **oil.lua**: File operations UI
+- **oil.lua**: File explorer & file operations UI (buffer-based, `default_file_explorer = true`)
+- **nvim-tree.lua**: Neo-tree-style sidebar file tree (`<leader>e` toggle, `<leader>E` reveal file), git status & diagnostics in the tree
 - **lualine.lua**: Status line
+- **barbar.lua**: Bufferline / tab strip for open buffers
 - **treesitter.lua**: Syntax highlighting & code parsing
 
 **Development Tools**
-- **conform.nvim**: Multi-language formatting (stylua, prettier, black, goimports, clang-format, etc.)
+- **conform.nvim**: Multi-language formatting (stylua, prettier, ruff, goimports, clang-format, etc.)
 - **nvim-lint**: Linting via LSP + nvim-lint engine
 - **trouble.lua**: Diagnostic list UI
 - **gitsigns.lua**: Git change indicators in gutter
+- **git-conflict.lua**: Merge conflict marker highlighting & resolution (`co`/`ct`/`cb`/`c0`)
 - **grug-far.lua**: Find & replace (rip-grep/ast-grep powered)
+- **copilot.lua**: GitHub Copilot ghost-text completion (accept: `<C-y>`)
+- **avante.lua**: AI agent/chat sidebar (Claude provider), keys under `<leader>a`
 
 ---
 

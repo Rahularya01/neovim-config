@@ -1,6 +1,6 @@
 local map = vim.keymap.set
 
--- Navigate Neovim windows. Herdr owns navigation between its outer panes.
+-- Navigate Neovim windows
 map("n", "<C-h>", "<C-w>h", { desc = "Go to left Neovim window", silent = true })
 map("n", "<C-j>", "<C-w>j", { desc = "Go to lower Neovim window", silent = true })
 map("n", "<C-k>", "<C-w>k", { desc = "Go to upper Neovim window", silent = true })
