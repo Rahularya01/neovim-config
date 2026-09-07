@@ -5,6 +5,16 @@ return {
   cond = platform.not_vscode,
   cmd = "Copilot",
   event = "InsertEnter",
+  dependencies = {
+    {
+      "copilotlsp-nvim/copilot-lsp",
+      init = function()
+        -- Avoid requesting next-edit suggestions while a rapid sequence of
+        -- edits is still in progress.
+        vim.g.copilot_nes_debounce = 500
+      end,
+    },
+  },
   opts = {
     suggestion = {
       enabled = true,
@@ -21,5 +31,17 @@ return {
       },
     },
     panel = { enabled = false },
+    nes = {
+      enabled = true,
+      keymap = {
+        -- NES mappings apply in normal mode, so this does not conflict with
+        -- the insert-mode Blink/Copilot ghost-text <Tab> mapping.
+        accept_and_goto = false,
+        accept = "<Tab>",
+        -- Keep this distinct from the insert-mode ghost-text dismiss mapping;
+        -- copilot.lua validates these keys globally, even across modes.
+        dismiss = "<C-g>",
+      },
+    },
   },
 }

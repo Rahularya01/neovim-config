@@ -9,7 +9,10 @@ return {
   dependencies = { "nvim-tree/nvim-web-devicons" },
   opts = {
     animation = false,
-    sidebar_filetypes = { oil = true },
+    sidebar_filetypes = {
+      ["neo-tree"] = true,
+      oil = true,
+    },
   },
   keys = {
     { "<A-,>", "<cmd>BufferPrevious<cr>", desc = "Previous buffer" },

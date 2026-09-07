@@ -1,13 +1,17 @@
 return {
   {
     "lewis6991/gitsigns.nvim",
-    event = { "BufReadPre", "BufNewFile" },
+    -- Attach after the buffer is visible so Git inspection does not delay
+    -- opening it.
+    event = { "BufReadPost", "BufNewFile" },
     opts = {
+      -- Keep GitLens-style blame visible for the current line in tracked
+      -- files. <leader>tb remains available to toggle it when needed.
       current_line_blame = true,
       current_line_blame_opts = {
         virt_text = true,
         virt_text_pos = "eol",
-        delay = 1000,
+        delay = 250,
         ignore_whitespace = false,
       },
       update_debounce = 200,

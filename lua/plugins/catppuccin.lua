@@ -20,6 +20,7 @@ return {
         mason = true,
         native_lsp = { enabled = true },
         nvim_surround = true,
+        neo_tree = true,
         nvimtree = true,
         snacks = {
           enabled = true,

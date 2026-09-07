@@ -4,7 +4,6 @@ return {
   {
     "esmuellert/nvim-eslint",
     cond = platform.not_vscode,
-    event = { "BufReadPre", "BufNewFile" },
     ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
     config = function()
       require("nvim-eslint").setup({
@@ -26,7 +25,7 @@ return {
   {
     "mason-org/mason.nvim",
     cond = platform.not_vscode,
-    event = { "BufReadPre", "BufNewFile" }, -- Load when files are opened, not immediately
+    cmd = { "Mason", "MasonInstall", "MasonUpdate" },
     priority = 1000,
     opts = {
       ui = {
@@ -80,7 +79,36 @@ return {
   {
     "mason-org/mason-lspconfig.nvim",
     cond = platform.not_vscode,
-    event = { "BufReadPre", "BufNewFile" },
+    ft = {
+      "lua",
+      "python",
+      "go",
+      "gomod",
+      "gowork",
+      "gotmpl",
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+      "html",
+      "css",
+      "scss",
+      "c",
+      "cpp",
+      "objc",
+      "objcpp",
+      "cuda",
+      "proto",
+      "json",
+      "jsonc",
+      "yaml",
+      "yaml.docker-compose",
+      "markdown",
+      "markdown.mdx",
+      "sh",
+      "bash",
+      "zsh",
+    },
     dependencies = {
       "neovim/nvim-lspconfig",
       "mason-org/mason.nvim",
