@@ -6,7 +6,7 @@ return {
   config = function()
     require("catppuccin").setup({
       flavour = "mocha",
-      transparent_background = false,
+      transparent_background = true,
       integrations = {
         barbar = true,
         blink_cmp = {
