@@ -1,6 +1,6 @@
 return {
   "windwp/nvim-ts-autotag",
-  event = { "BufReadPre", "BufNewFile" },
+  ft = { "html", "xml", "javascriptreact", "typescriptreact", "vue", "svelte" },
   dependencies = { "nvim-treesitter/nvim-treesitter" },
   config = function()
     require("nvim-ts-autotag").setup({

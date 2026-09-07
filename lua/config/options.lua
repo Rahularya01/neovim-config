@@ -54,8 +54,11 @@ opt.foldenable = true
 opt.foldlevel = 99
 opt.foldlevelstart = 99
 opt.foldcolumn = "0"
-opt.foldmethod = "expr"
-opt.foldexpr = "v:lua.vim.treesitter.foldexpr()"
+-- Tree-sitter expression folds are recalculated during redraws and become
+-- expensive in large buffers. Plugins or filetype-specific configuration can
+-- still opt into them where they are useful.
+opt.foldmethod = "manual"
+opt.foldexpr = "0"
 
 opt.list = false
 opt.listchars = {

@@ -1,89 +1,65 @@
 local platform = require("config.platform")
 
 return {
-  {
-    "nvim-neo-tree/neo-tree.nvim",
-    cond = platform.not_vscode,
-    branch = "v3.x",
-    dependencies = {
-      "nvim-lua/plenary.nvim",
-      "MunifTanjim/nui.nvim",
-      "nvim-tree/nvim-web-devicons",
+  "nvim-neo-tree/neo-tree.nvim",
+  branch = "v3.x",
+  cond = platform.not_vscode,
+  cmd = "Neotree",
+  dependencies = {
+    "nvim-lua/plenary.nvim",
+    "MunifTanjim/nui.nvim",
+    "nvim-tree/nvim-web-devicons",
+  },
+  keys = {
+    { "<leader>e", "<cmd>Neotree toggle filesystem left<cr>", desc = "Toggle file explorer (sidebar)" },
+    { "<leader>E", "<cmd>Neotree reveal_force_cwd filesystem left<cr>", desc = "Reveal current file in explorer" },
+  },
+  opts = {
+    close_if_last_window = false,
+    enable_git_status = true,
+    enable_diagnostics = true,
+    source_selector = {
+      winbar = false,
+      statusline = false,
     },
-    cmd = "Neotree",
-    keys = {
-      { "<leader>e", "<cmd>Neotree toggle<CR>", desc = "Toggle NeoTree" },
-    },
-    opts = {
-      close_if_last_window = true,
-      popup_border_style = "rounded",
-      enable_git_status = true,
-      enable_diagnostics = true,
-
-      default_component_configs = {
-        indent = {
-          with_expanders = true,
-          expander_collapsed = "",
-          expander_expanded = "",
-          expander_highlight = "NeoTreeExpander",
-        },
-        icon = {
-          folder_closed = "",
-          folder_open = "",
-          folder_empty = "󰜌",
-          default = "*",
-          highlight = "NeoTreeFileIcon",
-        },
-        modified = {
-          symbol = "[+]",
-          highlight = "NeoTreeModified",
-        },
-        git_status = {
-          symbols = {
-            added = "",
-            modified = "",
-            deleted = "✖",
-            renamed = "󰁕",
-            untracked = "",
-            ignored = "",
-            unstaged = "󰄱",
-            staged = "",
-            conflict = "",
-          },
-        },
+    window = {
+      position = "left",
+      width = 32,
+      mappings = {
+        ["l"] = "open",
+        ["h"] = "close_node",
+        ["/"] = "fuzzy_finder",
       },
-
-      filesystem = {
-        follow_current_file = {
-          enabled = true,
-          leave_dirs_open = false,
-        },
-        use_libuv_file_watcher = true,
-
-        filtered_items = {
-          visible = false,
-          hide_dotfiles = false,
-          hide_gitignored = false,
-          hide_by_name = {
-            ".git",
-            ".DS_Store",
-            "thumbs.db",
-          },
-        },
-
-        window = {
-          width = 35,
-          mappings = {
-            ["l"] = "open",
-            ["h"] = "close_node",
-            ["a"] = "add",
-            ["A"] = "add_directory",
-            ["d"] = "delete",
-            ["r"] = "rename",
-            ["?"] = "show_help",
-          },
-        },
+    },
+    filesystem = {
+      follow_current_file = {
+        enabled = true,
+        leave_dirs_open = true,
+      },
+      use_libuv_file_watcher = true,
+      hijack_netrw_behavior = "open_default",
+      filtered_items = {
+        visible = true,
+        hide_dotfiles = false,
+        hide_gitignored = false,
+        hide_hidden = false,
       },
     },
   },
+  config = function(_, opts)
+    require("neo-tree").setup(opts)
+
+    local function set_transparent_highlights()
+      vim.api.nvim_set_hl(0, "NeoTreeNormal", { link = "Normal" })
+      vim.api.nvim_set_hl(0, "NeoTreeNormalNC", { link = "NormalNC" })
+      vim.api.nvim_set_hl(0, "NeoTreeEndOfBuffer", { link = "EndOfBuffer" })
+      vim.api.nvim_set_hl(0, "NeoTreeWinSeparator", { link = "WinSeparator" })
+    end
+
+    set_transparent_highlights()
+    vim.api.nvim_create_autocmd("ColorScheme", {
+      group = vim.api.nvim_create_augroup("NeoTreeTransparentHighlights", { clear = true }),
+      callback = set_transparent_highlights,
+    })
+  end,
 }

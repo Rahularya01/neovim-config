@@ -7,7 +7,7 @@
 - **Format codebase**: `stylua .` (run from project root)
 - **Formatters by filetype**:
   - Lua: `stylua`
-  - Python: `isort`, `black`
+  - Python: `ruff` (`ruff_fix` + `ruff_format`)
   - Web: `prettierd` or `prettier` (JS/TS/HTML/CSS/JSON/YAML/Markdown)
   - C/C++: `clang-format`
   - Go: `goimports`, `gofumpt`

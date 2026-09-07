@@ -3,7 +3,7 @@ local platform = require("config.platform")
 return {
   "mfussenegger/nvim-lint",
   cond = platform.not_vscode,
-  event = { "BufReadPre", "BufNewFile" },
+  ft = { "python", "lua", "go", "c", "cpp" },
   config = function()
     local lint = require("lint")
     local linters_by_ft = {
@@ -28,7 +28,10 @@ return {
     end
     lint.linters_by_ft = linters_by_ft
     local lint_augroup = vim.api.nvim_create_augroup("lint", { clear = true })
-    vim.api.nvim_create_autocmd({ "BufEnter", "BufWritePost", "InsertLeave" }, {
+    -- Running external linters after every insert-mode exit makes editing feel
+    -- choppy, particularly in large Python and Go projects. LSP diagnostics
+    -- remain live; external linting runs when a file is saved.
+    vim.api.nvim_create_autocmd("BufWritePost", {
       group = lint_augroup,
       callback = function()
         lint.try_lint()

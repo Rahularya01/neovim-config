@@ -8,6 +8,7 @@ return {
       flavour = "mocha",
       transparent_background = true,
       integrations = {
+        barbar = true,
         blink_cmp = {
           style = "bordered",
         },
@@ -19,7 +20,7 @@ return {
         lsp_trouble = true,
         mason = true,
         native_lsp = { enabled = true },
-        neotree = true,
+        neo_tree = true,
         nvim_surround = true,
         snacks = {
           enabled = true,

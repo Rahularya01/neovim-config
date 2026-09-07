@@ -4,7 +4,6 @@ return {
   {
     "esmuellert/nvim-eslint",
     cond = platform.not_vscode,
-    event = { "BufReadPre", "BufNewFile" },
     ft = { "javascript", "javascriptreact", "typescript", "typescriptreact" },
     config = function()
       require("nvim-eslint").setup({
@@ -16,15 +15,17 @@ return {
           enable = true,
         },
         formatting = {
-          enable = true,
+          -- conform.nvim handles formatting via prettier(d); avoid a second
+          -- formatter racing it on save.
+          enable = false,
         },
       })
     end,
   },
   {
-    "williamboman/mason.nvim",
+    "mason-org/mason.nvim",
     cond = platform.not_vscode,
-    event = { "BufReadPre", "BufNewFile" }, -- Load when files are opened, not immediately
+    cmd = { "Mason", "MasonInstall", "MasonUpdate" },
     priority = 1000,
     opts = {
       ui = {
@@ -40,7 +41,7 @@ return {
     "WhoIsSethDaniel/mason-tool-installer.nvim",
     cond = platform.not_vscode,
     event = "VeryLazy",
-    dependencies = { "williamboman/mason.nvim" },
+    dependencies = { "mason-org/mason.nvim" },
     opts = {
       ensure_installed = {
         "stylua",
@@ -48,8 +49,6 @@ return {
         "prettier",
         "prettierd",
         "eslint_d",
-        "black",
-        "isort",
         "ruff",
         "basedpyright",
         "gopls",
@@ -78,12 +77,41 @@ return {
     },
   },
   {
-    "williamboman/mason-lspconfig.nvim",
+    "mason-org/mason-lspconfig.nvim",
     cond = platform.not_vscode,
-    event = { "BufReadPre", "BufNewFile" },
+    ft = {
+      "lua",
+      "python",
+      "go",
+      "gomod",
+      "gowork",
+      "gotmpl",
+      "javascript",
+      "javascriptreact",
+      "typescript",
+      "typescriptreact",
+      "html",
+      "css",
+      "scss",
+      "c",
+      "cpp",
+      "objc",
+      "objcpp",
+      "cuda",
+      "proto",
+      "json",
+      "jsonc",
+      "yaml",
+      "yaml.docker-compose",
+      "markdown",
+      "markdown.mdx",
+      "sh",
+      "bash",
+      "zsh",
+    },
     dependencies = {
       "neovim/nvim-lspconfig",
-      "williamboman/mason.nvim",
+      "mason-org/mason.nvim",
       "saghen/blink.cmp",
       "j-hui/fidget.nvim",
     },
@@ -230,6 +258,13 @@ return {
             "javascriptreact",
             "typescript",
             "typescriptreact",
+          },
+          settings = {
+            tailwindCSS = {
+              -- Recognize class strings passed through common class-merging
+              -- helpers (clsx/cva/cn), not just literal `className="..."`.
+              classFunctions = { "clsx", "cva", "cn", "tw", "twMerge" },
+            },
           },
         },
         clangd = {

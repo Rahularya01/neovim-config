@@ -28,7 +28,7 @@ return {
 			json = { "prettierd", "prettier", stop_after_first = true },
 			yaml = { "prettierd", "prettier", stop_after_first = true },
 			markdown = { "prettierd", "prettier", stop_after_first = true },
-			python = { "isort", "black" },
+			python = { "ruff_fix", "ruff_format" },
 			c = { "clang-format" },
 			cpp = { "clang-format" },
 			proto = { "clang-format" },
