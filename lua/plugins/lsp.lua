@@ -58,6 +58,7 @@ return {
         "clangd",
         "clang-format",
         "cpplint",
+        "js-debug-adapter",
       },
       auto_update = true,
       run_on_start = false, -- Don't run on startup to avoid lag
