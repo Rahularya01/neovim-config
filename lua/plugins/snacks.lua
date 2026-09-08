@@ -1,3 +1,5 @@
+local platform = require("config.platform")
+
 local base_opts = {
   bigfile = { enabled = true },
   input = { enabled = true },
@@ -192,8 +194,13 @@ local keys_full = {
 
 return {
   "folke/snacks.nvim",
+  cond = platform.not_vscode,
   priority = 1000,
-  event = "VeryLazy",
+  -- Must load before VimEnter (not on the deferred VeryLazy event): the
+  -- dashboard has to be drawn into the initial buffer before Neovim would
+  -- otherwise render its own built-in intro screen, or the native intro
+  -- flashes first.
+  lazy = false,
   opts = snacks_opts,
   keys = keys_full,
 }

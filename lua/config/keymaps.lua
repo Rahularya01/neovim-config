@@ -20,9 +20,9 @@ map("n", "<leader>rc", "<cmd>RemoveComments<cr>", { desc = "Remove comments", si
 
 -- Clear search highlights
 map("n", "<Esc>", function()
-	if vim.v.hlsearch == 1 then
-		vim.cmd("nohlsearch")
-	end
+  if vim.v.hlsearch == 1 then
+    vim.cmd("nohlsearch")
+  end
 end, { desc = "Clear search highlights", silent = true })
 
 -- Line movement
@@ -45,17 +45,17 @@ map("n", "<leader>q", "<cmd>copen<cr>", { desc = "Open quickfix list", silent = 
 
 -- Toggle options
 map("n", "<leader>ul", function()
-	vim.opt.list = not vim.opt.list:get()
+  vim.opt.list = not vim.opt.list:get()
 end, { desc = "Toggle listchars (show whitespace)", silent = true })
 
 map("n", "<leader>us", function()
-	vim.opt.spell = not vim.opt.spell:get()
+  vim.opt.spell = not vim.opt.spell:get()
 end, { desc = "Toggle spell checking", silent = true })
 
 -- Folds
 map("n", "zR", function()
-	vim.opt.foldlevel = 99
+  vim.opt.foldlevel = 99
 end, { desc = "Open all folds", silent = true })
 map("n", "zM", function()
-	vim.opt.foldlevel = 0
+  vim.opt.foldlevel = 0
 end, { desc = "Close all folds", silent = true })

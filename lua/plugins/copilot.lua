@@ -31,17 +31,9 @@ return {
       },
     },
     panel = { enabled = false },
-    nes = {
-      enabled = true,
-      keymap = {
-        -- NES mappings apply in normal mode, so this does not conflict with
-        -- the insert-mode Blink/Copilot ghost-text <Tab> mapping.
-        accept_and_goto = false,
-        accept = "<Tab>",
-        -- Keep this distinct from the insert-mode ghost-text dismiss mapping;
-        -- copilot.lua validates these keys globally, even across modes.
-        dismiss = "<C-g>",
-      },
-    },
+    -- Next Edit Suggestions are handled by sidekick.nvim's <Tab> mapping
+    -- (via the shared copilot-lsp server), so copilot.lua's own NES UI is
+    -- disabled here to avoid two plugins fighting over the same keymap.
+    nes = { enabled = false },
   },
 }

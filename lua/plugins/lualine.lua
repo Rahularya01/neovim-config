@@ -3,7 +3,9 @@ local platform = require("config.platform")
 return {
   "nvim-lualine/lualine.nvim",
   cond = platform.not_vscode,
-  event = "VeryLazy",
+  -- Statusline chrome should be present from the first frame; on VeryLazy it
+  -- pops in a tick after startup instead of being there immediately.
+  lazy = false,
   dependencies = {
     "nvim-tree/nvim-web-devicons",
     "catppuccin/nvim",

@@ -111,7 +111,7 @@ return {
 **Navigation & UI**
 - **snacks.nvim**: Picker (files, grep, buffers), terminal, lazygit, GitHub issue/PR picker
 - **oil.lua**: File explorer & file operations UI (buffer-based, `default_file_explorer = true`)
-- **nvim-tree.lua**: Neo-tree-style sidebar file tree (`<leader>e` toggle, `<leader>E` reveal file), git status & diagnostics in the tree
+- **neo-tree.lua**: Sidebar file tree (`<leader>e` toggle, `<leader>E` reveal file), git status & diagnostics in the tree
 - **lualine.lua**: Status line
 - **barbar.lua**: Bufferline / tab strip for open buffers
 - **treesitter.lua**: Syntax highlighting & code parsing
@@ -124,7 +124,7 @@ return {
 - **git-conflict.lua**: Merge conflict marker highlighting & resolution (`co`/`ct`/`cb`/`c0`)
 - **grug-far.lua**: Find & replace (rip-grep/ast-grep powered)
 - **copilot.lua**: GitHub Copilot ghost-text completion (accept: `<C-y>`)
-- **avante.lua**: AI agent/chat sidebar (Claude provider), keys under `<leader>a`
+- **sidekick.lua**: AI CLI companion (Copilot NES suggestions + Claude CLI sidebar), keys under `<leader>a`
 
 ---
 

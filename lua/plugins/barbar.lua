@@ -5,7 +5,9 @@ vim.g.barbar_auto_setup = false -- we call setup() ourselves via lazy's opts
 return {
   "romgrk/barbar.nvim",
   cond = platform.not_vscode,
-  event = "VeryLazy",
+  -- Bufferline chrome should be present from the first frame; on VeryLazy it
+  -- pops in a tick after startup instead of being there immediately.
+  lazy = false,
   dependencies = { "nvim-tree/nvim-web-devicons" },
   opts = {
     animation = false,
