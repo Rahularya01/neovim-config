@@ -35,7 +35,7 @@ require("mason-tool-installer").setup({
     pin("marksman", "2026-02-08"),
     pin("taplo", "0.10.0"),
     pin("prisma-language-server", "31.12.10"),
-    pin("copilot-language-server", "1.549.0"),
+    pin("copilot-language-server", "1.549.0"), -- copilot_ls, for NES (plugins/ai.lua)
     -- Formatters / linters (conform + nvim-lint)
     pin("prettierd", "0.29.0"),
     pin("stylua", "v2.5.2"),

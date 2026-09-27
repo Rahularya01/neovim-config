@@ -41,14 +41,16 @@ autocmd({ "FocusGained", "TermClose", "TermLeave" }, {
 autocmd("VimResized", {
   group = augroup("resize"),
   callback = function()
+    local tab = vim.fn.tabpagenr()
     vim.cmd("tabdo wincmd =")
+    vim.cmd("tabnext " .. tab)
   end,
 })
 
 -- Close utility windows with q
 autocmd("FileType", {
   group = augroup("close_q"),
-  pattern = { "help", "qf", "man", "notify", "checkhealth", "lspinfo", "grug-far", "startuptime", "gitsigns-blame" },
+  pattern = { "help", "qf", "man", "checkhealth", "grug-far", "gitsigns-blame" },
   callback = function(ev)
     vim.bo[ev.buf].buflisted = false
     vim.keymap.set("n", "q", "<cmd>close<cr>", { buffer = ev.buf, silent = true, desc = "Close" })

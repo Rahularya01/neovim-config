@@ -9,6 +9,8 @@ vim.pack.add({
 })
 
 -- Statusline -----------------------------------------------------------------
+-- copilot.vim (inline) and copilot-lsp (next edits) get an icon, not a name.
+local copilot_clients = { ["GitHub Copilot"] = true, copilot_ls = true }
 local function lsp_clients()
   local names = vim
     .iter(vim.lsp.get_clients({ bufnr = 0 }))
@@ -16,7 +18,7 @@ local function lsp_clients()
       return c.name
     end)
     :filter(function(n)
-      return n ~= "copilot"
+      return not copilot_clients[n]
     end)
     :totable()
   return #names > 0 and ("\u{f0ad} " .. table.concat(names, ", ")) or ""
@@ -53,7 +55,9 @@ require("lualine").setup({
           return "\u{f4b8}"
         end,
         cond = function()
-          return #vim.lsp.get_clients({ bufnr = 0, name = "copilot" }) > 0
+          return vim.iter(vim.lsp.get_clients({ bufnr = 0 })):any(function(c)
+            return copilot_clients[c.name]
+          end)
         end,
       },
       "encoding",
@@ -109,7 +113,7 @@ wk.add({
   { "<leader>h", group = "hunks" },
   { "<leader>l", group = "lsp / lazygit" },
   { "<leader>n", group = "notifications" },
-  { "<leader>o", group = "organize" },
+  { "<leader>o", group = "fix" },
   { "<leader>p", group = "plugins" },
   { "<leader>r", group = "rename" },
   { "<leader>s", group = "search" },
@@ -121,6 +125,8 @@ wk.add({
   { "]", group = "next" },
   { "g", group = "goto" },
   { "z", group = "fold" },
+  { "zR", desc = "Open all folds" },
+  { "zM", desc = "Close all folds" },
 })
 vim.keymap.set("n", "<leader>uu", "<cmd>Undotree<cr>", { desc = "Undo tree" })
 vim.keymap.set("n", "<leader>?", function()

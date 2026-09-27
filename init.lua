@@ -22,8 +22,7 @@ local function load(mods)
   end
 end
 
--- Needed before the first screen is drawn. Order matters: colorscheme first,
--- completion before lsp (it provides capabilities).
+-- Needed before the first screen is drawn. Order matters: colorscheme first.
 load({ "colorscheme", "snacks", "ui", "treesitter", "completion", "lsp", "formatting", "git" })
 
 -- Everything else loads right after the UI appears.

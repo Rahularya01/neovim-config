@@ -32,7 +32,8 @@ require("conform").setup({
     bash = { "shfmt" },
     zsh = { "shfmt" },
     toml = { "taplo" },
-    ["_"] = { "trim_whitespace" },
+    -- "prefer": servers like prismals/dockerls format these; trim only when none attached.
+    ["_"] = { "trim_whitespace", lsp_format = "prefer" },
   },
   default_format_opts = { lsp_format = "fallback" },
   -- editor.formatOnSave = true

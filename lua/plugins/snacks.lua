@@ -117,10 +117,10 @@ map("n", "<leader>tl", function()
 end, { desc = "New terminal" })
 
 -- References (Cursor: ]r / [r)
-map({ "n", "t" }, "]r", function()
+map("n", "]r", function()
   Snacks.words.jump(vim.v.count1)
 end, { desc = "Next reference" })
-map({ "n", "t" }, "[r", function()
+map("n", "[r", function()
   Snacks.words.jump(-vim.v.count1)
 end, { desc = "Prev reference" })
 

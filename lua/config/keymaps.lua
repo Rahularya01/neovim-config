@@ -51,7 +51,7 @@ map({ "n", "x" }, "j", "v:count == 0 ? 'gj' : 'j'", { expr = true, silent = true
 map({ "n", "x" }, "k", "v:count == 0 ? 'gk' : 'k'", { expr = true, silent = true })
 map("n", "n", "nzzzv")
 map("n", "N", "Nzzzv")
-map("x", "p", '"_dP', { desc = "Paste without yanking" })
+map("x", "p", "P", { desc = "Paste without yanking" })
 
 -- Diagnostics
 map("n", "]d", function()
@@ -68,10 +68,6 @@ map("n", "[e", function()
 end, { desc = "Prev error" })
 map("n", "<leader>ld", vim.diagnostic.open_float, { desc = "Line diagnostics" })
 map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Diagnostics → loclist" })
-
--- Folds (Cursor: zR / zM)
-map("n", "zR", "zR", { desc = "Open all folds" })
-map("n", "zM", "zM", { desc = "Close all folds" })
 
 -- Misc
 map("n", "<leader>ul", "<cmd>set list!<cr>", { desc = "Toggle whitespace" })

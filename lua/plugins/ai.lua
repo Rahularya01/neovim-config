@@ -1,71 +1,56 @@
-local gh = require("config.pack").gh
-vim.pack.add({ gh("folke/sidekick.nvim") })
+-- Copilot (Cursor: github.copilot.enable). Two clients of the same Mason-pinned
+-- copilot-language-server (plugins/tools.lua), sharing one sign-in:
+-- copilot.vim for inline suggestions, copilot-lsp's `copilot_ls` for next edit
+-- suggestions. First run: :Copilot setup
 
--- Copilot inline suggestions via the native LSP client (Cursor: github.copilot.enable).
--- The `copilot` server is installed + enabled by mason-lspconfig in lsp.lua.
--- First run: :LspCopilotSignIn
-if vim.lsp.inline_completion then
-  vim.lsp.inline_completion.enable()
-  vim.keymap.set("i", "<M-]>", function()
-    vim.lsp.inline_completion.select({ count = 1 })
-  end, { desc = "Next suggestion" })
-  vim.keymap.set("i", "<M-[>", function()
-    vim.lsp.inline_completion.select({ count = -1 })
-  end, { desc = "Prev suggestion" })
-  Snacks.toggle({
-    name = "Copilot suggestions",
-    get = function()
-      return vim.lsp.inline_completion.is_enabled()
-    end,
-    set = function(on)
-      vim.lsp.inline_completion.enable(on)
-    end,
-  }):map("<leader>ug")
-end
+-- Must be set before copilot.vim's plugin/ file is sourced by vim.pack.add().
+-- Its bundled server (older, needs Node) and npx download are both bypassed.
+vim.g.copilot_command = "copilot-language-server"
+vim.g.copilot_version = false
+vim.g.copilot_no_tab_map = true -- <Tab> accepts via completion.lua
 -- Cursor: copilot disabled for plaintext / markdown / scminput
-vim.api.nvim_create_autocmd("FileType", {
-  group = vim.api.nvim_create_augroup("user_copilot_ft", { clear = true }),
-  pattern = { "text", "markdown", "gitcommit" },
-  callback = function(ev)
-    if vim.lsp.inline_completion then
-      vim.lsp.inline_completion.enable(false, { bufnr = ev.buf })
-    end
-  end,
-})
+vim.g.copilot_filetypes = { text = false, markdown = false, gitcommit = false }
 
--- Claude Code / AI CLIs in a split (Cursor: <leader>a* → Claude sidebar) ------------
-require("sidekick").setup({
-  nes = { enabled = false }, -- editor.inline suggestions come from copilot above
-  cli = { mux = { enabled = false }, win = { layout = "right" } },
-})
-local cli = function()
-  return require("sidekick.cli")
+local gh = require("config.pack").gh
+vim.pack.add({ gh("github/copilot.vim"), gh("copilotlsp-nvim/copilot-lsp") })
+-- This module loads after startup, so copilot.vim missed VimEnter (which starts
+-- its client) and the current buffer's FileType/BufEnter.
+if vim.v.vim_did_enter == 1 then
+  vim.cmd("doautocmd <nomodeline> github_copilot VimEnter")
+  vim.cmd("doautocmd <nomodeline> github_copilot FileType")
+  vim.cmd("doautocmd <nomodeline> github_copilot BufEnter")
 end
-local map = vim.keymap.set
-map({ "n", "t", "i", "x" }, "<C-.>", function()
-  cli().toggle()
-end, { desc = "Sidekick toggle" })
-map("n", "<leader>aa", function()
-  cli().toggle()
-end, { desc = "AI CLI toggle" })
-map("n", "<leader>ac", function()
-  cli().toggle({ name = "claude", focus = true })
-end, { desc = "Claude Code" })
-map("n", "<leader>as", function()
-  cli().select()
-end, { desc = "Select AI CLI" })
-map("n", "<leader>ad", function()
-  cli().close()
-end, { desc = "Close AI CLI" })
-map({ "n", "x" }, "<leader>at", function()
-  cli().send({ msg = "{this}" })
-end, { desc = "Send this" })
-map("n", "<leader>af", function()
-  cli().send({ msg = "{file}" })
-end, { desc = "Send file" })
-map("x", "<leader>av", function()
-  cli().send({ msg = "{selection}" })
-end, { desc = "Send selection" })
-map({ "n", "x" }, "<leader>ap", function()
-  cli().prompt()
-end, { desc = "AI prompt" })
+require("plugins.lsp").enable_installed() -- copilot_ls's config exists only now
+
+Snacks.toggle({
+  name = "Copilot",
+  get = function()
+    return vim.g.copilot_enabled ~= false and vim.g.copilot_enabled ~= 0
+  end,
+  set = function(on)
+    vim.cmd.Copilot(on and "enable" or "disable")
+  end,
+}):map("<leader>ug")
+
+-- Next edit suggestions: normal-mode <Tab> jumps to the edit, then applies it
+-- and moves to its end. Insert-mode <Tab> is in completion.lua.
+vim.keymap.set("n", "<Tab>", function()
+  if not vim.b.nes_state then
+    return "<Tab>"
+  end
+  local nes = require("copilot-lsp.nes")
+  local _ = nes.walk_cursor_start_edit() or (nes.apply_pending_nes() and nes.walk_cursor_end_edit())
+end, { expr = true, desc = "Next edit: jump / apply" })
+
+-- tether.nvim: editor context for Claude Code, Gemini CLI, and Codex. Local
+-- checkout, so edits in the repo are live on the next :restart.
+local tether_dir = vim.fn.expand("~/Projects/Personal/tether.nvim")
+vim.opt.rtp:prepend(tether_dir)
+vim.cmd.runtime("plugin/tether.lua")
+
+-- Claude Code in a right split (Cursor: <leader>a* → Claude sidebar) ------------
+local function claude()
+  Snacks.terminal.toggle("claude", { win = { position = "right", width = 0.4 } })
+end
+vim.keymap.set({ "n", "t", "i", "x" }, "<C-.>", claude, { desc = "Claude Code" })
+vim.keymap.set("n", "<leader>ac", claude, { desc = "Claude Code" })

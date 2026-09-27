@@ -19,10 +19,7 @@ require("lazydev").setup({
 })
 
 -- Server overrides (merged on top of nvim-lspconfig's defaults) ----------------
-vim.lsp.config("*", {
-  capabilities = require("blink.cmp").get_lsp_capabilities(nil, true),
-})
-
+-- Completion capabilities for "*" are registered by blink.cmp's plugin/ file.
 vim.lsp.config("lua_ls", {
   settings = {
     Lua = {
@@ -128,7 +125,7 @@ M.servers = {
   "marksman",
   "taplo",
   "prismals",
-  "copilot",
+  "copilot_ls", -- config comes from copilot-lsp, added in plugins/ai.lua
 }
 
 function M.enable_installed()
@@ -174,9 +171,8 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.lsp.buf.code_action({ context = { only = { "source" }, diagnostics = {} } })
     end, "Source action")
     map("n", "<leader>oi", function()
-      vim.lsp.buf.code_action({ context = { only = { "source.organizeImports" }, diagnostics = {} }, apply = true })
-    end, "Organize imports")
-    map("i", "<C-k>", vim.lsp.buf.signature_help, "Signature help")
+      vim.lsp.buf.code_action({ context = { only = { "source.fixAll" }, diagnostics = {} } })
+    end, "Fix all")
     map("n", "<leader>li", "<cmd>checkhealth vim.lsp<cr>", "LSP info")
     map("n", "<leader>lr", "<cmd>lsp restart<cr>", "Restart LSP")
 

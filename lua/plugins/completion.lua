@@ -11,10 +11,21 @@ require("blink.cmp").setup({
     -- Cursor: ctrl+j / ctrl+k move through suggestions
     ["<C-j>"] = { "select_next", "fallback" },
     ["<C-k>"] = { "select_prev", "fallback_to_mappings" },
-    -- Tab: accept Copilot ghost text first, then snippet jump, then a real tab.
+    -- Tab: accept Copilot ghost text first, then a next edit suggestion, then
+    -- snippet jump, then a real tab. Copilot loads after startup (init.lua).
     ["<Tab>"] = {
       function()
-        return vim.lsp.inline_completion and vim.lsp.inline_completion.get()
+        if vim.g.loaded_copilot and vim.fn["copilot#GetDisplayedSuggestion"]().text ~= "" then
+          vim.api.nvim_feedkeys(vim.fn["copilot#Accept"](""), "n", true)
+          return true
+        end
+      end,
+      function(cmp)
+        if vim.b.nes_state then
+          cmp.hide()
+          local nes = require("copilot-lsp.nes")
+          return nes.apply_pending_nes() and nes.walk_cursor_end_edit()
+        end
       end,
       "snippet_forward",
       "fallback",

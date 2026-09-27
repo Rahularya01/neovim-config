@@ -20,7 +20,12 @@ opt.wrap = false
 opt.termguicolors = true
 opt.showmode = false
 opt.laststatus = 3
-opt.cmdheight = 1
+opt.cmdheight = 0
+-- Experimental 0.12 message/cmdline UI (:h ui2). Messages go to an ephemeral
+-- float so nothing is lost with cmdheight=0; pcall in case the module moves.
+pcall(function()
+  require("vim._core.ui2").enable({ msg = { target = "msg" } })
+end)
 opt.pumheight = 12
 opt.winborder = "rounded"
 opt.splitright = true
