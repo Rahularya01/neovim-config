@@ -1,7 +1,7 @@
 local gh = require("config.pack").gh
 vim.pack.add({
   gh("lewis6991/gitsigns.nvim"),
-  gh("sindrets/diffview.nvim"),
+  gh("esmuellert/codediff.nvim"),
 })
 
 -- Signs + inline blame (Cursor: GitLens currentLine, delay 1000) ------------------
@@ -60,27 +60,25 @@ require("gitsigns").setup({
   end,
 })
 
--- Diff / history (Cursor: git.openChange, GitLens file history) -------------------
--- Merge conflicts (Cursor: <leader>ct incoming / <leader>co current) are resolved
--- in diffview's merge view: :DiffviewOpen during a merge/rebase. Its buffer-local
--- keys: <leader>co / ct ours / theirs, <leader>cO / cT for the whole file, ]x / [x.
-local actions = require("diffview.actions")
-require("diffview").setup({
-  enhanced_diff_hl = true,
+-- Diff / history / merge (Cursor: git.openChange, GitLens file history) ------------
+-- Opens in its own tab; q quits. Conflicted files in the :CodeDiff explorer open
+-- a 3-way merge view with buffer-local keys: <leader>co / ct ours / theirs,
+-- <leader>cb both, <leader>cx base, uppercase for the whole file, ]x / [x, and
+-- - to stage the result. The diff library downloads on first :CodeDiff.
+require("codediff").setup({
   keymaps = {
     view = {
-      { "n", "<leader>cb", actions.conflict_choose("all"), { desc = "Conflict: accept both" } },
-      { "n", "<leader>c0", actions.conflict_choose("none"), { desc = "Conflict: accept none" } },
-      { "n", "<leader>ca", false }, -- keep LSP code action
+      toggle_explorer = "<leader>gE", -- keep <leader>b buffer group
+      toggle_compact = "gC", -- keep gc comment operator
     },
   },
 })
-vim.keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Diffview open" })
-vim.keymap.set("n", "<leader>gc", "<cmd>DiffviewClose<cr>", { desc = "Diffview close" })
-vim.keymap.set("n", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", { desc = "File history" })
-vim.keymap.set("n", "<leader>gH", "<cmd>DiffviewFileHistory<cr>", { desc = "Repo history" })
+vim.keymap.set("n", "<leader>gd", "<cmd>CodeDiff<cr>", { desc = "CodeDiff open" })
+vim.keymap.set("n", "<leader>gh", "<cmd>CodeDiff history %<cr>", { desc = "File history" })
+vim.keymap.set("n", "<leader>gH", "<cmd>CodeDiff history<cr>", { desc = "Repo history" })
+vim.keymap.set("n", "<leader>gm", "<cmd>CodeDiff merge %<cr>", { desc = "Resolve conflicts (file)" })
 
--- Conflict markers outside diffview (diffview's own ]x / [x win inside it).
+-- Conflict markers outside CodeDiff (its own ]x / [x win inside it).
 vim.keymap.set("n", "]x", function()
   vim.fn.search("^<<<<<<< ", "W")
 end, { desc = "Next conflict" })
