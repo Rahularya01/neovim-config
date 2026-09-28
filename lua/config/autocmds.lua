@@ -64,6 +64,7 @@ autocmd("FileType", {
   callback = function()
     vim.opt_local.wrap = true
     vim.opt_local.spell = true
+    vim.opt_local.formatexpr = "" -- gq wraps text; <leader>cf / save still run conform
   end,
 })
 

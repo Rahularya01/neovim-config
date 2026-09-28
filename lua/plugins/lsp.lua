@@ -26,7 +26,6 @@ vim.lsp.config("lua_ls", {
       workspace = { checkThirdParty = false },
       completion = { callSnippet = "Replace" },
       hint = { enable = true },
-      diagnostics = { globals = { "vim", "Snacks" } },
     },
   },
 })
@@ -138,7 +137,7 @@ function M.enable_installed()
 end
 M.enable_installed()
 
--- Keymaps on attach (Cursor: K, gd, gD, gi, gr, <leader>rn, <leader>ca, <leader>oi)
+-- Keymaps on attach (Cursor: gd, gD, gi, gr, <leader>rn, <leader>ca, <leader>oi)
 vim.api.nvim_create_autocmd("LspAttach", {
   group = vim.api.nvim_create_augroup("user_lsp_attach", { clear = true }),
   callback = function(ev)
@@ -147,9 +146,6 @@ vim.api.nvim_create_autocmd("LspAttach", {
       vim.keymap.set(mode, lhs, rhs, vim.tbl_extend("force", { buffer = ev.buf, desc = desc }, extra or {}))
     end
 
-    map("n", "K", function()
-      vim.lsp.buf.hover()
-    end, "Hover")
     map("n", "gd", function()
       Snacks.picker.lsp_definitions()
     end, "Goto definition")

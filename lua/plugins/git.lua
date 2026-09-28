@@ -2,7 +2,6 @@ local gh = require("config.pack").gh
 vim.pack.add({
   gh("lewis6991/gitsigns.nvim"),
   gh("sindrets/diffview.nvim"),
-  gh("akinsho/git-conflict.nvim"),
 })
 
 -- Signs + inline blame (Cursor: GitLens currentLine, delay 1000) ------------------
@@ -62,18 +61,48 @@ require("gitsigns").setup({
 })
 
 -- Diff / history (Cursor: git.openChange, GitLens file history) -------------------
-require("diffview").setup({ enhanced_diff_hl = true })
+-- Merge conflicts (Cursor: <leader>ct incoming / <leader>co current) are resolved
+-- in diffview's merge view: :DiffviewOpen during a merge/rebase. Its buffer-local
+-- keys: <leader>co / ct ours / theirs, <leader>cO / cT for the whole file, ]x / [x.
+local actions = require("diffview.actions")
+require("diffview").setup({
+  enhanced_diff_hl = true,
+  keymaps = {
+    view = {
+      { "n", "<leader>cb", actions.conflict_choose("all"), { desc = "Conflict: accept both" } },
+      { "n", "<leader>c0", actions.conflict_choose("none"), { desc = "Conflict: accept none" } },
+      { "n", "<leader>ca", false }, -- keep LSP code action
+    },
+  },
+})
 vim.keymap.set("n", "<leader>gd", "<cmd>DiffviewOpen<cr>", { desc = "Diffview open" })
 vim.keymap.set("n", "<leader>gc", "<cmd>DiffviewClose<cr>", { desc = "Diffview close" })
 vim.keymap.set("n", "<leader>gh", "<cmd>DiffviewFileHistory %<cr>", { desc = "File history" })
 vim.keymap.set("n", "<leader>gH", "<cmd>DiffviewFileHistory<cr>", { desc = "Repo history" })
 
--- Merge conflicts (Cursor: <leader>ct incoming / <leader>co current) --------------
-require("git-conflict").setup({ default_mappings = false, disable_diagnostics = true })
-vim.keymap.set("n", "<leader>ct", "<Plug>(git-conflict-theirs)", { desc = "Conflict: accept incoming" })
-vim.keymap.set("n", "<leader>co", "<Plug>(git-conflict-ours)", { desc = "Conflict: accept current" })
-vim.keymap.set("n", "<leader>cb", "<Plug>(git-conflict-both)", { desc = "Conflict: accept both" })
-vim.keymap.set("n", "<leader>c0", "<Plug>(git-conflict-none)", { desc = "Conflict: accept none" })
-vim.keymap.set("n", "]x", "<Plug>(git-conflict-next-conflict)", { desc = "Next conflict" })
-vim.keymap.set("n", "[x", "<Plug>(git-conflict-prev-conflict)", { desc = "Prev conflict" })
-vim.keymap.set("n", "<leader>cq", "<cmd>GitConflictListQf<cr>", { desc = "Conflicts → quickfix" })
+-- Conflict markers outside diffview (diffview's own ]x / [x win inside it).
+vim.keymap.set("n", "]x", function()
+  vim.fn.search("^<<<<<<< ", "W")
+end, { desc = "Next conflict" })
+vim.keymap.set("n", "[x", function()
+  vim.fn.search("^<<<<<<< ", "bW")
+end, { desc = "Prev conflict" })
+vim.keymap.set("n", "<leader>cq", function()
+  local files = vim.fn.systemlist({ "git", "diff", "--name-only", "--diff-filter=U", "--relative" })
+  if vim.v.shell_error ~= 0 then
+    return vim.notify("Not in a git repository", vim.log.levels.WARN)
+  end
+  local items = {}
+  for _, file in ipairs(files) do
+    for lnum, line in ipairs(vim.fn.readfile(file)) do
+      if line:match("^<<<<<<< ") then
+        table.insert(items, { filename = file, lnum = lnum, text = line })
+      end
+    end
+  end
+  if #items == 0 then
+    return vim.notify("No conflicts")
+  end
+  vim.fn.setqflist({}, " ", { title = "Conflicts", items = items })
+  vim.cmd("botright copen")
+end, { desc = "Conflicts → quickfix" })

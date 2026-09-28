@@ -1,34 +1,31 @@
--- Copilot (Cursor: github.copilot.enable). Two clients of the same Mason-pinned
--- copilot-language-server (plugins/tools.lua), sharing one sign-in:
--- copilot.vim for inline suggestions, copilot-lsp's `copilot_ls` for next edit
--- suggestions. First run: :Copilot setup
-
--- Must be set before copilot.vim's plugin/ file is sourced by vim.pack.add().
--- Its bundled server (older, needs Node) and npx download are both bypassed.
-vim.g.copilot_command = "copilot-language-server"
-vim.g.copilot_version = false
-vim.g.copilot_no_tab_map = true -- <Tab> accepts via completion.lua
--- Cursor: copilot disabled for plaintext / markdown / scminput
-vim.g.copilot_filetypes = { text = false, markdown = false, gitcommit = false }
+-- Copilot (Cursor: github.copilot.enable). One client, copilot-lsp's `copilot_ls`,
+-- running the Mason-pinned copilot-language-server (plugins/tools.lua): Neovim's
+-- built-in inline completion for ghost text, copilot-lsp for next edit
+-- suggestions. Prompts for GitHub sign-in on first use.
 
 local gh = require("config.pack").gh
-vim.pack.add({ gh("github/copilot.vim"), gh("copilotlsp-nvim/copilot-lsp") })
--- This module loads after startup, so copilot.vim missed VimEnter (which starts
--- its client) and the current buffer's FileType/BufEnter.
-if vim.v.vim_did_enter == 1 then
-  vim.cmd("doautocmd <nomodeline> github_copilot VimEnter")
-  vim.cmd("doautocmd <nomodeline> github_copilot FileType")
-  vim.cmd("doautocmd <nomodeline> github_copilot BufEnter")
-end
+vim.pack.add({ gh("copilotlsp-nvim/copilot-lsp") })
+
+-- Cursor: copilot disabled for plaintext / markdown / scminput
+local disabled_ft = { text = true, markdown = true, gitcommit = true }
+vim.lsp.config("copilot_ls", {
+  root_dir = function(buf, on_dir)
+    if not disabled_ft[vim.bo[buf].filetype] then
+      on_dir(vim.uv.cwd())
+    end
+  end,
+})
 require("plugins.lsp").enable_installed() -- copilot_ls's config exists only now
 
+-- Ghost text; <Tab> accepts via completion.lua.
+vim.lsp.inline_completion.enable(true)
 Snacks.toggle({
   name = "Copilot",
   get = function()
-    return vim.g.copilot_enabled ~= false and vim.g.copilot_enabled ~= 0
+    return vim.lsp.inline_completion.is_enabled()
   end,
   set = function(on)
-    vim.cmd.Copilot(on and "enable" or "disable")
+    vim.lsp.inline_completion.enable(on)
   end,
 }):map("<leader>ug")
 

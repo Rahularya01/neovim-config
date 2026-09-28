@@ -6,11 +6,32 @@ vim.pack.add({
   gh("rachartier/tiny-inline-diagnostic.nvim"),
   gh("folke/todo-comments.nvim"),
   gh("nvim-lua/plenary.nvim"),
+  gh("MunifTanjim/nui.nvim"),
+  gh("folke/noice.nvim"),
 })
 
+-- Cmdline + messages (Cursor: command palette) ------------------------------
+-- Replaces the experimental built-in ui2; the two can't both own the cmdline.
+require("noice").setup({
+  presets = {
+    command_palette = true, -- `:` opens a popup near the top, completions below it
+    bottom_search = true, -- `/` and `?` stay at the bottom so matches aren't covered
+    long_message_to_split = true,
+  },
+  notify = { enabled = false }, -- snacks.notifier keeps vim.notify
+  lsp = {
+    progress = { enabled = true },
+    hover = { enabled = false }, -- native hover already uses winborder
+    signature = { enabled = false }, -- blink.cmp shows signatures
+  },
+})
+vim.keymap.set("n", "<leader>nm", "<cmd>Noice pick<cr>", { desc = "Message history" })
+vim.keymap.set("n", "<leader>nl", "<cmd>Noice last<cr>", { desc = "Last message" })
+vim.keymap.set("n", "<leader>nd", "<cmd>Noice dismiss<cr>", { desc = "Dismiss messages" })
+
 -- Statusline -----------------------------------------------------------------
--- copilot.vim (inline) and copilot-lsp (next edits) get an icon, not a name.
-local copilot_clients = { ["GitHub Copilot"] = true, copilot_ls = true }
+-- Copilot gets an icon, not a name.
+local copilot_clients = { copilot_ls = true }
 local function lsp_clients()
   local names = vim
     .iter(vim.lsp.get_clients({ bufnr = 0 }))
@@ -49,6 +70,16 @@ require("lualine").setup({
       { "filename", path = 1, symbols = { modified = " ●", readonly = " \u{f023}" } },
     },
     lualine_x = {
+      -- "recording @q" (hidden by cmdheight=0)
+      {
+        function()
+          return require("noice").api.status.mode.get()
+        end,
+        cond = function()
+          return package.loaded.noice and require("noice").api.status.mode.has()
+        end,
+        color = "WarningMsg",
+      },
       { lsp_clients },
       {
         function()
@@ -111,7 +142,7 @@ wk.add({
   { "<leader>f", group = "find" },
   { "<leader>g", group = "git" },
   { "<leader>h", group = "hunks" },
-  { "<leader>l", group = "lsp / lazygit" },
+  { "<leader>l", group = "lsp" },
   { "<leader>n", group = "notifications" },
   { "<leader>o", group = "fix" },
   { "<leader>p", group = "plugins" },

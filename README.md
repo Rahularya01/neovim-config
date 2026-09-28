@@ -16,6 +16,8 @@ Everything that runs code on this machine is pinned, and nothing updates on its 
 
 Remaining exposure: npm-based Mason tools pin the top-level package but not
 transitive dependencies; GitHub-release tools are only as trustworthy as that release.
+tether.nvim is the one unpinned exception: it loads from a local checkout
+(`~/Projects/Personal/tether.nvim`, see `lua/plugins/ai.lua`).
 
 ## Updating
 

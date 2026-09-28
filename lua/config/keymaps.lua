@@ -71,7 +71,6 @@ map("n", "<leader>q", vim.diagnostic.setloclist, { desc = "Diagnostics → locli
 
 -- Misc
 map("n", "<leader>ul", "<cmd>set list!<cr>", { desc = "Toggle whitespace" })
-map("t", "<Esc><Esc>", "<C-\\><C-n>", { desc = "Terminal normal mode" })
 map("n", "<leader>pu", "<cmd>PackUpdate<cr>", { desc = "Update plugins" })
 map("n", "<leader>pc", "<cmd>PackClean<cr>", { desc = "Clean unused plugins" })
 map("n", "<leader>ps", "<cmd>PackStatus<cr>", { desc = "Plugin status" })

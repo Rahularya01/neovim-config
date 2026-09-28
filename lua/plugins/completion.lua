@@ -15,10 +15,7 @@ require("blink.cmp").setup({
     -- snippet jump, then a real tab. Copilot loads after startup (init.lua).
     ["<Tab>"] = {
       function()
-        if vim.g.loaded_copilot and vim.fn["copilot#GetDisplayedSuggestion"]().text ~= "" then
-          vim.api.nvim_feedkeys(vim.fn["copilot#Accept"](""), "n", true)
-          return true
-        end
+        return vim.lsp.inline_completion.get()
       end,
       function(cmp)
         if vim.b.nes_state then

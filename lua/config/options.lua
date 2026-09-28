@@ -6,7 +6,6 @@ opt.tabstop = 2
 opt.shiftwidth = 2
 opt.softtabstop = 2
 opt.shiftround = true
-opt.smartindent = true
 
 -- UI
 opt.number = true
@@ -17,15 +16,9 @@ opt.cursorline = true
 opt.scrolloff = 8 -- editor.cursorSurroundingLines = 8
 opt.sidescrolloff = 8
 opt.wrap = false
-opt.termguicolors = true
 opt.showmode = false
 opt.laststatus = 3
-opt.cmdheight = 0
--- Experimental 0.12 message/cmdline UI (:h ui2). Messages go to an ephemeral
--- float so nothing is lost with cmdheight=0; pcall in case the module moves.
-pcall(function()
-  require("vim._core.ui2").enable({ msg = { target = "msg" } })
-end)
+opt.cmdheight = 0 -- cmdline and messages are drawn by noice.nvim (plugins/ui.lua)
 opt.pumheight = 12
 opt.winborder = "rounded"
 opt.splitright = true
@@ -48,8 +41,6 @@ opt.foldcolumn = "0"
 -- Search (search.smartCase)
 opt.ignorecase = true
 opt.smartcase = true
-opt.hlsearch = true
-opt.incsearch = true
 opt.inccommand = "split"
 opt.grepprg = "rg --vimgrep --smart-case"
 
